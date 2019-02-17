@@ -1,0 +1,2 @@
+# NetCore
+Dotnet Core Project
