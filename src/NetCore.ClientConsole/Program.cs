@@ -22,7 +22,7 @@ namespace NetCore.ClientConsole
             }
 
             var tokenClient = new TokenClient(disco.TokenEndpoint, "ro.client", "secret");
-            var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync("nghianguyen", "Qwert@123", "api1");
+            var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync("user", "Password123!", "api1");
 
             if (tokenResponse.IsError)
             {

@@ -131,7 +131,7 @@ namespace NetCore.Infrastructure.Migrations.ApplicationDb
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("NNQT.Infrastructure.Models.ApplicationUser", b =>
+            modelBuilder.Entity("NetCore.Infrastructure.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
@@ -198,7 +198,7 @@ namespace NetCore.Infrastructure.Migrations.ApplicationDb
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("NNQT.Infrastructure.Models.ApplicationUser")
+                    b.HasOne("NetCore.Infrastructure.Models.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -206,7 +206,7 @@ namespace NetCore.Infrastructure.Migrations.ApplicationDb
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("NNQT.Infrastructure.Models.ApplicationUser")
+                    b.HasOne("NetCore.Infrastructure.Models.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -219,7 +219,7 @@ namespace NetCore.Infrastructure.Migrations.ApplicationDb
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("NNQT.Infrastructure.Models.ApplicationUser")
+                    b.HasOne("NetCore.Infrastructure.Models.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
@@ -227,7 +227,7 @@ namespace NetCore.Infrastructure.Migrations.ApplicationDb
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("NNQT.Infrastructure.Models.ApplicationUser")
+                    b.HasOne("NetCore.Infrastructure.Models.ApplicationUser")
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);

@@ -9,6 +9,7 @@ using NetCore.Infrastructure.Data;
 using NetCore.Infrastructure.Migrations.ApplicationDb;
 using NetCore.Infrastructure.Models;
 using NetCore.Infrastructure.Services;
+using System;
 using System.Reflection;
 
 namespace NetCore.AuthServer
@@ -27,11 +28,15 @@ namespace NetCore.AuthServer
         {
             string connectionString = _configuration.GetConnectionString("DefaultConnection");
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
-            var infrastructureMigrationAssembly = "NNQT.Infrastructure";
+            var infrastructureMigrationAssembly = "NetCore.Infrastructure";
             //var infrastructureMigrationAssembly = migrationsAssembly;
 
             services.AddDbContext<ApplicationDbContext>(builder =>
-                builder.UseSqlServer(connectionString, sqlOptions => sqlOptions.MigrationsAssembly(infrastructureMigrationAssembly)));
+                builder.UseSqlServer(connectionString, sqlOptions =>
+                {
+                    sqlOptions.MigrationsAssembly(infrastructureMigrationAssembly);
+                    sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+                }));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
@@ -40,7 +45,8 @@ namespace NetCore.AuthServer
             var builders = services.AddIdentityServer()
                 .AddOperationalStore(options =>
                     options.ConfigureDbContext = builder =>
-                        builder.UseSqlServer(connectionString, sqlOptions => sqlOptions.MigrationsAssembly(infrastructureMigrationAssembly)))
+                        builder.UseSqlServer(connectionString, sqlOptions => sqlOptions.MigrationsAssembly(infrastructureMigrationAssembly))
+                        )
                 .AddConfigurationStore(options =>
                     options.ConfigureDbContext = builder =>
                         builder.UseSqlServer(connectionString, sqlOptions => sqlOptions.MigrationsAssembly(infrastructureMigrationAssembly)))

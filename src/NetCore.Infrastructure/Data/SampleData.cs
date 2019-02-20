@@ -1,5 +1,6 @@
 ﻿using IdentityModel;
 using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Test;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Infrastructure.Migrations.ApplicationDb;
 using NetCore.Infrastructure.Models;
+using NetCore.Infrastructurer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,9 +58,9 @@ namespace NetCore.Infrastructure.Data
 
         public static async void SeedUsersAndRoles(IApplicationBuilder app)
         {
-            await AddUserRole(app,"admin@nnqt.com", "admin");
-            await AddUserRole(app, "manager@nnqt.com", "manager");
-            await AddUserRole(app, "user@nnqt.com", "user");
+            //await AddUserRole(app,"admin@NetCore.com", "admin");
+            //await AddUserRole(app, "manager@NetCore.com", "manager");
+            //await AddUserRole(app, "user@NetCore.com", "user");
         }
 
         public static void Migration(IApplicationBuilder app)
@@ -134,6 +136,35 @@ namespace NetCore.Infrastructure.Data
             using (var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>())
             using (var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>())
             {
+                var context = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+
+                if (!context.Clients.Any())
+                {
+                    foreach (var client in Config.GetClients())
+                    {
+                        context.Clients.Add(client.ToEntity());
+                    }
+                    context.SaveChanges();
+                }
+
+                if (!context.IdentityResources.Any())
+                {
+                    foreach (var resource in Config.GetIdentityResources())
+                    {
+                        context.IdentityResources.Add(resource.ToEntity());
+                    }
+                    context.SaveChanges();
+                }
+
+                if (!context.ApiResources.Any())
+                {
+                    foreach (var resource in Config.GetApiResources())
+                    {
+                        context.ApiResources.Add(resource.ToEntity());
+                    }
+                    context.SaveChanges();
+                }
+
                 if (userManager.Users.Any() && roleManager.Roles.Any())
                 {
                     return;

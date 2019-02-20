@@ -39,7 +39,7 @@ namespace NetCore.API
                 .AddJwtBearer(options =>
                 {
                     //destination of authen server
-                    options.Authority = "http://localhost:50002/";
+                    options.Authority = "http://localhost:5002/";
                     //destination of web api
                     options.Audience = "api1";
                     options.RequireHttpsMetadata = false;
@@ -60,7 +60,7 @@ namespace NetCore.API
             }
 
             app.UseHttpsRedirection();
-            SampleData.Migration(app);
+            //SampleData.Migration(app);
             app.UseAuthentication();
             app.UseMvc();
         }
