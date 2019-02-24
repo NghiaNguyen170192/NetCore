@@ -5,8 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NetCore.Infrastructure.Data;
 using NetCore.Infrastructure.Migrations.ApplicationDb;
+using NetCore.Infrastructure.Services;
 using System.Reflection;
 
 namespace NetCore.API
@@ -24,7 +24,8 @@ namespace NetCore.API
 
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            //string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            string connectionString = ConnectionstringService.GetConnectionstring();
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
 
             services.AddDbContext<ApplicationDbContext>(options =>

@@ -9,6 +9,7 @@ using NetCore.Infrastructure.Data;
 using NetCore.Infrastructure.Migrations.ApplicationDb;
 using NetCore.Infrastructure.Models;
 using NetCore.Infrastructure.Services;
+using NetCore.Infrastructure;
 using System;
 using System.Reflection;
 
@@ -26,7 +27,8 @@ namespace NetCore.AuthServer
 
         public void ConfigureServices(IServiceCollection services)
         {
-            string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            //string connectionString = _configuration.GetConnectionString("DefaultConnection");
+            string connectionString = Infrastructure.Services.ConnectionstringService.GetConnectionstring();
             var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             var infrastructureMigrationAssembly = "NetCore.Infrastructure";
             //var infrastructureMigrationAssembly = migrationsAssembly;
