@@ -9,7 +9,10 @@ namespace NetCore.ClientConsole
 {
     public class Program
     {
-        public static void Main(string[] args) => MainAsync().GetAwaiter().GetResult();
+        public static void Main(string[] args)
+        {
+            MainAsync().GetAwaiter().GetResult();
+        }
 
         private static async Task MainAsync()
         {
