@@ -55,14 +55,15 @@ namespace NetCore.AuthServer
                 //.AddInMemoryApiResources(Config.GetApiResources())
                 //.AddInMemoryClients(Config.GetClients())
                 .AddAspNetIdentity<ApplicationUser>();
-            if (_environment.IsDevelopment())
-            {
-                builders.AddDeveloperSigningCredential();
-            }
-            else
-            {
-                throw new System.Exception("no signing credential");
-            }
+            //if (_environment.IsDevelopment())
+            //{
+            //    builders.AddDeveloperSigningCredential();
+            //}
+            //else
+            //{
+            //    throw new System.Exception("no signing credential");
+            //}
+            builders.AddDeveloperSigningCredential();
 
             services.AddTransient<IProfileService, IdentityClaimsProfileService>();
         }

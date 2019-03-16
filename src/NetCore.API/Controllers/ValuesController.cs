@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NetCore.Infrastructure.Crawler;
+using NetCore.Infrastructure.Migrations.ApplicationDb;
+using NetCore.Infrastructure.Models.IMDB;
 using System.Collections.Generic;
 
 namespace NetCore.API.Controllers
@@ -9,6 +12,11 @@ namespace NetCore.API.Controllers
     [ApiController]
     public class ValuesController : ControllerBase
     {
+        private readonly ApplicationDbContext _context;
+        public ValuesController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
         // GET api/values
         [HttpGet]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
@@ -17,6 +25,12 @@ namespace NetCore.API.Controllers
         public ActionResult<IEnumerable<string>> Get()
         {
             var test = User;
+            ImdbCrawler crawler = new ImdbCrawler();
+            crawler.RunAsync();
+            //var genres = TitleBasicMapper._genres;
+
+            //Console.ReadLine();
+
             return new string[] { "value1", "value2" };
         }
 
