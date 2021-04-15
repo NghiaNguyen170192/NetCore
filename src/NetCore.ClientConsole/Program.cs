@@ -1,14 +1,4 @@
-﻿using IdentityModel.Client;
-using NetCore.Infrastructure.Crawler;
-using NetCore.Infrastructure.Models.IMDB;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
-using System.Linq;
+﻿using System.Threading.Tasks;
 namespace NetCore.ClientConsole
 {
     public class Program

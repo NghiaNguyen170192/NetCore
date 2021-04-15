@@ -60,7 +60,6 @@ namespace NetCore.API
             }
 
             app.UseHttpsRedirection();
-            //SampleData.Migration(app);
             app.UseAuthentication();
             app.UseMvc();
         }

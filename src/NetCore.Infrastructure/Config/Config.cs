@@ -7,13 +7,14 @@ namespace NetCore.Infrastructurer
 {
     public class Config
     {
+
         public static IEnumerable<IdentityResource> GetIdentityResources()
         {
             return new List<IdentityResource>
             {
                 new IdentityResources.OpenId(),
                 new IdentityResources.Email(),
-                new IdentityResources.Profile()
+                new IdentityResources.Profile(),
             };
         }
 
@@ -21,7 +22,7 @@ namespace NetCore.Infrastructurer
         {
             return new List<ApiResource>
             {
-                new ApiResource("api1", "My API")
+                new ApiResource("api1")
                 {
                     UserClaims =
                     {
@@ -30,36 +31,46 @@ namespace NetCore.Infrastructurer
                         JwtClaimTypes.GivenName,
                         JwtClaimTypes.FamilyName,
                         JwtClaimTypes.Role,
+                    },
+                    Scopes =
+                    {
+                         "api1",
+                         IdentityServerConstants.StandardScopes.OfflineAccess
                     }
                 }
             };
         }
 
-        public static IEnumerable<Client> GetClients()
+        public static IEnumerable<IdentityServer4.Models.Client> GetClients()
         {
-            return new List<Client>
+            return new List<IdentityServer4.Models.Client>
             {
-
-                new Client
+                new IdentityServer4.Models.Client
                 {
                     ClientId = "ro.client",
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-
-                    ClientSecrets =
+                    AllowOfflineAccess = true,
+                    AllowedScopes =
                     {
-                        new Secret("secret".Sha256())
+                        "api1",
+                        IdentityServerConstants.StandardScopes.OfflineAccess
                     },
-                    AllowedScopes = {
-                        IdentityServerConstants.StandardScopes.OpenId,
-                        IdentityServerConstants.StandardScopes.Profile,
-                        IdentityServerConstants.StandardScopes.Email,
-                        IdentityServerConstants.StandardScopes.Address,
-                        //IdentityServerConstants.AccessTokenAudience,
-                        //IdentityServerConstants.TokenTypes.AccessToken,
-                        "api1"
-                    }
+                    RefreshTokenExpiration = TokenExpiration.Absolute,
+                    RefreshTokenUsage = TokenUsage.ReUse,
+                    AbsoluteRefreshTokenLifetime = 200,
+                    AccessTokenLifetime = (int) new System.TimeSpan(1, 0, 0, 0).TotalSeconds,
+                    AccessTokenType = AccessTokenType.Jwt
                 }
             };
         }
+
+        public static IEnumerable<ApiScope> GetApiScopes()
+        {
+            return new ApiScope[]
+            {
+                new ApiScope("api1"),
+            };
+        }
+
     }
 }

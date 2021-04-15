@@ -76,25 +76,6 @@ namespace NetCore.Infrastructure.Data
             }
         }
 
-        //public static async void SeedSampleData(IApplicationBuilder app, IHostingEnvironment env)
-        //{
-        //using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-        //using (var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>())
-        //{
-        //    if (context.TitleBasics != null && !context.TitleBasics.Any())
-        //    {
-        //        var filePath = $@"{env.ContentRootPath}\AppData\NetCoreTrainingSeedingData.sql";
-        //        var lines = File.ReadLines(filePath);
-        //        var commands = ParseCommand(lines);
-
-        //        foreach (var command in commands)
-        //        {
-        //            await context.Database.ExecuteSqlCommandAsync(command);
-        //        }
-        //    }
-        //}
-        //}
-
         public class Users
         {
             public static List<TestUser> Get()
@@ -191,32 +172,6 @@ namespace NetCore.Infrastructure.Data
                     }
                 }
             }
-        }
-
-        private static IEnumerable<string> ParseCommand(IEnumerable<string> lines)
-        {
-            var sb = new StringBuilder();
-            var commands = new List<string>();
-            foreach (var line in lines)
-            {
-                if (string.Equals(line, "GO", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (sb.Length > 0)
-                    {
-                        commands.Add(sb.ToString());
-                        sb = new StringBuilder();
-                    }
-                }
-                else
-                {
-                    if (!string.IsNullOrWhiteSpace(line))
-                    {
-                        sb.Append(line);
-                    }
-                }
-            }
-
-            return commands;
         }
     }
 }
