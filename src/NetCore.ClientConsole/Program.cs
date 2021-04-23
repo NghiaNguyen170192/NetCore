@@ -1,4 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using IdentityModel.Client;
+using System.Net.Http;
+using System.Threading.Tasks;
+
 namespace NetCore.ClientConsole
 {
     public class Program
@@ -10,22 +13,27 @@ namespace NetCore.ClientConsole
 
         private static async Task MainAsync()
         {
-            //// discover endpoints from metadata
-            //var disco = await DiscoveryClient.GetAsync("http://localhost:5002");
-            //if (disco.IsError)
-            //{
-            //    Console.WriteLine(disco.Error);
-            //    return;
-            //}
+            // discover endpoints from metadata
+            var client = new HttpClient();
+            var disco = await client.GetDiscoveryDocumentAsync("https://localhost:44398");
+            if (disco.IsError)
+            {
+                return;
+            }
 
-            //var tokenClient = new TokenClient(disco.TokenEndpoint, "ro.client", "secret");
-            //var tokenResponse = await tokenClient.RequestResourceOwnerPasswordAsync("user", "Password123!", "api1");
+            // request token
+            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = disco.TokenEndpoint,
+                ClientId = "modulusgrant",
+                ClientSecret = "jKGHySpqOJJzXKn9zFr5H09CPujNpVAVgZLP5CGSRq0=",
+                Scope = "api1",
+            });
 
-            //if (tokenResponse.IsError)
-            //{
-            //    Console.WriteLine(tokenResponse.Error);
-            //    return;
-            //}
+            if (tokenResponse.IsError)
+            {
+                return;
+            }
 
             //Console.WriteLine(tokenResponse.Json);
             //Console.WriteLine("\n\n");

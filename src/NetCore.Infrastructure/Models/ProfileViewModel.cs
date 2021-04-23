@@ -19,8 +19,6 @@ namespace NetCore.Infrastructure.Models
         public ProfileViewModel(ApplicationUser user)
         {
             Id = user.Id;
-            FirstName = user.FirstName;
-            LastName = user.LastName;
             Email = user.Email;
         }
 

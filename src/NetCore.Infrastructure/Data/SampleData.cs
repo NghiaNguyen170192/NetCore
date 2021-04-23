@@ -13,7 +13,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace NetCore.Infrastructure.Data
@@ -133,6 +132,15 @@ namespace NetCore.Infrastructure.Data
                     foreach (var resource in Config.GetIdentityResources())
                     {
                         context.IdentityResources.Add(resource.ToEntity());
+                    }
+                    context.SaveChanges();
+                }
+
+                if (!context.ApiScopes.Any())
+                {
+                    foreach (var resource in Config.GetApiScopes())
+                    {
+                        context.ApiScopes.Add(resource.ToEntity());
                     }
                     context.SaveChanges();
                 }

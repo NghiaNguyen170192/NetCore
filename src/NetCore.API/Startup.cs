@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NetCore.Infrastructure.Data;
 using NetCore.Infrastructure.Migrations.ApplicationDb;
 using System.Reflection;
 
@@ -39,26 +38,17 @@ namespace NetCore.API
                 .AddJwtBearer(options =>
                 {
                     //destination of authen server
-                    options.Authority = "http://localhost:5002/";
+                    options.Authority = "http://localhost:52646/";
                     //destination of web api
                     options.Audience = "api1";
                     options.RequireHttpsMetadata = false;
                 });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddMvc(option => option.EnableEndpointRouting = false).SetCompatibilityVersion(CompatibilityVersion.Latest);
         }
 
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
-            else
-            {
-                app.UseHsts();
-            }
-
             app.UseHttpsRedirection();
             app.UseAuthentication();
             app.UseMvc();

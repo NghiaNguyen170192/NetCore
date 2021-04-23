@@ -43,9 +43,9 @@ namespace NetCore.Infrastructurer
 
         public static IEnumerable<IdentityServer4.Models.Client> GetClients()
         {
-            return new List<IdentityServer4.Models.Client>
+            return new List<Client>
             {
-                new IdentityServer4.Models.Client
+                new Client
                 {
                     ClientId = "ro.client",
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
@@ -60,6 +60,27 @@ namespace NetCore.Infrastructurer
                     AbsoluteRefreshTokenLifetime = 200,
                     AccessTokenLifetime = (int) new System.TimeSpan(1, 0, 0, 0).TotalSeconds,
                     AccessTokenType = AccessTokenType.Jwt
+                },
+                // interactive ASP.NET Core MVC client
+                new Client
+                {
+                    ClientId = "mvc",
+                    ClientSecrets = { new Secret("secret") },
+
+                    AllowedGrantTypes = GrantTypes.Code,
+                    
+                    // where to redirect to after login
+                    RedirectUris = { "https://localhost:6002/signin-oidc" },
+
+                    // where to redirect to after logout
+                    PostLogoutRedirectUris = { "https://localhost:6002/signout-callback-oidc" },
+
+                    AllowedScopes = new List<string>
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "api1"
+                    }
                 }
             };
         }
@@ -71,6 +92,5 @@ namespace NetCore.Infrastructurer
                 new ApiScope("api1"),
             };
         }
-
     }
 }

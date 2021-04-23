@@ -41,7 +41,7 @@ namespace NetCore.API.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = new ApplicationUser { UserName = model.UserName, FirstName = model.FirstName, LastName = model.LastName, Email = model.Email };
+            var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
 
             var result = await _userManager.CreateAsync(user, model.Password);
 
@@ -57,8 +57,6 @@ namespace NetCore.API.Controllers
                 await _userManager.AddToRoleAsync(user, role);
                 //await _roleManager.AddClaimAsync(identityRole, new Claim("role", role));
                 await _userManager.AddClaimAsync(user, new Claim("userName", user.UserName));
-                await _userManager.AddClaimAsync(user, new Claim("firstName", user.FirstName));
-                await _userManager.AddClaimAsync(user, new Claim("lastName", user.LastName));
                 await _userManager.AddClaimAsync(user, new Claim("email", user.Email));
                 await _userManager.AddClaimAsync(user, new Claim(ClaimTypes.Role, role));
 
