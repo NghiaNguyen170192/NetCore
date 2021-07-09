@@ -67,7 +67,7 @@ namespace NetCore.Infrastructurer
                     ClientId = "mvc",
                     ClientSecrets = { new Secret("secret") },
 
-                    AllowedGrantTypes = GrantTypes.Code,
+                    AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
                     
                     // where to redirect to after login
                     RedirectUris = { "https://localhost:6002/signin-oidc" },

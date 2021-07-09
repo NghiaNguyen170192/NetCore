@@ -27,8 +27,8 @@ namespace NetCore.Infrastructure.Migrations
                 Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
                 ConnectionStringName, MigrationsAssemblyName);
         }
-        protected abstract TContext CreateNewInstance(
-            DbContextOptions<TContext> options);
+
+        protected abstract TContext CreateNewInstance(DbContextOptions<TContext> options);
 
         public TContext CreateWithConnectionStringName(string connectionStringName, string migrationsAssemblyName)
         {

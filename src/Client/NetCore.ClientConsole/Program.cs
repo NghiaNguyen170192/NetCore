@@ -1,6 +1,4 @@
-﻿using IdentityModel.Client;
-using System.Net.Http;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace NetCore.ClientConsole
 {
@@ -8,32 +6,36 @@ namespace NetCore.ClientConsole
     {
         public static void Main(string[] args)
         {
-            MainAsync().GetAwaiter().GetResult();           
+            MainAsync().GetAwaiter().GetResult();
         }
 
         private static async Task MainAsync()
         {
-            // discover endpoints from metadata
-            var client = new HttpClient();
-            var disco = await client.GetDiscoveryDocumentAsync("https://localhost:44398");
-            if (disco.IsError)
-            {
-                return;
-            }
+        }
 
-            // request token
-            var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
-            {
-                Address = disco.TokenEndpoint,
-                ClientId = "modulusgrant",
-                ClientSecret = "jKGHySpqOJJzXKn9zFr5H09CPujNpVAVgZLP5CGSRq0=",
-                Scope = "api1",
-            });
+        private void ExecuteTask()
+        {
+            //// discover endpoints from metadata
+            //var client = new HttpClient();
+            //var disco = await client.GetDiscoveryDocumentAsync("https://localhost:44398");
+            //if (disco.IsError)
+            //{
+            //    return;
+            //}
 
-            if (tokenResponse.IsError)
-            {
-                return;
-            }
+            //// request token
+            //var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            //{
+            //    Address = disco.TokenEndpoint,
+            //    ClientId = "modulusgrant",
+            //    ClientSecret = "jKGHySpqOJJzXKn9zFr5H09CPujNpVAVgZLP5CGSRq0=",
+            //    Scope = "api1",
+            //});
+
+            //if (tokenResponse.IsError)
+            //{
+            //    return;
+            //}
 
             //Console.WriteLine(tokenResponse.Json);
             //Console.WriteLine("\n\n");
