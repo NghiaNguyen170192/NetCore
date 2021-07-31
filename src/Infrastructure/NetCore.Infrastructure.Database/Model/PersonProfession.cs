@@ -1,9 +1,13 @@
-﻿namespace NetCore.Infrastructure.Database.Model
+﻿using System;
+
+namespace NetCore.Infrastructure.Database.Model
 {
-    public class PersonProfession
-    {
-        public Person PersonI { get; set; }
-        
-        public Profession Profession { get; set; }
-    }
+    //public class PersonProfession : Entity
+    //{
+    //    public Guid PersonId { get; set; }
+    //    public Person Person { get; set; }
+
+    //    public Guid ProfessionId { get; set; }
+    //    public Profession Profession { get; set; }
+    //}
 }

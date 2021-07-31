@@ -6,6 +6,6 @@ namespace NetCore.Infrastructure.Database.Model
     {
         public string Name { get; set; }
 
-        public IList<TitleGenre> TitleGenres { get; set; }
+        //public IList<TitleGenre> TitleGenres { get; set; }
     }
 }

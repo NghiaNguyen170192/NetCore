@@ -20,8 +20,8 @@ namespace NetCore.Infrastructure.Database.Model
         
         public int? RuntimeMinutes{ get; set; }
 
-        public IList<TitleGenre> TitleGenres { get; set; }
+        //public IList<TitleGenre> TitleGenres { get; set; }
 
-        public IList<PersonTitle> PersonTitles { get; set; }
+        //public IList<PersonTitle> PersonTitles { get; set; }
     }
 }

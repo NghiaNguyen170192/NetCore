@@ -12,8 +12,8 @@ namespace NetCore.Infrastructure.Database.Model
         
         public int? DeathYear { get; set; }
 
-        public IList<PersonProfession> PersonProfessions { get; set; }
+        //public IList<PersonProfession> PersonProfessions { get; set; }
 
-        public IList<PersonTitle> PersonTitles { get; set; }
+        //public IList<PersonTitle> PersonTitles { get; set; }
     }
 }
