@@ -22,7 +22,10 @@ namespace NetCore.Api
 
             services.AddDbContext<DatabaseContext>(builder =>
             {
-                builder.UseSqlServer(databaseOptions.DatabaseConnection, o => o.MigrationsAssembly(databaseOptions.MigrationsAssembly));
+                builder.UseSqlServer(databaseOptions.DatabaseConnection, options => 
+                { 
+                    options.MigrationsAssembly(databaseOptions.MigrationsAssembly); 
+                });
             });
 
             //services.AddAuthorization();
