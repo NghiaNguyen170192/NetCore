@@ -11,7 +11,21 @@ namespace NetCore.Infrastructure.Database.Contexts
         {
         }
 
-        public DbSet<Activity> Activity { get; set; }
+        //public DbSet<Genre> Genre { get; set; }
+
+        //public DbSet<Person> Person { get; set; }
+        
+        //public DbSet<PersonProfession> PersonProfession { get; set; }
+        
+        //public DbSet<PersonTitle> PersonTitle { get; set; }
+        
+        //public DbSet<Profession> Profession { get; set; }
+
+        //public DbSet<Title> Title { get; set; }
+
+        //public DbSet<TitleGenre> TitleGenre { get; set; }
+        
+        //public DbSet<TitleType> TitleType { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

@@ -6,15 +6,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.Production.json" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="appsettings.Production.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
     <Content Include="appsettings.Development.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
@@ -34,11 +25,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Infrastructure\NetCore.Infrastructure.Database.MsSql\NetCore.Infrastructure.Database.MsSql.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\NetCore.Infrastructure.Database.PostgreSql\NetCore.Infrastructure.Database.PostgreSql.csproj" />
     <ProjectReference Include="..\..\Infrastructure\NetCore.Infrastructure.Database\NetCore.Infrastructure.Database.csproj" />
   </ItemGroup>
 
-  <Import Project="..\..\Shared\NetCore.Shared\NetCore.Shared.projitems" Label="Shared" />
+  <ItemGroup>
+    <Folder Include="sql\" />
+  </ItemGroup>
 
 </Project>

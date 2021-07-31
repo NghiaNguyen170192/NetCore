@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NetCore.Infrastructure.Database.Contexts;
+using NetCore.Infrastructure.Database.Model;
 using System.Linq;
 
 namespace NetCore.API.Controllers
@@ -7,10 +8,10 @@ namespace NetCore.API.Controllers
     [Route("api/[controller]")]
     //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [ApiController]
-    public class ActivityController : ControllerBase
+    public class CustomerController : ControllerBase
     {
         private readonly DatabaseContext _databaseContext;
-        public ActivityController(DatabaseContext context)
+        public CustomerController(DatabaseContext context)
         {
             _databaseContext = context;
         }
@@ -21,8 +22,9 @@ namespace NetCore.API.Controllers
         //[Authorize]
         public ActionResult<string> Get()
         {
-            var result = _databaseContext.Activity.Take(10); 
-            return Ok(result);
+            //var result = _databaseContext.Set<Customer>().Take(10); 
+            //return Ok(result);
+            return Ok();
         }
 
         // POST api/values

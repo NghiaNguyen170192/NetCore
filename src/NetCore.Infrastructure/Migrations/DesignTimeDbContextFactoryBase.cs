@@ -22,9 +22,7 @@ namespace NetCore.Infrastructure.Migrations
 
         public TContext CreateDbContext(string[] args)
         {
-            return Create(
-                Directory.GetCurrentDirectory(),
-                Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+            return Create(Directory.GetCurrentDirectory(), Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
                 ConnectionStringName, MigrationsAssemblyName);
         }
 

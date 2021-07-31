@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NetCore.Infrastructure.Database.Contexts;
-using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,23 +10,26 @@ namespace NetCore.Tools.Migration
 {
     public class MigrationService: IHostedService
     {
+        private readonly IServiceScopeFactory _scopeFactory;
         private readonly DatabaseContext _databaseContext;
-        
-        public MigrationService(DatabaseContext databaseContext)
+
+        public MigrationService(IServiceScopeFactory scopeFactory)
         {
-            _databaseContext = databaseContext;
+            _scopeFactory = scopeFactory;
+            _databaseContext = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<DatabaseContext>();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
             RunMigrations();
             RunSeeds();
+            RunSeedsBySql();
             return Task.CompletedTask;
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            return Task.CompletedTask; 
+            return Task.CompletedTask;
         }
 
         private void RunMigrations()
@@ -40,18 +43,17 @@ namespace NetCore.Tools.Migration
 
         private void RunSeeds()
         {
-            var numberOfRecords = 10000;
-            if(_databaseContext.Activity.Count() == numberOfRecords)
-            {
-                return;
-            }
+           
+        }
 
-            for (int i = 0; i < numberOfRecords; i++)
-            {
-                _databaseContext.Activity.Add(new Infrastructure.Database.Model.Activity());
-            }
+        private void RunSeedsBySql()
+        {
+            
+        }
 
-            _databaseContext.SaveChanges();
+        private void DeleteDatabase()
+        {
+
         }
     }
 }

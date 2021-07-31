@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.Configuration;
-using NetCore.Infrastructure.Database;
 
-namespace NetCore.Shared
+namespace NetCore.Infrastructure.Database.Extensions
 {
-    public static class ConfigurationHelper
+    public static class DatabaseExtensions
     {
         public static DatabaseOptions GetDatabaseOptions(this IConfiguration configuration, string key)
         {

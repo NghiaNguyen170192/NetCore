@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Options;
 using NetCore.Infrastructure.Database.Contexts;
 
-namespace NetCore.Infrastructure.Database.PostgreSql
+namespace NetCore.Infrastructure.Database
 {
     public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<DatabaseContext>
     {
@@ -20,7 +20,7 @@ namespace NetCore.Infrastructure.Database.PostgreSql
             var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
 
             var migrationsAssembly = options.Value.MigrationsAssembly ?? GetType().Assembly.FullName;
-            optionsBuilder.UseNpgsql(sqlConnection, o => o.MigrationsAssembly(migrationsAssembly));
+            optionsBuilder.UseSqlServer(sqlConnection, o => o.MigrationsAssembly(migrationsAssembly));
 
             return new DatabaseContext(optionsBuilder.Options);
         }

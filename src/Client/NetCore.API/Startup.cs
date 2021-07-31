@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Infrastructure.Database.Contexts;
-using NetCore.Shared;
+using NetCore.Infrastructure.Database.Extensions;
 
 namespace NetCore.API
 {
@@ -22,11 +22,8 @@ namespace NetCore.API
 
             services.AddDbContext<DatabaseContext>(builder =>
             {
-                builder.UseNpgsql(databaseOptions.DatabaseConnection, o => o.MigrationsAssembly(databaseOptions.MigrationsAssembly));
+                builder.UseSqlServer(databaseOptions.DatabaseConnection, o => o.MigrationsAssembly(databaseOptions.MigrationsAssembly));
             });
-
-            //services.AddDbContext<ApplicationDbContext>(options =>
-            //   options.UseSqlServer(connectionString));
 
             //services.AddAuthorization();
             //services.AddAuthentication(options =>
