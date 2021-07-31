@@ -3,7 +3,7 @@ using NetCore.Infrastructure.Database.Contexts;
 using NetCore.Infrastructure.Database.Model;
 using System.Linq;
 
-namespace NetCore.API.Controllers
+namespace NetCore.Api.Controllers
 {
     [Route("api/[controller]")]
     //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]

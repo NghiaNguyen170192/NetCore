@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NetCore.Infrastructure.Database.Contexts;
 using NetCore.Infrastructure.Database.Extensions;
 
-namespace NetCore.API
+namespace NetCore.Api
 {
     public class Startup
     {
