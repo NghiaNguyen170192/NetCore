@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using NetCore.Infrastructure.Database.Contexts;
 using NetCore.Infrastructure.Database.Model;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,17 +13,20 @@ namespace NetCore.Api.Controllers
     public class PersonController : ControllerBase
     {
         private readonly DatabaseContext _databaseContext;
+        private readonly IMediator _mediator;
 
-        public PersonController(DatabaseContext context)
+        public PersonController(IMediator mediator, DatabaseContext context)
         {
+            _mediator = mediator;
             _databaseContext = context;
+            
         }
 
         // GET api/values
         [HttpGet]
         //[Authorize(Roles="user")]
         //[Authorize]
-        public ActionResult<string> Get()
+        public async Task<ActionResult> Get()
         {
             var result = _databaseContext.Set<Person>().Take(10);
             return Ok(result);
@@ -34,6 +37,7 @@ namespace NetCore.Api.Controllers
         public async Task<ActionResult> Create([FromBody] Person model)
         {
             var result = await _databaseContext.Set<Person>().AddAsync(model);
+
             return Ok(result);
         }
 
