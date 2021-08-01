@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using MediatR;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -6,9 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using NetCore.Infrastructure.Database.Contexts;
 using NetCore.Infrastructure.Database.Extensions;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Reflection;
 
 namespace NetCore.Api
@@ -55,9 +54,11 @@ namespace NetCore.Api
                 .AddControllersWithViews()
                 .AddNewtonsoftJson(options =>options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
+            services.AddMediatR(Assembly.GetExecutingAssembly());
+
             AddSwagger(services);
         }
-      
+
         public void Configure(IApplicationBuilder app)
         {
             app.UseHttpsRedirection();
