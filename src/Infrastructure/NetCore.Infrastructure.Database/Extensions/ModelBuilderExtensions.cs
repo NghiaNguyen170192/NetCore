@@ -17,8 +17,11 @@ namespace NetCore.Infrastructure.Database.Extensions
                 var tableAttribute = entityClass.GetCustomAttribute(typeof(TableAttribute)) as TableAttribute;
 
                 modelBuilder.Entity(entityClass).ToTable(tableAttribute.Name);
+                var properties = entityClass.GetProperties().Where(p => 
+                    (p.PropertyType == typeof(DateTime) || p.PropertyType == typeof(Guid)) 
+                    && p.CustomAttributes.Any(a => a.AttributeType == typeof(DatabaseGeneratedAttribute) && !p.CustomAttributes.Any(c => c.AttributeType == typeof(DefaultValueAttribute))));
 
-                foreach (var property in entityClass.GetProperties().Where(p => (p.PropertyType == typeof(DateTime) || p.PropertyType == typeof(Guid)) && p.CustomAttributes.Any(a => a.AttributeType == typeof(DatabaseGeneratedAttribute) && !p.CustomAttributes.Any(c => c.AttributeType == typeof(DefaultValueAttribute)))))
+                foreach (var property in )
                 {
                     var defaultValueSql = "GetDate()";
                     if (property.PropertyType == typeof(Guid))

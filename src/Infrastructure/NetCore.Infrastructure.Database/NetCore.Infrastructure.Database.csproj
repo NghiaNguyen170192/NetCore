@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <Folder Include="Configuration\" />
+    <Folder Include="Handlers\" />
     <Folder Include="Properties\" />
   </ItemGroup>
 

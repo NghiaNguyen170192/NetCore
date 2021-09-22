@@ -1,13 +1,21 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.OData;
+using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Net.Http.Headers;
+using Microsoft.OData.Edm;
+using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
 using NetCore.Infrastructure.Database.Contexts;
 using NetCore.Infrastructure.Database.Extensions;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 
 namespace NetCore.Api
@@ -48,50 +56,35 @@ namespace NetCore.Api
             //        options.RequireHttpsMetadata = false;
             //    });
 
-            services.AddMvc(option => option.EnableEndpointRouting = false);
-
             services
-                .AddControllersWithViews()
+                .AddControllers()
+                .AddOData(options =>
+                {
+                    options.Select().Filter().Expand().OrderBy().Count().SetMaxTop(250);
+                })
                 .AddNewtonsoftJson(options =>options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
-            services.AddMediatR(Assembly.GetExecutingAssembly());
+            services.AddMediatR(typeof(Infrastructure.Handlers.AssemblyReference).GetTypeInfo().Assembly);
 
-            AddSwagger(services);
-        }
-
-        public void Configure(IApplicationBuilder app)
-        {
-            app.UseHttpsRedirection();
-            //app.UseAuthentication();
-            app.UseMvc();
-
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
+            services.AddSwaggerGen(options =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "NetCore Api V1.0.0");
-            });
-
-        }
-
-        private void AddSwagger(IServiceCollection services)
-        {
-            services.AddSwaggerGen(c =>
-            {
-                c.DocInclusionPredicate((docName, apiDesc) =>
+                options.DocInclusionPredicate((docName, apiDesc) =>
                 {
                     var assemblyName = ((ControllerActionDescriptor)apiDesc.ActionDescriptor).ControllerTypeInfo.Assembly.GetName().Name;
                     var currentAssemblyName = GetType().Assembly.GetName().Name;
                     return currentAssemblyName == assemblyName;
                 });
 
-                c.SwaggerDoc("v1", new OpenApiInfo
+                options.SwaggerDoc("v1", new OpenApiInfo
                 {
                     Title = "NetCore Api",
                     Version = "v1.0.0",
                     Description = "NetCore Api"
                 });
 
-                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                #region swagger for JWT Bearer authentication
+                
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
                     Description = "Please enter into field the word 'Bearer' following by space and JWT",
@@ -99,7 +92,7 @@ namespace NetCore.Api
                     Type = SecuritySchemeType.ApiKey
                 });
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement()
                 {
                     {
                         new OpenApiSecurityScheme
@@ -116,14 +109,50 @@ namespace NetCore.Api
                         new List<string>()
                     }
                 });
+                #endregion
 
                 //var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
                 //var folderPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
                 //var xmlPath = Path.Combine(folderPath, xmlFile);
                 //c.IncludeXmlComments(xmlPath);
-                c.DescribeAllParametersInCamelCase();
+                options.DescribeAllParametersInCamelCase();
+            });
+
+            AddODataFormattersForSwagger(services);
+        }
+        
+        public void Configure(IApplicationBuilder app)
+        {
+            app.UseHttpsRedirection();
+            //app.UseAuthentication();
+
+            app.UseRouting();
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "NetCore Api V1.0.0");
             });
         }
+        
+        private void AddODataFormattersForSwagger(IServiceCollection services)
+        {
+            services.AddMvcCore(options =>
+            {
+                var outputFormatters = options
+                        .OutputFormatters.OfType<ODataOutputFormatter>()
+                        .Where(foramtter => foramtter.SupportedMediaTypes.Count == 0);
 
+                foreach (var outputFormatter in outputFormatters)
+                {
+                    outputFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/odata"));
+                }
+            });
+        }
     }
 }

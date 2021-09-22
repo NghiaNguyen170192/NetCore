@@ -1,8 +1,9 @@
-﻿using MediatR;
+﻿using Azure.Core;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using NetCore.Infrastructure.Database.Contexts;
-using NetCore.Infrastructure.Database.Model;
-using System.Linq;
+using Microsoft.AspNetCore.OData.Query;
+using NetCore.Infrastructure.Handlers.Person;
+using System;
 using System.Threading.Tasks;
 
 namespace NetCore.Api.Controllers
@@ -12,52 +13,45 @@ namespace NetCore.Api.Controllers
     [ApiController]
     public class PersonController : ControllerBase
     {
-        private readonly DatabaseContext _databaseContext;
         private readonly IMediator _mediator;
 
-        public PersonController(IMediator mediator, DatabaseContext context)
+        public PersonController(IMediator mediator)
         {
             _mediator = mediator;
-            _databaseContext = context;
-            
         }
 
         // GET api/values
         [HttpGet]
         //[Authorize(Roles="user")]
         //[Authorize]
-        public async Task<ActionResult> Get()
-        {
-            var result = _databaseContext.Set<Person>().Take(10);
-            return Ok(result);
+        [EnableQuery]
+        public async Task<ActionResult> Get(QueryPersonRequest request)
+{
+            var response = await _mediator.Send(request);
+            return Ok(response);
         }
 
         // POST api/values
         [HttpPost]
-        public async Task<ActionResult> Create([FromBody] Person model)
+        public async Task<ActionResult> Create([FromBody] CreatePersonRequest request)
         {
-            var result = await _databaseContext.Set<Person>().AddAsync(model);
-
-            return Ok(result);
+            var response = await _mediator.Send(request);
+            return Ok(response);
         }
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        public async Task<ActionResult> Put(int id, [FromBody] string value)
         {
+            throw new NotImplementedException();
         }
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public ActionResult Delete(int id)
-        {
-            var existing = _databaseContext.Set<Person>().FirstOrDefault(x => x.Id == id);
-            if (existing == null)
-            {
-                return NotFound();
-            }
-
-            return Accepted();
+        public async Task<ActionResult> Delete(int id)
+{
+            var response = await _mediator.Send(new DeletePersonRequest(id));
+            return Ok(response);
         }
     }
 }

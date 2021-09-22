@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NetCore.Infrastructure.Model.MediatR
+namespace NetCore.Infrastructure.Handlers
 {
-    public class PersonRequest
+    public class AssemblyReference
     {
     }
 }
