@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace NetCore.Infrastructure.Database.Model
+namespace NetCore.Infrastructure.Database.Models
 {
-    public class Person : Entity
+    public class Person : BaseEntity
     {
         public string NameConst { get; set; }
 
@@ -11,9 +11,5 @@ namespace NetCore.Infrastructure.Database.Model
         public int BirthYear { get; set; }
         
         public int? DeathYear { get; set; }
-
-        //public IList<PersonProfession> PersonProfessions { get; set; }
-
-        //public IList<PersonTitle> PersonTitles { get; set; }
     }
 }

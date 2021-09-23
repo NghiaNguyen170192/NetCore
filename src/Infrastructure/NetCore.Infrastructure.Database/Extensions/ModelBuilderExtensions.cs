@@ -21,7 +21,7 @@ namespace NetCore.Infrastructure.Database.Extensions
                     (p.PropertyType == typeof(DateTime) || p.PropertyType == typeof(Guid)) 
                     && p.CustomAttributes.Any(a => a.AttributeType == typeof(DatabaseGeneratedAttribute) && !p.CustomAttributes.Any(c => c.AttributeType == typeof(DefaultValueAttribute))));
 
-                foreach (var property in )
+                foreach (var property in properties)
                 {
                     var defaultValueSql = "GetDate()";
                     if (property.PropertyType == typeof(Guid))

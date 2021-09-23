@@ -22,8 +22,12 @@
 
   <ItemGroup>
     <Folder Include="Configuration\" />
-    <Folder Include="Handlers\" />
+    <Folder Include="Migrations\" />
     <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\New folder\NetCore.Infrastructure.Database.Models\NetCore.Infrastructure.Database.Models.csproj" />
   </ItemGroup>
 
 </Project>

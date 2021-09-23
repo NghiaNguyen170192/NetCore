@@ -1,8 +1,7 @@
-﻿using Azure.Core;
-using MediatR;
+﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using NetCore.Infrastructure.Handlers.Person;
+using NetCore.Infrastructure.Handlers;
 using System;
 using System.Threading.Tasks;
 

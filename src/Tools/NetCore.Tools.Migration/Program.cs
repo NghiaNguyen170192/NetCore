@@ -13,7 +13,21 @@ namespace NetCore.Tools.Migration
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            var host = CreateHostBuilder(args).Build();
+
+            using (var scope = host.Services.CreateScope())
+            {
+                try
+                {
+                    var application = scope.ServiceProvider.GetRequiredService<MigrationService>();
+                    application.Run(args);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    return;
+                }
+            }
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args)
@@ -35,8 +49,7 @@ namespace NetCore.Tools.Migration
                     {
                         builder.UseSqlServer(databaseOptions.DatabaseConnection, o => o.MigrationsAssembly(databaseOptions.MigrationsAssembly));
                     });
-
-                    services.AddHostedService<MigrationService>();
+                    services.AddSingleton<MigrationService>();
                 });
         }
     }

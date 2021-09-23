@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace NetCore.Infrastructure.Database.Model
+namespace NetCore.Infrastructure.Database.Models
 {
-    public class Entity
+    public class BaseEntity
     {
         public virtual int Id { get; set; }
 

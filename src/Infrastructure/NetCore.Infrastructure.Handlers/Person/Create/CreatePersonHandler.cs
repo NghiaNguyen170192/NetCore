@@ -1,11 +1,11 @@
 ﻿using MediatR;
 using NetCore.Infrastructure.Database.Contexts;
-using NetCore.Infrastructure.Database.Model;
+using NetCore.Infrastructure.Database.Models;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NetCore.Infrastructure.Handlers.Person
+namespace NetCore.Infrastructure.Handlers
 {
     public class CreatePersonHandler : IRequestHandler<CreatePersonRequest, CreatePersonResponse>
     {
@@ -24,7 +24,7 @@ namespace NetCore.Infrastructure.Handlers.Person
             }
 
             var person = MapPerson(request);
-            await _databaseContext.Set<Database.Model.Person>().AddAsync(person);
+            await _databaseContext.Set<Person>().AddAsync(person);
             await _databaseContext.SaveChangesAsync();
 
             return await Task.FromResult(MapResponse(person));
@@ -32,12 +32,12 @@ namespace NetCore.Infrastructure.Handlers.Person
 
         private bool IsExisted(CreatePersonRequest request)
         {
-            return _databaseContext.Set<Database.Model.Person>().Any(x => x.NameConst == request.NameConst);
+            return _databaseContext.Set<Person>().Any(x => x.NameConst == request.NameConst);
         }
 
-        private Database.Model.Person MapPerson(CreatePersonRequest request)
+        private Person MapPerson(CreatePersonRequest request)
         {
-            return new Database.Model.Person
+            return new Person
             {
                 BirthYear = request.BirthYear ?? 0,
                 DeathYear = request.DeathYear,
@@ -46,7 +46,7 @@ namespace NetCore.Infrastructure.Handlers.Person
             };
         }
 
-        private CreatePersonResponse MapResponse(Database.Model.Person person)
+        private CreatePersonResponse MapResponse(Person person)
         {
             return new CreatePersonResponse(person.Id);
         }
