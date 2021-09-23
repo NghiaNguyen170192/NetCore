@@ -1,6 +1,7 @@
 ﻿using MediatR;
+using System;
 
 namespace NetCore.Infrastructure.Handlers
 {
-    public record DeletePersonRequest(int Id): IRequest;
+    public record DeletePersonRequest(Guid Id) : IRequest;
 }

@@ -1,7 +1,8 @@
 ﻿using MediatR;
+using System;
 using System.Linq;
 
 namespace NetCore.Infrastructure.Handlers
 {
-    public record QueryPersonRequest(int Id, string NameConst, string PrimaryName, int BirthYear, int? DeathYear) : IRequest<IQueryable<QueryPersonResponse>>;
+    public record QueryPersonRequest(Guid Id, string NameConst, string PrimaryName, int BirthYear, int? DeathYear) : IRequest<IQueryable<QueryPersonResponse>>;
 }

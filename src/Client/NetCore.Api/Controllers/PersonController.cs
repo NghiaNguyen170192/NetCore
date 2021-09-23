@@ -40,14 +40,14 @@ namespace NetCore.Api.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] string value)
+        public async Task<ActionResult> Put(Guid id, [FromBody] string value)
         {
             throw new NotImplementedException();
         }
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult> Delete(Guid id)
 {
             var response = await _mediator.Send(new DeletePersonRequest(id));
             return Ok(response);

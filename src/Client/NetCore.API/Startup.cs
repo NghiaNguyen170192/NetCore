@@ -1,11 +1,13 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.OData;
 using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using NetCore.Infrastructure.Database.Contexts;
@@ -117,7 +119,7 @@ namespace NetCore.Api
             AddODataFormattersForSwagger(services);
         }
         
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
         {
             app.UseHttpsRedirection();
             //app.UseAuthentication();
@@ -129,11 +131,19 @@ namespace NetCore.Api
                 endpoints.MapControllers();
             });
 
-            app.UseSwagger();
-            app.UseSwaggerUI(c =>
+            if (environment.IsDevelopment())
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "NetCore Api V1.0.0");
-            });
+                app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "NetCore Api V1.0.0");
+                });
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+            }
         }
         
         private void AddODataFormattersForSwagger(IServiceCollection services)

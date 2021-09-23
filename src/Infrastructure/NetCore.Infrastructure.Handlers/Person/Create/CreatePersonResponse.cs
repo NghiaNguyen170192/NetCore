@@ -1,4 +1,6 @@
-﻿namespace NetCore.Infrastructure.Handlers
+﻿using System;
+
+namespace NetCore.Infrastructure.Handlers
 {
-    public record CreatePersonResponse(int Id);
+    public record CreatePersonResponse(Guid Id);
 }

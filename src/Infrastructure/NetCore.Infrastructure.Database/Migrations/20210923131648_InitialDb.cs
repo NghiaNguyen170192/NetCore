@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace NetCore.Infrastructure.Database.Migrations
 {
@@ -10,12 +11,15 @@ namespace NetCore.Infrastructure.Database.Migrations
                 name: "Person",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     NameConst = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     PrimaryName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     BirthYear = table.Column<int>(type: "int", nullable: false),
-                    DeathYear = table.Column<int>(type: "int", nullable: true)
+                    DeathYear = table.Column<int>(type: "int", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CreatedById = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ModifiedOn = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedById = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
                 {

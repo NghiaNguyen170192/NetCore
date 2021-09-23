@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace NetCore.Infrastructure.Database.Models
+﻿namespace NetCore.Infrastructure.Database.Models
 {
     public class Person : BaseEntity
     {

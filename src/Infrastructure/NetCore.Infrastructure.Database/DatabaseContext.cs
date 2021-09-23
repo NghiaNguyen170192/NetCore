@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NetCore.Infrastructure.Database.Extensions;
 using NetCore.Infrastructure.Database.Models;
 
 namespace NetCore.Infrastructure.Database.Contexts
@@ -15,6 +16,7 @@ namespace NetCore.Infrastructure.Database.Contexts
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.SetDefaultValueTableName();
         }
     }
 }
