@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using CommandLine;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Infrastructure.Database.Contexts;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace NetCore.Tools.Migration
@@ -11,25 +13,25 @@ namespace NetCore.Tools.Migration
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly DatabaseContext _databaseContext;
 
-        //public MigrationService(IServiceScopeFactory scopeFactory)
-        //{
-        //    _scopeFactory = scopeFactory;
-        //    _databaseContext = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<DatabaseContext>();
-        //}
-
-        public MigrationService(DatabaseContext databaseContext)
+        public MigrationService(IServiceScopeFactory scopeFactory)
         {
-            _databaseContext = databaseContext;
+            _scopeFactory = scopeFactory;
+            _databaseContext = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<DatabaseContext>();
         }
+
+        //public MigrationService(DatabaseContext databaseContext)
+        //{
+        //    _databaseContext = databaseContext;
+        //}
 
         public void Run(string[] args)
         {
-            RunMigrations();
-            RunSeeds();
-            RunSeedsBySql();
+            Parser.Default.ParseArguments<Options>(args)
+                .WithParsed(RunCommands)
+                .WithNotParsed(HandleParseError);
         }
 
-        private void RunMigrations()
+        private void RunMigration()
         {
             var pendingMigrations = _databaseContext.Database.GetPendingMigrations();
             if (pendingMigrations.Any())
@@ -43,24 +45,53 @@ namespace NetCore.Tools.Migration
 
         }
 
-        private void RunSeedsBySql()
+        private void RunSeedsTestData()
         {
 
         }
 
         private void DeleteDatabase()
         {
+            Console.WriteLine($"Delete database Start");
+            _databaseContext.Database.EnsureDeleted();
+            Console.WriteLine($"Delete database End");
+
+        }
+
+        private void RunCommands(Options commands)
+        {
             try
             {
-                Console.WriteLine($"Delete database Start");
-                _databaseContext.Database.EnsureDeleted();
-                Console.WriteLine($"Delete database End");
+                if (commands.RunDeleteDatabase)
+                {
+                    DeleteDatabase();
+                }
+
+                if (commands.RunMigration)
+                {
+                    RunMigration();
+                }
+
+                if (commands.RunSeeds)
+                {
+                    RunSeeds();
+                }
+
+                if (commands.RunSeedsTestData)
+                {
+                    RunSeedsTestData();
+                }
             }
             catch (Exception exception)
             {
                 Console.WriteLine(exception.Message);
                 Console.WriteLine(exception.StackTrace);
             }
+        }
+
+        private void HandleParseError(IEnumerable<Error> errors)
+        {
+
         }
     }
 }
