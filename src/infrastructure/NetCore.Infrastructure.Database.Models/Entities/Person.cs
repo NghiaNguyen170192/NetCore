@@ -1,4 +1,4 @@
-﻿namespace NetCore.Infrastructure.Database.Models
+﻿namespace NetCore.Infrastructure.Database.Models.Entities
 {
     public class Person : BaseEntity
     {

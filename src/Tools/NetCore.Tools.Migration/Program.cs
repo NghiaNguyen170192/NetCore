@@ -1,9 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NetCore.Infrastructure.Database.Contexts;
+using NetCore.Infrastructure.Database;
 using NetCore.Infrastructure.Database.Extensions;
+using NetCore.Infrastructure.Models.Identity;
 using System;
 using System.IO;
 
@@ -44,15 +46,28 @@ namespace NetCore.Tools.Migration
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    var databaseOptions = hostContext.Configuration.GetDatabaseOptions("ConnectionStrings");
+                    var databaseOptions = hostContext.Configuration.GetDatabaseOptions("ConnectionString");
                     services.AddDbContext<DatabaseContext>(builder =>
                     {
-                        builder.UseSqlServer(databaseOptions.DatabaseConnection, o => o.MigrationsAssembly(databaseOptions.MigrationsAssembly));
+                        builder.UseSqlServer(databaseOptions.ApplicationConnectionString, o => o.MigrationsAssembly(databaseOptions.MigrationsAssembly));
                     });
+
+                    //services.AddIdentity<ApplicationUser, IdentityRole>()
+                    //    .AddEntityFrameworkStores<DatabaseContext>()
+                    //    .AddDefaultTokenProviders();
+
+                    //var builders = services.AddIdentityServer()
+                    //    .AddOperationalStore(options =>
+                    //        options.ConfigureDbContext = builder =>
+                    //            builder.UseSqlServer(databaseOptions.ApplicationConnectionString, sqlOptions => sqlOptions.MigrationsAssembly(databaseOptions.MigrationsAssembly))
+                    //            )
+                    //    .AddConfigurationStore(options =>
+                    //        options.ConfigureDbContext = builder =>
+                    //            builder.UseSqlServer(databaseOptions.ApplicationConnectionString, sqlOptions => sqlOptions.MigrationsAssembly(databaseOptions.MigrationsAssembly)))
+                    //    .AddAspNetIdentity<ApplicationUser>();
+
                     services.AddSingleton<MigrationService>();
                 });
         }
-
-        //dsadasdas
     }
 }

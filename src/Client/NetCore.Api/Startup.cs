@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
-using NetCore.Infrastructure.Database.Contexts;
+using NetCore.Infrastructure.Database;
 using NetCore.Infrastructure.Database.Extensions;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,7 +35,7 @@ namespace NetCore.Api
 
             services.AddDbContext<DatabaseContext>(builder =>
             {
-                builder.UseSqlServer(databaseOptions.DatabaseConnection, options =>
+                builder.UseSqlServer(databaseOptions.ApplicationConnectionString, options =>
                 {
                     options.MigrationsAssembly(databaseOptions.MigrationsAssembly);
                 });

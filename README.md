@@ -20,11 +20,23 @@ dotnet build NetCore.sln
 <br />
 
 
-**Add application database migrations:**
+**Add application database migration**
 ```bash
 cd .\src\Infrastructure\NetCore.Infrastructure.Database\
 
-dotnet ef migrations add your_migration_name
+dotnet ef migrations add InittialDatabase --context DatabaseContext -o .\Migrations\
+```
+
+<br />
+
+
+**Add Identity Server Store migration (one time only)**
+```bash
+cd .\src\Infrastructure\NetCore.Infrastructure.Database\
+
+dotnet ef migrations add InittialDatabase --context ConfigurationDbContext -o .\Migrations\ConfigurationDb
+
+dotnet ef migrations add InittialDatabase --context PersistedGrantDbContext -o .\Migrations\PersistedGrantDb
 ```
 
 <br />

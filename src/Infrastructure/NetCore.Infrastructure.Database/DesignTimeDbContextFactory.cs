@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Options;
-using NetCore.Infrastructure.Database.Contexts;
 
 namespace NetCore.Infrastructure.Database
 {

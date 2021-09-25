@@ -6,10 +6,9 @@
     <PackageReference Include="MediatR" Version="9.0.0" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NetCore.Infrastructure.Database.Models\NetCore.Infrastructure.Database.Models.csproj" />
-    <ProjectReference Include="..\NetCore.Infrastructure.Database\NetCore.Infrastructure.Database.csproj" />
+    <Folder Include="Person\Update\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Person\Update\" />
+    <ProjectReference Include="..\NetCore.Infrastructure.Database\NetCore.Infrastructure.Database.csproj" />
   </ItemGroup>
 </Project>

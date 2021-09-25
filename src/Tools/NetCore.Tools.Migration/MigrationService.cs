@@ -1,7 +1,8 @@
 ﻿using CommandLine;
+using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using NetCore.Infrastructure.Database.Contexts;
+using NetCore.Infrastructure.Database;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,11 +13,15 @@ namespace NetCore.Tools.Migration
     {
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly DatabaseContext _databaseContext;
+        private readonly ConfigurationDbContext _configurationDbContext;
+        private readonly PersistedGrantDbContext _persistedGrantDbContext;
 
         public MigrationService(IServiceScopeFactory scopeFactory)
         {
             _scopeFactory = scopeFactory;
             _databaseContext = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<DatabaseContext>();
+            _configurationDbContext = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+            _persistedGrantDbContext = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
         }
 
         public void Run(string[] args)
@@ -28,6 +33,18 @@ namespace NetCore.Tools.Migration
 
         private void RunMigration()
         {
+            var persistedGrantPendingMigration = _persistedGrantDbContext.Database.GetPendingMigrations();
+            if (persistedGrantPendingMigration.Any())
+            {
+                _databaseContext.Database.Migrate();
+            }
+
+            var configurationDbPendingMigration = _configurationDbContext.Database.GetPendingMigrations();
+            if (configurationDbPendingMigration.Any())
+            {
+                _databaseContext.Database.Migrate();
+            }
+
             var pendingMigrations = _databaseContext.Database.GetPendingMigrations();
             if (pendingMigrations.Any())
             {

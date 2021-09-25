@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NetCore.Infrastructure.Database;
+using NetCore.Infrastructure.Models.Identity;
 
 namespace NetCore.AuthServer
 {
@@ -28,7 +30,7 @@ namespace NetCore.AuthServer
             //    }));
 
             //services.AddIdentity<ApplicationUser, IdentityRole>()
-            //    .AddEntityFrameworkStores<ApplicationDbContext>()
+            //    .AddEntityFrameworkStores<DatabaseContext>()
             //    .AddDefaultTokenProviders();
 
             //var builders = services.AddIdentityServer()
