@@ -21,10 +21,11 @@ namespace NetCore.Api
     public class Startup
     {
         private readonly IConfiguration _configuration;
-
-        public Startup(IConfiguration configuration)
+        private readonly IWebHostEnvironment _environment;
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             _configuration = configuration;
+            _environment = environment;
         }
 
         public void ConfigureServices(IServiceCollection services)
@@ -64,33 +65,35 @@ namespace NetCore.Api
 
             services.AddMediatR(typeof(Infrastructure.Handlers.AssemblyReference).GetTypeInfo().Assembly);
 
-            services.AddSwaggerGen(options =>
+            if (_environment.IsDevelopment())
             {
-                options.DocInclusionPredicate((docName, apiDesc) =>
+                services.AddSwaggerGen(options =>
                 {
-                    var assemblyName = ((ControllerActionDescriptor)apiDesc.ActionDescriptor).ControllerTypeInfo.Assembly.GetName().Name;
-                    var currentAssemblyName = GetType().Assembly.GetName().Name;
-                    return currentAssemblyName == assemblyName;
-                });
+                    options.DocInclusionPredicate((docName, apiDesc) =>
+                    {
+                        var assemblyName = ((ControllerActionDescriptor)apiDesc.ActionDescriptor).ControllerTypeInfo.Assembly.GetName().Name;
+                        var currentAssemblyName = GetType().Assembly.GetName().Name;
+                        return currentAssemblyName == assemblyName;
+                    });
 
-                options.SwaggerDoc("v1", new OpenApiInfo
-                {
-                    Title = "NetCore Api",
-                    Version = "v1.0.0",
-                    Description = "NetCore Api"
-                });
+                    options.SwaggerDoc("v1", new OpenApiInfo
+                    {
+                        Title = "NetCore Api",
+                        Version = "v1.0.0",
+                        Description = "NetCore Api"
+                    });
 
-                #region swagger for JWT Bearer authentication
-                
-                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-                {
-                    In = ParameterLocation.Header,
-                    Description = "Please enter into field the word 'Bearer' following by space and JWT",
-                    Name = "Authorization",
-                    Type = SecuritySchemeType.ApiKey
-                });
+                    #region swagger for JWT Bearer authentication
 
-                options.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                    {
+                        In = ParameterLocation.Header,
+                        Description = "Please enter into field the word 'Bearer' following by space and JWT",
+                        Name = "Authorization",
+                        Type = SecuritySchemeType.ApiKey
+                    });
+
+                    options.AddSecurityRequirement(new OpenApiSecurityRequirement()
                 {
                     {
                         new OpenApiSecurityScheme
@@ -107,19 +110,20 @@ namespace NetCore.Api
                         new List<string>()
                     }
                 });
-                #endregion
+                    #endregion
 
-                //var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                //var folderPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                //var xmlPath = Path.Combine(folderPath, xmlFile);
-                //c.IncludeXmlComments(xmlPath);
-                options.DescribeAllParametersInCamelCase();
-            });
+                    //var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                    //var folderPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                    //var xmlPath = Path.Combine(folderPath, xmlFile);
+                    //c.IncludeXmlComments(xmlPath);
+                    options.DescribeAllParametersInCamelCase();
+                });
 
-            AddODataFormattersForSwagger(services);
+                AddODataFormattersForSwagger(services);
+            }
         }
         
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment environment)
+        public void Configure(IApplicationBuilder app)
         {
             app.UseHttpsRedirection();
             //app.UseAuthentication();
@@ -131,7 +135,7 @@ namespace NetCore.Api
                 endpoints.MapControllers();
             });
 
-            if (environment.IsDevelopment())
+            if (_environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();

@@ -22,7 +22,6 @@ namespace NetCore.Api.Controllers
         // GET api/values
         [HttpGet]
         //[Authorize(Roles="user")]
-        //[Authorize]
         [EnableQuery]
         public async Task<ActionResult> Get(QueryPersonRequest request)
 {

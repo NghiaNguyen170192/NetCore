@@ -19,11 +19,6 @@ namespace NetCore.Tools.Migration
             _databaseContext = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<DatabaseContext>();
         }
 
-        //public MigrationService(DatabaseContext databaseContext)
-        //{
-        //    _databaseContext = databaseContext;
-        //}
-
         public void Run(string[] args)
         {
             Parser.Default.ParseArguments<Options>(args)
@@ -55,7 +50,6 @@ namespace NetCore.Tools.Migration
             Console.WriteLine($"Delete database Start");
             _databaseContext.Database.EnsureDeleted();
             Console.WriteLine($"Delete database End");
-
         }
 
         private void RunCommands(Options commands)
