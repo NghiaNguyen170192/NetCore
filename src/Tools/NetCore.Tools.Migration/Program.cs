@@ -52,5 +52,7 @@ namespace NetCore.Tools.Migration
                     services.AddSingleton<MigrationService>();
                 });
         }
+
+        //dsadasdas
     }
 }
