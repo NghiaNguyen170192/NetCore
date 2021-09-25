@@ -1,16 +1,30 @@
 # NetCore
-Dotnet Core Project
+**Requisites** 
+.Net Core 5.0
 
-To add migrations:
-	1/ Open Powershell and navigate to NetCore.Infrastructure.Database
-	2/ run "dotnet ef migrations add your_migration_name"
+<br />
 
-To Run:
-	1/ Navigate to \docker, run "docker-compose up -d" to start database
-	2/ Build the NetCore.sln
-	3/ Edit Connectionstring with your connectionstring in these projects:
-		NetCore.Tools.Migrations
-		NetCore.Api
-	4/ Right click on NetCore.sln, click Properties, set Multiple Startup projects:
-		NetCore.Api
-		
+## To Run Application:
+### Vs Code
+
+```bash
+cd .\docker\
+
+docker-compose up -d
+
+dotnet restore
+
+dotnet build NetCore.sln
+```
+
+<br />
+
+
+**Add application database migrations:**
+```bash
+cd .\src\Infrastructure\NetCore.Infrastructure.Database\
+
+dotnet ef migrations add your_migration_name
+```
+
+<br />
