@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NetCore.Infrastructure.Database.Models\NetCore.Infrastructure.Database.Models.csproj" />
     <ProjectReference Include="..\New folder\NetCore.Infrastructure.Database.Models\NetCore.Infrastructure.Database.Models.csproj" />
   </ItemGroup>
 
