@@ -34,10 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Sql\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\infrastructure\NetCore.Infrastructure.Database\NetCore.Infrastructure.Database.csproj" />
   </ItemGroup>
 

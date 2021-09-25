@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using NetCore.Infrastructure.Database.Extensions;
 using NetCore.Infrastructure.Database.Models.Entities;
-using NetCore.Infrastructure.Models.Identity;
 
 namespace NetCore.Infrastructure.Database
 {
@@ -14,10 +12,8 @@ namespace NetCore.Infrastructure.Database
 
         }
 
-        #region DbSet
         public DbSet<Person> Person { get; set; }
 
-        #endregion
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
