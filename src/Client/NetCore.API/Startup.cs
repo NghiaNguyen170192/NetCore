@@ -22,6 +22,7 @@ namespace NetCore.Api
     {
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _environment;
+
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             _configuration = configuration;
@@ -139,9 +140,9 @@ namespace NetCore.Api
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c =>
+                app.UseSwaggerUI(options =>
                 {
-                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "NetCore Api V1.0.0");
+                    options.SwaggerEndpoint("/swagger/v1/swagger.json", "NetCore Api V1.0.0");
                 });
             }
             else
