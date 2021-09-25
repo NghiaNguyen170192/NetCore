@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using System;
 
-namespace NetCore.Infrastructure.Handlers
+namespace NetCore.Infrastructure.Database.Handlers
 {
     public record DeletePersonRequest(Guid Id) : IRequest;
 }

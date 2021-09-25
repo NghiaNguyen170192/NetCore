@@ -1,0 +1,40 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "auth-server",
+			"type": "coreclr",
+			"request": "launch",
+			"program": "${workspaceFolder}/src/NetCore.AuthServer/bin/Debug/netcoreapp3.1/NetCore.AuthServer.dll",
+			"cwd": "${workspaceFolder}/src/NetCore.AuthServer",
+			"stopAtEntry": false,
+			"env": {
+				"ASPNETCORE_ENVIRONMENT": "Development"
+			}
+		},
+		{
+			"name": "api",
+			"type": "coreclr",
+			"request": "launch",
+			"program": "${workspaceFolder}/src/NetCore.API/bin/Debug/netcoreapp3.1/NetCore.API.dll",
+			"cwd": "${workspaceFolder}/src/NetCore.API",
+			"stopAtEntry": false,
+			"env": {
+				"ASPNETCORE_ENVIRONMENT": "Development"
+			}
+		}
+	],
+	"compounds": [
+		{
+			"name": "Server/Client",
+			"configurations": [
+				"auth-server",
+				"api"
+			],
+			"preLaunchTask": ""
+		}
+	]
+}
