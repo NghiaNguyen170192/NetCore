@@ -18,8 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Infrastructure\NetCore.Infrastructure.Database.Handlers\NetCore.Infrastructure.Database.Handlers.csproj" />
     <ProjectReference Include="..\..\Infrastructure\NetCore.Infrastructure.Database\NetCore.Infrastructure.Database.csproj" />
-    <ProjectReference Include="..\..\Infrastructure\NetCore.Infrastructure.Handlers\NetCore.Infrastructure.Handlers.csproj" />
   </ItemGroup>
 
   <ItemGroup>

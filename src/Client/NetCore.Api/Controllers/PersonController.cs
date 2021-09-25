@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using NetCore.Infrastructure.Handlers;
+using NetCore.Infrastructure.Database.Handlers;
 using System;
 using System.Threading.Tasks;
 

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NetCore.Infrastructure.Handlers
+namespace NetCore.Infrastructure.Database.Handlers
 {
     public class DeletePersonHandler : IRequestHandler<DeletePersonRequest>
     {

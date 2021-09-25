@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NetCore.Infrastructure.Handlers
+namespace NetCore.Infrastructure.Database.Handlers
 {
     public record CreatePersonResponse(Guid Id);
 }

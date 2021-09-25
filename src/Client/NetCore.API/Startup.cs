@@ -64,7 +64,7 @@ namespace NetCore.Api
                 })
                 .AddNewtonsoftJson(options =>options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
-            services.AddMediatR(typeof(Infrastructure.Handlers.AssemblyReference).GetTypeInfo().Assembly);
+            services.AddMediatR(typeof(Infrastructure.Database.Handlers.AssemblyReference).GetTypeInfo().Assembly);
 
             if (_environment.IsDevelopment())
             {
