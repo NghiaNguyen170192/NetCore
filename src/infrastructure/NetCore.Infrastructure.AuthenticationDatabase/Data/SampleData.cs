@@ -69,9 +69,20 @@ namespace NetCore.Infrastructure.Data
             using (var configurationDbContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>())
             using (var applicationDbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>())
             {
-                persistedGrantDbContext.Database.Migrate();
-                configurationDbContext.Database.Migrate();
-                applicationDbContext.Database.Migrate();
+                if (persistedGrantDbContext.Database.GetPendingMigrations().Any())
+                {
+                    persistedGrantDbContext.Database.Migrate();
+                }
+
+                if (configurationDbContext.Database.GetPendingMigrations().Any())
+                {
+                    configurationDbContext.Database.Migrate();
+                }
+
+                if (applicationDbContext.Database.GetPendingMigrations().Any())
+                {
+                    applicationDbContext.Database.Migrate();
+                }
             }
         }
 

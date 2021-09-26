@@ -1,9 +1,12 @@
 ﻿using CommandLine;
 using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Mappers;
+using IdentityServer4.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Infrastructure.AuthenticationDatabase;
 using NetCore.Infrastructure.Database;
+using NetCore.Infrastructurer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,33 +38,6 @@ namespace NetCore.Tools.Migration
         }
 
         private void RunMigration()
-        {
-            RunIdpDatabaseMigration();
-            RunApplicationDatabaseMigration();
-        }
-
-        private void RunIdpDatabaseMigration()
-        {
-            var persistedGrantPendingMigration = _persistedGrantDbContext.Database.GetPendingMigrations();
-            if (persistedGrantPendingMigration.Any())
-            {
-                _persistedGrantDbContext.Database.Migrate();
-            }
-
-            var configurationDbPendingMigration = _configurationDbContext.Database.GetPendingMigrations();
-            if (configurationDbPendingMigration.Any())
-            {
-                _configurationDbContext.Database.Migrate();
-            }
-
-            var applicationDbPendingMigration = _applicationDbContext.Database.GetPendingMigrations();
-            if (applicationDbPendingMigration.Any())
-            {
-                _applicationDbContext.Database.Migrate();
-            }
-        }
-
-        private void RunApplicationDatabaseMigration()
         {
             var pendingMigrations = _databaseContext.Database.GetPendingMigrations();
             if (pendingMigrations.Any())

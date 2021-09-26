@@ -1,9 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using IdentityServer4.Services;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NetCore.Infrastructure.AuthenticationDatabase;
+using NetCore.Infrastructure.Data;
 using NetCore.Infrastructure.Database;
+using NetCore.Infrastructure.Database.Extensions;
 using NetCore.Infrastructure.Models.Identity;
+using NetCore.Infrastructure.Services;
 
 namespace NetCore.AuthServer
 {
@@ -18,41 +24,41 @@ namespace NetCore.AuthServer
 
         public void ConfigureServices(IServiceCollection services)
         {
+            var databaseOptions = _configuration.GetDatabaseOptions("ConnectionStrings");
             //string connectionString = _configuration.GetConnectionString("DefaultConnection");
             //var migrationsAssembly = typeof(Startup).GetTypeInfo().Assembly.GetName().Name;
             //var infrastructureMigrationAssembly = "NetCore.Infrastructure";
 
-            //services.AddDbContext<ApplicationDbContext>(builder =>
-            //    builder.UseSqlServer(connectionString, sqlOptions =>
-            //    {
-            //        sqlOptions.MigrationsAssembly(infrastructureMigrationAssembly);
-            //        sqlOptions.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-            //    }));
+            services.AddDbContext<ApplicationDbContext>(builder =>
+                builder.UseSqlServer(databaseOptions.IdpConnectionString, sqlOptions =>
+                {
+                    sqlOptions.MigrationsAssembly(databaseOptions.MigrationsAssembly);
+                }));
 
-            //services.AddIdentity<ApplicationUser, IdentityRole>()
-            //    .AddEntityFrameworkStores<DatabaseContext>()
-            //    .AddDefaultTokenProviders();
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<DatabaseContext>()
+                .AddDefaultTokenProviders();
 
-            //var builders = services.AddIdentityServer()
-            //    .AddOperationalStore(options =>
-            //        options.ConfigureDbContext = builder =>
-            //            builder.UseSqlServer(connectionString, sqlOptions => sqlOptions.MigrationsAssembly(infrastructureMigrationAssembly))
-            //            )
-            //    .AddConfigurationStore(options =>
-            //        options.ConfigureDbContext = builder =>
-            //            builder.UseSqlServer(connectionString, sqlOptions => sqlOptions.MigrationsAssembly(infrastructureMigrationAssembly)))
-            //    .AddAspNetIdentity<ApplicationUser>();
+            var builders = services.AddIdentityServer()
+                .AddOperationalStore(options =>
+                    options.ConfigureDbContext = builder =>
+                        builder.UseSqlServer(databaseOptions.IdpConnectionString, sqlOptions => sqlOptions.MigrationsAssembly(databaseOptions.MigrationsAssembly))
+                        )
+                .AddConfigurationStore(options =>
+                    options.ConfigureDbContext = builder =>
+                        builder.UseSqlServer(databaseOptions.IdpConnectionString, sqlOptions => sqlOptions.MigrationsAssembly(databaseOptions.MigrationsAssembly)))
+                .AddAspNetIdentity<ApplicationUser>();
 
-            //builders.AddDeveloperSigningCredential();
+            builders.AddDeveloperSigningCredential();
 
-            //services.AddTransient<IProfileService, IdentityClaimsProfileService>();
+            services.AddTransient<IProfileService, IdentityClaimsProfileService>();
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            //app.UseIdentityServer();
+            app.UseIdentityServer();
 
-            //SampleData.Migration(app);
+            SampleData.Migration(app);
             //SampleData.SeedUsersAndRoles(app);
             //SampleData.InitializeDbData(app);
         }

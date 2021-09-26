@@ -65,8 +65,7 @@ namespace NetCore.Tools.Migration
                     var builders = services.AddIdentityServer()
                         .AddOperationalStore(options =>
                             options.ConfigureDbContext = builder =>
-                                builder.UseSqlServer(databaseOptions.IdpConnectionString, sqlOptions => sqlOptions.MigrationsAssembly(databaseOptions.MigrationsAssembly))
-                                )
+                                builder.UseSqlServer(databaseOptions.IdpConnectionString, sqlOptions => sqlOptions.MigrationsAssembly(databaseOptions.MigrationsAssembly)) )
                         .AddConfigurationStore(options =>
                             options.ConfigureDbContext = builder =>
                                 builder.UseSqlServer(databaseOptions.IdpConnectionString, sqlOptions => sqlOptions.MigrationsAssembly(databaseOptions.MigrationsAssembly)))
