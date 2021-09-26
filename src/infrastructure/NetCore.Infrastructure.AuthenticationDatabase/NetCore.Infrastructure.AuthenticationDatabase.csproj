@@ -20,8 +20,8 @@
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.32" />
-    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.1.2" />
-    <PackageReference Include="IdentityServer4.EntityFramework" Version="4.1.2" />
+    <PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.1.1" />
+    <PackageReference Include="IdentityServer4.EntityFramework" Version="4.1.1" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.5" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.5" />
@@ -38,11 +38,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
+    <ProjectReference Include="..\NetCore.Infrastructure.Database.Models\NetCore.Infrastructure.Database.Models.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NetCore.Infrastructure.Database.Models\NetCore.Infrastructure.Database.Models.csproj" />
+    <Folder Include="Migrations\ApplicationDb\" />
+    <Folder Include="Migrations\ConfigurationDb\" />
+    <Folder Include="Migrations\PersistedGrantDb\" />
   </ItemGroup>
 
 </Project>

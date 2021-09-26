@@ -2,6 +2,7 @@
 using IdentityServer4.EntityFramework.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using NetCore.Infrastructure.AuthenticationDatabase;
 using NetCore.Infrastructure.Database;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,7 @@ namespace NetCore.Tools.Migration
         private readonly DatabaseContext _databaseContext;
         private readonly ConfigurationDbContext _configurationDbContext;
         private readonly PersistedGrantDbContext _persistedGrantDbContext;
+        private readonly ApplicationDbContext _applicationDbContext;
 
         public MigrationService(IServiceScopeFactory scopeFactory)
         {
@@ -22,6 +24,7 @@ namespace NetCore.Tools.Migration
             _databaseContext = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<DatabaseContext>();
             _configurationDbContext = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ConfigurationDbContext>();
             _persistedGrantDbContext = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
+            _applicationDbContext = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<ApplicationDbContext>();
         }
 
         public void Run(string[] args)
@@ -33,18 +36,33 @@ namespace NetCore.Tools.Migration
 
         private void RunMigration()
         {
+            RunIdpDatabaseMigration();
+            RunApplicationDatabaseMigration();
+        }
+
+        private void RunIdpDatabaseMigration()
+        {
             var persistedGrantPendingMigration = _persistedGrantDbContext.Database.GetPendingMigrations();
             if (persistedGrantPendingMigration.Any())
             {
-                _databaseContext.Database.Migrate();
+                _persistedGrantDbContext.Database.Migrate();
             }
 
             var configurationDbPendingMigration = _configurationDbContext.Database.GetPendingMigrations();
             if (configurationDbPendingMigration.Any())
             {
-                _databaseContext.Database.Migrate();
+                _configurationDbContext.Database.Migrate();
             }
 
+            var applicationDbPendingMigration = _applicationDbContext.Database.GetPendingMigrations();
+            if (applicationDbPendingMigration.Any())
+            {
+                _applicationDbContext.Database.Migrate();
+            }
+        }
+
+        private void RunApplicationDatabaseMigration()
+        {
             var pendingMigrations = _databaseContext.Database.GetPendingMigrations();
             if (pendingMigrations.Any())
             {

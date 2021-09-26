@@ -6,7 +6,7 @@ namespace NetCore.Infrastructure.Database
 {
     public class DatabaseContext : DbContext
     {
-        public DatabaseContext(DbContextOptions databaseContextOptions)
+        public DatabaseContext(DbContextOptions<DatabaseContext> databaseContextOptions)
             : base(databaseContextOptions)
         {
 
@@ -17,6 +17,7 @@ namespace NetCore.Infrastructure.Database
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.HasDefaultSchema("netcore");
             modelBuilder.SetDefaultValueTableName();
         }
     }

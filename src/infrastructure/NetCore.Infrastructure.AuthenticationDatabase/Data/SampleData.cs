@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using NetCore.Infrastructure.Migrations.ApplicationDb;
+using NetCore.Infrastructure.AuthenticationDatabase;
 using NetCore.Infrastructure.Models.Identity;
 using NetCore.Infrastructurer;
 using System;

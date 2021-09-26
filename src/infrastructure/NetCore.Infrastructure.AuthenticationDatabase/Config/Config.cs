@@ -7,7 +7,6 @@ namespace NetCore.Infrastructurer
 {
     public class Config
     {
-
         public static IEnumerable<IdentityResource> GetIdentityResources()
         {
             return new List<IdentityResource>

@@ -4,9 +4,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NetCore.Infrastructure.Migrations.ApplicationDb;
+using NetCore.Infrastructure.AuthenticationDatabase;
 
-namespace NetCore.Infrastructure.Migrations.ApplicationDb
+namespace NetCore.Infrastructure.AuthenticationDatabase.Migrations.ApplicationDb
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -15,6 +15,7 @@ namespace NetCore.Infrastructure.Migrations.ApplicationDb
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("idp")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.5")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -150,7 +151,7 @@ namespace NetCore.Infrastructure.Migrations.ApplicationDb
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("NetCore.Infrastructure.Models.ApplicationUser", b =>
+            modelBuilder.Entity("NetCore.Infrastructure.Models.Identity.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -226,7 +227,7 @@ namespace NetCore.Infrastructure.Migrations.ApplicationDb
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("NetCore.Infrastructure.Models.ApplicationUser", null)
+                    b.HasOne("NetCore.Infrastructure.Models.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -235,7 +236,7 @@ namespace NetCore.Infrastructure.Migrations.ApplicationDb
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("NetCore.Infrastructure.Models.ApplicationUser", null)
+                    b.HasOne("NetCore.Infrastructure.Models.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -250,7 +251,7 @@ namespace NetCore.Infrastructure.Migrations.ApplicationDb
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NetCore.Infrastructure.Models.ApplicationUser", null)
+                    b.HasOne("NetCore.Infrastructure.Models.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -259,7 +260,7 @@ namespace NetCore.Infrastructure.Migrations.ApplicationDb
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("NetCore.Infrastructure.Models.ApplicationUser", null)
+                    b.HasOne("NetCore.Infrastructure.Models.Identity.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
