@@ -15,6 +15,7 @@
   <ItemGroup>
     <PackageReference Include="MediatR" Version="9.0.0" />
     <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.OData" Version="8.0.1" />
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
@@ -25,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\Infrastructure\NetCore.Infrastructure.Database.Handlers\NetCore.Infrastructure.Database.Handlers.csproj" />
     <ProjectReference Include="..\..\Infrastructure\NetCore.Infrastructure.Database\NetCore.Infrastructure.Database.csproj" />
+    <ProjectReference Include="..\..\shared\NetCore.Shared\NetCore.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Controllers;
@@ -8,10 +9,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using NetCore.Infrastructure.Database;
-using NetCore.Infrastructure.Database.Extensions;
+using NetCore.Shared.Configurations;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
@@ -22,39 +24,46 @@ namespace NetCore.Api
     {
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _environment;
+        private readonly DatabaseOptions _databaseOptions;
+        private readonly AuthenticationServerConfiguration _authenticationServerConfiguration;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
+            IdentityModelEventSource.ShowPII = true;
             _configuration = configuration;
             _environment = environment;
+
+            _databaseOptions = new DatabaseOptions();
+            _configuration.GetSection("ConnectionStrings").Bind(_databaseOptions);
+
+            _authenticationServerConfiguration = new AuthenticationServerConfiguration();
+            _configuration.GetSection("AuthenticationServer").Bind(_authenticationServerConfiguration);
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
-            var databaseOptions = _configuration.GetDatabaseOptions("ConnectionStrings");
-
             services.AddDbContext<DatabaseContext>(builder =>
             {
-                builder.UseSqlServer(databaseOptions.ApplicationConnectionString, options =>
+                builder.UseSqlServer(_databaseOptions.ApplicationConnectionString, options =>
                 {
-                    options.MigrationsAssembly(databaseOptions.MigrationsAssembly);
+                    options.MigrationsAssembly(_databaseOptions.MigrationsAssembly);
                 });
             });
 
-            //services.AddAuthorization();
-            //services.AddAuthentication(options =>
-            //{
-            //    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            //    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            //})
-            //    .AddJwtBearer(options =>
-            //    {
-            //        //destination of authen server
-            //        options.Authority = "http://localhost:52646/";
-            //        //destination of web api
-            //        options.Audience = "api1";
-            //        options.RequireHttpsMetadata = false;
-            //    });
+            services.AddAuthorization();
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
+                {
+                    //destination of authen server
+                    options.Authority = "http://localhost:52646/";
+                    //destination of web api
+                    options.Audience = "api1";
+                    options.RequireHttpsMetadata = false;
+                });
 
             services
                 .AddControllers()
@@ -85,7 +94,6 @@ namespace NetCore.Api
                     });
 
                     #region swagger for JWT Bearer authentication
-
                     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                     {
                         In = ParameterLocation.Header,
@@ -127,7 +135,7 @@ namespace NetCore.Api
         public void Configure(IApplicationBuilder app)
         {
             app.UseHttpsRedirection();
-            //app.UseAuthentication();
+            app.UseAuthentication();
 
             app.UseRouting();
 

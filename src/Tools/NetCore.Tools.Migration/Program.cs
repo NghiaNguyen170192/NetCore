@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NetCore.Infrastructure.AuthenticationDatabase;
 using NetCore.Infrastructure.Database;
-using NetCore.Infrastructure.Database.Extensions;
 using NetCore.Infrastructure.Models.Identity;
 using System;
 using System.IO;
@@ -47,7 +46,9 @@ namespace NetCore.Tools.Migration
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    var databaseOptions = hostContext.Configuration.GetDatabaseOptions("ConnectionStrings");
+                    var databaseOptions = new DatabaseOptions();
+                    hostContext.Configuration.GetSection("ConnectionStrings").Bind(databaseOptions);
+
                     services.AddDbContext<DatabaseContext>(builder =>
                     {
                         builder.UseSqlServer(databaseOptions.ApplicationConnectionString, o => o.MigrationsAssembly(databaseOptions.MigrationsAssembly));
