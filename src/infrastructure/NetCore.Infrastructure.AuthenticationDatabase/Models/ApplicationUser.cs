@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System;
 
-namespace NetCore.Infrastructure.Models.Identity
+namespace NetCore.Infrastructure.AuthenticationDatabase.Models
 {
     public class ApplicationUser: IdentityUser
     {
