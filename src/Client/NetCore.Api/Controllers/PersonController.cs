@@ -1,4 +1,6 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using NetCore.Infrastructure.Database.Handlers;
@@ -8,7 +10,8 @@ using System.Threading.Tasks;
 namespace NetCore.Api.Controllers
 {
     [Route("api/[controller]")]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(Roles = "user")]
     [ApiController]
     public class PersonController : ControllerBase
     {
@@ -21,7 +24,6 @@ namespace NetCore.Api.Controllers
 
         // GET api/values
         [HttpGet]
-        //[Authorize(Roles="user")]
         [EnableQuery]
         public async Task<ActionResult> Get(QueryPersonRequest request)
 {

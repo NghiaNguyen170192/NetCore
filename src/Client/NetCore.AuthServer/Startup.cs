@@ -5,11 +5,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using NetCore.Infrastructure.AuthenticationDatabase;
+using NetCore.Infrastructure.AuthenticationDatabase.Models;
 using NetCore.Infrastructure.Data;
 using NetCore.Infrastructure.Database;
-using NetCore.Infrastructure.Models.Identity;
 using NetCore.Infrastructure.Services;
 
 namespace NetCore.AuthServer
@@ -39,7 +40,7 @@ namespace NetCore.AuthServer
                 }));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<DatabaseContext>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
             var builders = services.AddIdentityServer()
@@ -52,7 +53,10 @@ namespace NetCore.AuthServer
                         builder.UseSqlServer(_databaseOptions.IdpConnectionString, sqlOptions => sqlOptions.MigrationsAssembly(_databaseOptions.MigrationsAssembly)))
                 .AddAspNetIdentity<ApplicationUser>();
 
-            builders.AddDeveloperSigningCredential();
+            if (_environment.IsDevelopment())
+            {
+                builders.AddDeveloperSigningCredential();
+            }
 
             services.AddTransient<IProfileService, IdentityClaimsProfileService>();
         }
@@ -61,9 +65,22 @@ namespace NetCore.AuthServer
         {
             app.UseIdentityServer();
 
+            if (_environment.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+            }
+            RunMigration(app);
+        }
+
+        private void RunMigration(IApplicationBuilder app)
+        {
             SampleData.Migration(app);
             //SampleData.SeedUsersAndRoles(app);
-            //SampleData.InitializeDbData(app);
+            SampleData.InitializeDbData(app, "secret");
         }
     }
 }

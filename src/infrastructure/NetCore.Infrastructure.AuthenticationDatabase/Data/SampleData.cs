@@ -1,13 +1,14 @@
 ﻿using IdentityModel;
 using IdentityServer4.EntityFramework.DbContexts;
 using IdentityServer4.EntityFramework.Mappers;
+using IdentityServer4.Models;
 using IdentityServer4.Test;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Infrastructure.AuthenticationDatabase;
-using NetCore.Infrastructure.Models.Identity;
+using NetCore.Infrastructure.AuthenticationDatabase.Models;
 using NetCore.Infrastructurer;
 using System;
 using System.Collections.Generic;
@@ -19,48 +20,48 @@ namespace NetCore.Infrastructure.Data
 {
     public static class SampleData
     {
-        private static async Task AddUserRole(IApplicationBuilder app, string userName, string roleName)
-        {
-            using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            {
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-                string defaultPassword = "Qwert@123";
-                ApplicationUser user = new ApplicationUser
-                {
-                    UserName = userName,
-                    NormalizedUserName = userName,
-                    Email = userName,
-                    NormalizedEmail = userName,
-                    EmailConfirmed = true,
-                    LockoutEnabled = false,
-                    SecurityStamp = Guid.NewGuid().ToString()
-                };
+        //private static async Task AddUserRole(IApplicationBuilder app, string userName, string roleName)
+        //{
+        //    using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+        //    {
+        //        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        //        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+        //        string defaultPassword = "Qwert@123";
+        //        ApplicationUser user = new ApplicationUser
+        //        {
+        //            UserName = userName,
+        //            NormalizedUserName = userName.ToLower(),
+        //            Email = userName,
+        //            NormalizedEmail = userName,
+        //            EmailConfirmed = true,
+        //            LockoutEnabled = false,
+        //            SecurityStamp = Guid.NewGuid().ToString()
+        //        };
 
-                IdentityRole identityRole = new IdentityRole { Name = roleName, NormalizedName = roleName };
-                if (roleManager.FindByNameAsync(roleName).Result == null)
-                {
-                    await roleManager.CreateAsync(identityRole);
-                }
+        //        IdentityRole identityRole = new IdentityRole { Name = roleName, NormalizedName = roleName };
+        //        if (roleManager.FindByNameAsync(roleName).Result == null)
+        //        {
+        //            await roleManager.CreateAsync(identityRole);
+        //        }
 
-                if (userManager.FindByNameAsync(userName).Result == null)
-                {
-                    IdentityResult result = userManager.CreateAsync(user, defaultPassword).Result;
+        //        if (userManager.FindByNameAsync(userName).Result == null)
+        //        {
+        //            IdentityResult result = userManager.CreateAsync(user, defaultPassword).Result;
 
-                    if (result.Succeeded)
-                    {
-                        userManager.AddToRoleAsync(user, identityRole.Name).Wait();
-                    }
-                }
-            }
-        }
+        //            if (result.Succeeded)
+        //            {
+        //                userManager.AddToRoleAsync(user, identityRole.Name).Wait();
+        //            }
+        //        }
+        //    }
+        //}
 
-        public static async void SeedUsersAndRoles(IApplicationBuilder app)
-        {
-            //await AddUserRole(app,"admin@NetCore.com", "admin");
-            //await AddUserRole(app, "manager@NetCore.com", "manager");
-            //await AddUserRole(app, "user@NetCore.com", "user");
-        }
+        //public static async void SeedUsersAndRoles(IApplicationBuilder app)
+        //{
+        //    await AddUserRole(app, "admin@netcore.com", "admin");
+        //    await AddUserRole(app, "manager@netcore.com", "manager");
+        //    await AddUserRole(app, "user@netcore.com", "user");
+        //}
 
         public static void Migration(IApplicationBuilder app)
         {
@@ -121,7 +122,7 @@ namespace NetCore.Infrastructure.Data
             }
         }
 
-        public static async void InitializeDbData(IApplicationBuilder app)
+        public static async void InitializeDbData(IApplicationBuilder app, string secret)
         {
             using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             using (var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>())
@@ -133,6 +134,7 @@ namespace NetCore.Infrastructure.Data
                 {
                     foreach (var client in Config.GetClients())
                     {
+                        client.ClientSecrets = GetSecrets(secret);
                         context.Clients.Add(client.ToEntity());
                     }
                     context.SaveChanges();
@@ -191,6 +193,13 @@ namespace NetCore.Infrastructure.Data
                     }
                 }
             }
+        }
+        private static List<Secret> GetSecrets(string secret)
+        {
+            List<Secret> secrets = new List<Secret>();
+            secrets.Add(new Secret(secret.Sha256()));
+
+            return secrets;
         }
     }
 }

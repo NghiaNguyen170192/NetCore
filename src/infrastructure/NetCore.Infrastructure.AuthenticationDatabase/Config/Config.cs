@@ -21,7 +21,7 @@ namespace NetCore.Infrastructurer
         {
             return new List<ApiResource>
             {
-                new ApiResource("api1")
+                new ApiResource("netcore-api")
                 {
                     UserClaims =
                     {
@@ -33,25 +33,34 @@ namespace NetCore.Infrastructurer
                     },
                     Scopes =
                     {
-                         "api1",
+                         "netcore-api",
                          IdentityServerConstants.StandardScopes.OfflineAccess
                     }
                 }
             };
         }
 
-        public static IEnumerable<IdentityServer4.Models.Client> GetClients()
+
+        public static IEnumerable<ApiScope> GetApiScopes()
+        {
+            return new ApiScope[]
+            {
+                new ApiScope("netcore-api"),
+            };
+        }
+
+        public static IEnumerable<Client> GetClients()
         {
             return new List<Client>
             {
                 new Client
                 {
-                    ClientId = "ro.client",
+                    ClientId = "netcore.client",
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                     AllowOfflineAccess = true,
                     AllowedScopes =
                     {
-                        "api1",
+                        "netcore-api",
                         IdentityServerConstants.StandardScopes.OfflineAccess
                     },
                     RefreshTokenExpiration = TokenExpiration.Absolute,
@@ -64,31 +73,22 @@ namespace NetCore.Infrastructurer
                 new Client
                 {
                     ClientId = "mvc",
-                    ClientSecrets = { new Secret("secret") },
 
                     AllowedGrantTypes = GrantTypes.HybridAndClientCredentials,
                     
                     // where to redirect to after login
-                    RedirectUris = { "https://localhost:6002/signin-oidc" },
+                    RedirectUris = { "https://localhost:6003/signin-oidc" },
 
                     // where to redirect to after logout
-                    PostLogoutRedirectUris = { "https://localhost:6002/signout-callback-oidc" },
+                    PostLogoutRedirectUris = { "https://localhost:6003/signout-callback-oidc" },
 
                     AllowedScopes = new List<string>
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "api1"
+                        "netcore-api"
                     }
                 }
-            };
-        }
-
-        public static IEnumerable<ApiScope> GetApiScopes()
-        {
-            return new ApiScope[]
-            {
-                new ApiScope("api1"),
             };
         }
     }

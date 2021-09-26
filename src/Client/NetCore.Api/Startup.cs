@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using NetCore.Infrastructure.Database;
@@ -17,6 +18,7 @@ using NetCore.Shared.Configurations;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 
 namespace NetCore.Api
 {
@@ -51,18 +53,20 @@ namespace NetCore.Api
             });
 
             services.AddAuthorization();
-            services.AddAuthentication(options =>
-            {
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
+            services
+                .AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
                 .AddJwtBearer(options =>
                 {
                     //destination of authen server
-                    options.Authority = "http://localhost:52646/";
+                    options.Authority = _authenticationServerConfiguration.Issuer;
                     //destination of web api
-                    options.Audience = "api1";
-                    options.RequireHttpsMetadata = false;
+                    options.Audience = _authenticationServerConfiguration.Audience;
+                    options.RequireHttpsMetadata = true;
+                    options.TokenValidationParameters = GetTokenValidationParameters();
                 });
 
             services
@@ -136,8 +140,8 @@ namespace NetCore.Api
         {
             app.UseHttpsRedirection();
             app.UseAuthentication();
-
             app.UseRouting();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
@@ -172,6 +176,35 @@ namespace NetCore.Api
                     outputFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/odata"));
                 }
             });
+        }
+
+        private TokenValidationParameters GetTokenValidationParameters()
+        {
+            return new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidIssuer = _authenticationServerConfiguration.Issuer,
+                ValidateAudience = true,
+                ValidAudience = _authenticationServerConfiguration.Audience,
+                //ValidateIssuerSigningKey = true,
+                //IssuerSigningKey = GetSecurityKey(),
+                RequireExpirationTime = true,
+                ValidateLifetime = true
+            };
+        }
+
+        private SecurityKey GetSecurityKey()
+        {
+            X509Certificate2 certificate = GetCertificate();
+            return new X509SecurityKey(certificate);
+        }
+
+        private X509Certificate2 GetCertificate()
+        {
+            string fileName = _authenticationServerConfiguration.CertificatePath;
+            string password = _authenticationServerConfiguration.CertificatePassword;
+            var certificate = new X509Certificate2(fileName, password, X509KeyStorageFlags.MachineKeySet);
+            return certificate;
         }
     }
 }

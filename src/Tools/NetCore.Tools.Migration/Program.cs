@@ -1,11 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NetCore.Infrastructure.AuthenticationDatabase;
 using NetCore.Infrastructure.Database;
-using NetCore.Infrastructure.Models.Identity;
 using System;
 using System.IO;
 
@@ -58,19 +56,6 @@ namespace NetCore.Tools.Migration
                     {
                         builder.UseSqlServer(databaseOptions.IdpConnectionString, o => o.MigrationsAssembly(databaseOptions.MigrationsAssembly));
                     });
-
-                    services.AddIdentity<ApplicationUser, IdentityRole>()
-                        .AddEntityFrameworkStores<ApplicationDbContext>()
-                        .AddDefaultTokenProviders();
-
-                    var builders = services.AddIdentityServer()
-                        .AddOperationalStore(options =>
-                            options.ConfigureDbContext = builder =>
-                                builder.UseSqlServer(databaseOptions.IdpConnectionString, sqlOptions => sqlOptions.MigrationsAssembly(databaseOptions.MigrationsAssembly)) )
-                        .AddConfigurationStore(options =>
-                            options.ConfigureDbContext = builder =>
-                                builder.UseSqlServer(databaseOptions.IdpConnectionString, sqlOptions => sqlOptions.MigrationsAssembly(databaseOptions.MigrationsAssembly)))
-                        .AddAspNetIdentity<ApplicationUser>();
 
                     services.AddSingleton<MigrationService>();
                 });

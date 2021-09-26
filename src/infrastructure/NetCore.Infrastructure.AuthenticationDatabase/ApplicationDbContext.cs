@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
-using NetCore.Infrastructure.Models.Identity;
+using NetCore.Infrastructure.AuthenticationDatabase.Models;
 using System.IO;
 
 namespace NetCore.Infrastructure.AuthenticationDatabase
