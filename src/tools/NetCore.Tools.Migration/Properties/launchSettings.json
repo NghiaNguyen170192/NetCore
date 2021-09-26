@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "NetCore.Tools.Migration": {
+      "commandName": "Project",
+      "commandLineArgs": "-m -s -t",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    }
+  }
+}
