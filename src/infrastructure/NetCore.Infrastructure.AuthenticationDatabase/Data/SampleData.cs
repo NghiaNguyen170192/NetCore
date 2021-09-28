@@ -196,8 +196,10 @@ namespace NetCore.Infrastructure.Data
         }
         private static List<Secret> GetSecrets(string secret)
         {
-            List<Secret> secrets = new List<Secret>();
-            secrets.Add(new Secret(secret.Sha256()));
+            List<Secret> secrets = new List<Secret>
+            {
+                new Secret(secret.Sha256())
+            };
 
             return secrets;
         }

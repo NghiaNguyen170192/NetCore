@@ -24,8 +24,8 @@ namespace NetCore.Infrastructure.Database.Handlers
             }
 
             var person = MapPerson(request);
-            await _databaseContext.Set<Person>().AddAsync(person);
-            await _databaseContext.SaveChangesAsync();
+            await _databaseContext.Set<Person>().AddAsync(person, cancellationToken);
+            await _databaseContext.SaveChangesAsync(cancellationToken);
 
             return await Task.FromResult(MapResponse(person));
         }

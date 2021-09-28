@@ -2,10 +2,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NetCore.Infrastructure.AuthenticationDatabase;
 using NetCore.Infrastructure.Database;
+using NetCore.Shared.Extentions;
 using System;
-using System.IO;
 
 namespace NetCore.Tools.Migration
 {
@@ -34,31 +33,20 @@ namespace NetCore.Tools.Migration
         {
             return Host.CreateDefaultBuilder(args)
                 .UseEnvironment(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"))
-                .ConfigureAppConfiguration((HostBuilderContext context, IConfigurationBuilder builder) =>
-                {
-                    builder.SetBasePath(Directory.GetCurrentDirectory());
-                    builder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true);
-                    builder.AddJsonFile($"appsettings.{context.HostingEnvironment.EnvironmentName}.json", optional: true, reloadOnChange: true);
-                    builder.AddEnvironmentVariables();
-                    builder.AddCommandLine(args);
-                })
-                .ConfigureServices((hostContext, services) =>
+                .ConfigureAppConfiguration((HostBuilderContext hostBuilderContext, IConfigurationBuilder configurationBuilder) => configurationBuilder.AddAppSettings(hostBuilderContext, args))
+                .ConfigureServices((hostBuilderContext, services) =>
                 {
                     var databaseOptions = new DatabaseOptions();
-                    hostContext.Configuration.GetSection("ConnectionStrings").Bind(databaseOptions);
+                    hostBuilderContext.Configuration.GetSection("ConnectionStrings").Bind(databaseOptions);
 
                     services.AddDbContext<DatabaseContext>(builder =>
                     {
                         builder.UseSqlServer(databaseOptions.ApplicationConnectionString, o => o.MigrationsAssembly(databaseOptions.MigrationsAssembly));
                     });
 
-                    services.AddDbContext<ApplicationDbContext>(builder =>
-                    {
-                        builder.UseSqlServer(databaseOptions.IdpConnectionString, o => o.MigrationsAssembly(databaseOptions.MigrationsAssembly));
-                    });
-
                     services.AddSingleton<MigrationService>();
-                });
+                })
+                .AddLoggingConfiguration("netcore-migration-logs"); ;
         }
     }
 }

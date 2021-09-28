@@ -31,7 +31,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Tools.Migration", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{70D4B544-224C-4238-8DAC-D2623F420282}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCore.Shared", "src\shared\NetCore.Shared\NetCore.Shared.csproj", "{FD682A6E-536C-4CA3-B64E-D74D517A2710}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Shared", "src\shared\NetCore.Shared\NetCore.Shared.csproj", "{FD682A6E-536C-4CA3-B64E-D74D517A2710}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

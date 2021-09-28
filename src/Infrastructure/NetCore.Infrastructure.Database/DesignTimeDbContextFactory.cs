@@ -11,10 +11,10 @@ namespace NetCore.Infrastructure.Database
         {
             var sqlConnection = new SqlConnection();
             var options = Options.Create(new DatabaseOptions());
-            return CreateDbContext(args, sqlConnection, options);
+            return CreateDbContext(sqlConnection, options);
         }
 
-        public DatabaseContext CreateDbContext(string[] args, SqlConnection sqlConnection, IOptions<DatabaseOptions> options)
+        public DatabaseContext CreateDbContext(SqlConnection sqlConnection, IOptions<DatabaseOptions> options)
         {
             var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
 

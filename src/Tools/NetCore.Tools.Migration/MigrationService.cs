@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Infrastructure.Database;
+using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,15 +13,19 @@ namespace NetCore.Tools.Migration
     {
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly DatabaseContext _databaseContext;
+        private readonly ILogger _logger;
 
-        public MigrationService(IServiceScopeFactory scopeFactory)
+        public MigrationService(IServiceScopeFactory scopeFactory, ILogger logger)
         {
             _scopeFactory = scopeFactory;
             _databaseContext = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<DatabaseContext>();
+            _logger = logger;
         }
 
         public void Run(string[] args)
         {
+            _logger.Information("args: " + string.Join(" ", args, 0, args.Length));
+
             Parser.Default.ParseArguments<Options>(args)
                 .WithParsed(RunCommands)
                 .WithNotParsed(HandleParseError);
