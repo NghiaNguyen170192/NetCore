@@ -18,12 +18,12 @@ jobs:
         
     - name: Restore dependencies
       working-directory: src/
-      run: dotnet restore NetCore.sln
+      run: dotnet restore
       
     - name: Build
       working-directory: src/
-      run: dotnet build NetCore.sln --no-restore
+      run: dotnet build --no-restore
       
     - name: Test
       working-directory: src/
-      run: dotnet test NetCore.sln --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal
