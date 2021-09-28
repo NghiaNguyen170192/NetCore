@@ -17,10 +17,10 @@ jobs:
         dotnet-version: 5.0.x
         
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore NetCore.sln
       
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build NetCore.sln --no-restore
       
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test NetCore.sln --no-build --verbosity normal
