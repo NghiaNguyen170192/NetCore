@@ -1,6 +1,12 @@
 # NetCore
-**Requisites** 
+
+[![.NET](https://github.com/NghiaNguyen170192/NetCore/actions/workflows/netcore-ci.yml/badge.svg)](https://github.com/NghiaNguyen170192/NetCore/actions/workflows/netcore-ci.yml)
+
+
+## Requisites
 .Net Core 5.0
+
+IdentityServer 4
 
 <br />
 
