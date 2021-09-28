@@ -21,7 +21,9 @@ jobs:
       run: dotnet restore NetCore.sln
       
     - name: Build
-      run: dotnet build --no-restore
+      working-directory: src/
+      run: dotnet build NetCore.sln --no-restore
       
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      working-directory: src/
+      run: dotnet test NetCore.sln --no-build --verbosity normal
