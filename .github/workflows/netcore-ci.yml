@@ -17,7 +17,8 @@ jobs:
         dotnet-version: 5.0.x
         
     - name: Restore dependencies
-      run: dotnet restore
+      working-directory: src/
+      run: dotnet restore NetCore.sln
       
     - name: Build
       run: dotnet build --no-restore
