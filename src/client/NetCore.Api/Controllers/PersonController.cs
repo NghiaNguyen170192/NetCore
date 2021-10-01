@@ -26,7 +26,7 @@ namespace NetCore.Api.Controllers
         [HttpGet]
         [EnableQuery]
         public async Task<ActionResult> Get(QueryPersonRequest request)
-{
+        {
             var response = await _mediator.Send(request);
             return Ok(response);
         }
@@ -41,15 +41,16 @@ namespace NetCore.Api.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(Guid id, [FromBody] string value)
+        public async Task<ActionResult> Put(Guid id, [FromBody] UpdatePersonRequest request)
         {
-            throw new NotImplementedException();
+            var response = await _mediator.Send(request);
+            return Ok(response);
         }
 
         // DELETE api/values/5
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(Guid id)
-{
+        {
             var response = await _mediator.Send(new DeletePersonRequest(id));
             return Ok(response);
         }
