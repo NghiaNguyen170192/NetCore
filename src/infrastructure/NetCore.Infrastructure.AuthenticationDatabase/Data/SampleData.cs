@@ -95,7 +95,7 @@ namespace NetCore.Infrastructure.Data
                     new TestUser {
                         SubjectId = Guid.NewGuid().ToString(),
                         Username = "manager",
-                        Password ="Password123!",
+                        Password ="your_password_here",
                         Claims = new List<Claim> {
                             new Claim(JwtClaimTypes.Role, "manager"),
                         }
@@ -104,7 +104,7 @@ namespace NetCore.Infrastructure.Data
                     new TestUser {
                         SubjectId = Guid.NewGuid().ToString(),
                         Username = "admin",
-                        Password = "Password123!",
+                        Password = "your_password_here",
                         Claims = new List<Claim> {
                             new Claim(JwtClaimTypes.Role, "admin"),
                         }
@@ -113,7 +113,7 @@ namespace NetCore.Infrastructure.Data
                     new TestUser {
                         SubjectId = Guid.NewGuid().ToString(),
                         Username = "user",
-                        Password = "Password123!",
+                        Password = "your_password_here",
                         Claims = new List<Claim> {
                             new Claim(JwtClaimTypes.Role, "user"),
                         }
