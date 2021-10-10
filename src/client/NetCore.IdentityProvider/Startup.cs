@@ -13,7 +13,7 @@ using NetCore.Infrastructure.Data;
 using NetCore.Infrastructure.Database;
 using NetCore.Infrastructure.Services;
 
-namespace NetCore.AuthServer
+namespace NetCore.IdentityProvider
 {
     public class Startup
     {

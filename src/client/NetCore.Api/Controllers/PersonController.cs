@@ -1,8 +1,7 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using NetCore.Infrastructure.Database.Dtos;
 using NetCore.Infrastructure.Database.Handlers;
 using System;
 using System.Threading.Tasks;
@@ -41,8 +40,9 @@ namespace NetCore.Api.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put([FromBody] UpdatePersonRequest request)
+        public async Task<ActionResult> Put(Guid id, [FromBody] UpdatePersonModel model)
         {
+            var request = new UpdatePersonRequest(id, model.NameConst, model.PrimaryName, model.BirthYear, model.DeathYear);
             var response = await _mediator.Send(request);
             return Ok(response);
         }

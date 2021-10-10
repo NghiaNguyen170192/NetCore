@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using NetCore.Shared.Extentions;
 
-namespace NetCore.AuthServer
+namespace NetCore.IdentityProvider
 {
     public class Program
     {
@@ -19,7 +19,7 @@ namespace NetCore.AuthServer
               .ConfigureAppConfiguration((HostBuilderContext hostbuilderContext, IConfigurationBuilder configurationBuilder) =>
                   configurationBuilder.AddAppSettings(hostbuilderContext, args))
               .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
-              .AddLoggingConfiguration("netcore-authserver");
+              .AddLoggingConfiguration("netcore-idp");
         }
     }
 }

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>d7074227-90b9-4951-8d59-e4d6003546e3</UserSecretsId>
@@ -26,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\infrastructure\NetCore.Infrastructure.Database.Dtos\NetCore.Infrastructure.Database.Dtos.csproj" />
     <ProjectReference Include="..\..\infrastructure\NetCore.Infrastructure.Database.Handlers\NetCore.Infrastructure.Database.Handlers.csproj" />
     <ProjectReference Include="..\..\infrastructure\NetCore.Infrastructure.Database\NetCore.Infrastructure.Database.csproj" />
     <ProjectReference Include="..\..\shared\NetCore.Shared\NetCore.Shared.csproj" />

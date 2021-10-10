@@ -6,8 +6,11 @@
 
   <ItemGroup>
     <Compile Remove="Contexts\**" />
+    <Compile Remove="Properties\**" />
     <EmbeddedResource Remove="Contexts\**" />
+    <EmbeddedResource Remove="Properties\**" />
     <None Remove="Contexts\**" />
+    <None Remove="Properties\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,7 +29,6 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
-    <Folder Include="Properties\" />
   </ItemGroup>
 
   <ItemGroup>
