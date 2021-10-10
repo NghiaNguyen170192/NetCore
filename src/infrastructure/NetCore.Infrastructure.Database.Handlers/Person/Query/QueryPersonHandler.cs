@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NetCore.Infrastructure.Database.Handlers
 {
-    public class QueryPersonHandler : IRequestHandler<QueryPersonRequest, IQueryable<QueryPersonResponse>>
+    public class QueryPersonHandler : IRequestHandler<QueryPersonRequest, QueryPersonResponse>
     {
         private readonly DatabaseContext _databaseContext;
 
@@ -15,13 +15,13 @@ namespace NetCore.Infrastructure.Database.Handlers
             _databaseContext = databaseContext;
         }
 
-        public async Task<IQueryable<QueryPersonResponse>> Handle(QueryPersonRequest request, CancellationToken cancellationToken)
+        public async Task<QueryPersonResponse> Handle(QueryPersonRequest request, CancellationToken cancellationToken)
         {
-            var response = _databaseContext
+            var person = _databaseContext
                 .Set<Person>()
-                .Select(person => MapResponse(person))
-                .AsQueryable(); 
-            
+                .SingleOrDefault(x => x.Id == request.Id);
+
+            var response = MapResponse(person);
             return await Task.FromResult(response);
         }
 

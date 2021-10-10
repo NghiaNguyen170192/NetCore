@@ -10,8 +10,8 @@ using System.Threading.Tasks;
 namespace NetCore.Api.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    [Authorize(Roles = "user")]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(Roles = "user")]
     [ApiController]
     public class PersonController : ControllerBase
     {
@@ -41,7 +41,7 @@ namespace NetCore.Api.Controllers
 
         // PUT api/values/5
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(Guid id, [FromBody] UpdatePersonRequest request)
+        public async Task<ActionResult> Put([FromBody] UpdatePersonRequest request)
         {
             var response = await _mediator.Send(request);
             return Ok(response);
