@@ -2,39 +2,12 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "build",
+			//sequential sonar scanner run: second task
+			"label": "netcore-build",
 			"command": "dotnet",
 			"type": "process",
 			"args": [
-				"build",
-				"${workspaceFolder}/NetCore.sln",
-				"/property:GenerateFullPaths=true",
-				"/consoleloggerparameters:NoSummary"
-			],
-			"problemMatcher": "$msCompile"
-		},
-		{
-			"label": "publish",
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"publish",
-				"${workspaceFolder}/src/client/NetCore.IdentityProvider/NetCore.IdentityProvider.csproj",
-				"/property:GenerateFullPaths=true",
-				"/consoleloggerparameters:NoSummary"
-			],
-			"problemMatcher": "$msCompile"
-		},
-		{
-			"label": "watch",
-			"command": "dotnet",
-			"type": "process",
-			"args": [
-				"watch",
-				"run",
-				"${workspaceFolder}/src/NetCore.IdentityProvider/NetCore.IdentityProvider.csproj",
-				"/property:GenerateFullPaths=true",
-				"/consoleloggerparameters:NoSummary"
+				"build"
 			],
 			"problemMatcher": "$msCompile"
 		}
