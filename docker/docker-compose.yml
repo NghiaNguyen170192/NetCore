@@ -9,3 +9,8 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=nM2ZvJm-H4eFisl
+
+  sonar:
+    image: sonarqube:community
+    ports:
+    - "9000:9000"
