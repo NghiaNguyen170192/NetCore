@@ -1,7 +1,7 @@
 version: '3.9'
 
 services:
-  database:
+  netcore-db:
     image: mcr.microsoft.com/mssql/server:2019-latest
     hostname: netcore-db
     ports:
@@ -9,6 +9,8 @@ services:
     environment:
       - ACCEPT_EULA=Y
       - SA_PASSWORD=nM2ZvJm-H4eFisl
+    restart:
+      unless-stopped
 
   sonar:
     image: sonarqube:community

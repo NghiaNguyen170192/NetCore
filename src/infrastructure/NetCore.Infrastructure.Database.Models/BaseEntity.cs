@@ -2,7 +2,7 @@
 
 namespace NetCore.Infrastructure.Database.Models
 {
-    public class BaseEntity
+    public abstract class BaseEntity
     {
         public virtual Guid Id { get; set; }
 
