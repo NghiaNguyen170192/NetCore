@@ -2,25 +2,30 @@ name: .NET
 
 on:
   push:
-    branches: [ develop, staging, master]
+    branches: [develop, staging, master]
   pull_request:
-    branches: [ develop, staging, master]
+    branches: [develop, staging, master]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v1
-      with:
-        dotnet-version: 5.0.x
-        
-    - name: Restore dependencies
-      run: dotnet restore
-      
-    - name: Build
-      run: dotnet build --no-restore
-      
-    - name: Test
-      run: dotnet test --no-build --verbosity normal
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "5.0.1"
+
+      - name: Add nuget.org as nuget package source
+        run: dotnet nuget add source https://api.nuget.org/v3/index.json --name nuget.org
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore
+
+      - name: Test
+        run: dotnet test --no-build --verbosity normal
