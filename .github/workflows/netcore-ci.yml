@@ -18,8 +18,8 @@ jobs:
         with:
           dotnet-version: 5.0.x
 
-      - name: Add nuget.org as nuget package source
-        run: dotnet nuget add source https://api.nuget.org/v3/index.json --name nuget.org
+      # - name: Add nuget.org as nuget package source
+      #   run: dotnet nuget add source https://api.nuget.org/v3/index.json --name nuget.org
 
       - name: Restore dependencies
         run: dotnet restore
