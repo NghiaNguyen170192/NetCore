@@ -36,6 +36,7 @@ namespace NetCore.Tools.Migration
             var pendingMigrations = _databaseContext.Database.GetPendingMigrations();
             if (pendingMigrations.Any())
             {
+                _logger.Information($"Pending migrations:  { pendingMigrations.Count()}");
                 _databaseContext.Database.Migrate();
             }
         }
