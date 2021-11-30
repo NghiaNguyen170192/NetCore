@@ -14,6 +14,6 @@ namespace NetCore.Tools.Migration
         public bool RunSeedsTestData { get; set; }
 
         [Option('d', "delete-database", Required = false, HelpText = "Delete Database.")]
-        public bool  RunDeleteDatabase{ get; set; }
+        public bool RunDeleteDatabase { get; set; }
     }
 }

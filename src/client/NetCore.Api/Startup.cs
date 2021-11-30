@@ -3,20 +3,16 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Controllers;
-using Microsoft.AspNetCore.OData;
-using Microsoft.AspNetCore.OData.Formatter;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.Net.Http.Headers;
 using Microsoft.OpenApi.Models;
 using NetCore.Infrastructure.Database;
 using NetCore.Shared.Configurations;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 
@@ -69,13 +65,13 @@ namespace NetCore.Api
                     options.TokenValidationParameters = GetTokenValidationParameters();
                 });
 
-            services
-                .AddControllers()
-                .AddOData(options =>
-                {
-                    options.Select().Filter().Expand().OrderBy().Count().SetMaxTop(250);
-                })
-                .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
+            //services
+            //    .AddControllers()
+            //    .AddOData(options =>
+            //    {
+            //        options.Select().Filter().Expand().OrderBy().Count().SetMaxTop(250);
+            //    })
+            //    .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
             services.AddMediatR(typeof(Infrastructure.Database.Handlers.AssemblyReference).GetTypeInfo().Assembly);
 
@@ -132,7 +128,7 @@ namespace NetCore.Api
                     options.DescribeAllParametersInCamelCase();
                 });
 
-                AddODataFormattersForSwagger(services);
+                //AddODataFormattersForSwagger(services);
             }
         }
 
@@ -163,20 +159,20 @@ namespace NetCore.Api
             }
         }
 
-        private void AddODataFormattersForSwagger(IServiceCollection services)
-        {
-            services.AddMvcCore(options =>
-            {
-                var outputFormatters = options
-                        .OutputFormatters.OfType<ODataOutputFormatter>()
-                        .Where(foramtter => foramtter.SupportedMediaTypes.Count == 0);
+        //private void AddODataFormattersForSwagger(IServiceCollection services)
+        //{
+        //    services.AddMvcCore(options =>
+        //    {
+        //        var outputFormatters = options
+        //                .OutputFormatters.OfType<ODataOutputFormatter>()
+        //                .Where(foramtter => foramtter.SupportedMediaTypes.Count == 0);
 
-                foreach (var outputFormatter in outputFormatters)
-                {
-                    outputFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/odata"));
-                }
-            });
-        }
+        //        foreach (var outputFormatter in outputFormatters)
+        //        {
+        //            outputFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/odata"));
+        //        }
+        //    });
+        //}
 
         private TokenValidationParameters GetTokenValidationParameters()
         {
