@@ -7,10 +7,13 @@
   <ItemGroup>
     <Compile Remove="Contexts\**" />
     <Compile Remove="Properties\**" />
+    <Compile Remove="UnitOfWork\**" />
     <EmbeddedResource Remove="Contexts\**" />
     <EmbeddedResource Remove="Properties\**" />
+    <EmbeddedResource Remove="UnitOfWork\**" />
     <None Remove="Contexts\**" />
     <None Remove="Properties\**" />
+    <None Remove="UnitOfWork\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -29,7 +32,6 @@
 
   <ItemGroup>
     <Folder Include="Migrations\" />
-    <Folder Include="UnitOfWork\" />
   </ItemGroup>
 
   <ItemGroup>

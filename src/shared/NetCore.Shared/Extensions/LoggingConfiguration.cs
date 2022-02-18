@@ -3,7 +3,6 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using Serilog.Formatting.Display;
-using Serilog.Formatting.Json;
 using System;
 using System.Globalization;
 using System.IO;
@@ -14,10 +13,10 @@ namespace NetCore.Shared.Extentions
     {
         private const string DEFAULT_FILE_OUTPUT_TEMPLATE = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] {Message}{NewLine}{Exception}";
         private static readonly MessageTemplateTextFormatter _formatter = new(DEFAULT_FILE_OUTPUT_TEMPLATE, CultureInfo.InvariantCulture);
+      
         public static IHostBuilder AddLoggingConfiguration(this IHostBuilder hostBuilder, string applicationName)
         {
             return hostBuilder.UseSerilog((hostBuilderContext, loggerConfiguration) => loggerConfiguration
-                   .Enrich.WithProperty("Client", applicationName)
                    .Enrich.FromLogContext()
                    .WriteTo.Async(loggerSinkConfiguration =>
                    {

@@ -65,14 +65,6 @@ namespace NetCore.Api
                     options.TokenValidationParameters = GetTokenValidationParameters();
                 });
 
-            //services
-            //    .AddControllers()
-            //    .AddOData(options =>
-            //    {
-            //        options.Select().Filter().Expand().OrderBy().Count().SetMaxTop(250);
-            //    })
-            //    .AddNewtonsoftJson(options => options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
-
             services.AddMediatR(typeof(Infrastructure.Database.Handlers.AssemblyReference).GetTypeInfo().Assembly);
 
             if (_environment.IsDevelopment())
@@ -121,14 +113,8 @@ namespace NetCore.Api
                 });
                     #endregion
 
-                    //var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-                    //var folderPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-                    //var xmlPath = Path.Combine(folderPath, xmlFile);
-                    //c.IncludeXmlComments(xmlPath);
                     options.DescribeAllParametersInCamelCase();
                 });
-
-                //AddODataFormattersForSwagger(services);
             }
         }
 
@@ -158,21 +144,6 @@ namespace NetCore.Api
                 app.UseExceptionHandler("/Error");
             }
         }
-
-        //private void AddODataFormattersForSwagger(IServiceCollection services)
-        //{
-        //    services.AddMvcCore(options =>
-        //    {
-        //        var outputFormatters = options
-        //                .OutputFormatters.OfType<ODataOutputFormatter>()
-        //                .Where(foramtter => foramtter.SupportedMediaTypes.Count == 0);
-
-        //        foreach (var outputFormatter in outputFormatters)
-        //        {
-        //            outputFormatter.SupportedMediaTypes.Add(new MediaTypeHeaderValue("application/odata"));
-        //        }
-        //    });
-        //}
 
         private TokenValidationParameters GetTokenValidationParameters()
         {

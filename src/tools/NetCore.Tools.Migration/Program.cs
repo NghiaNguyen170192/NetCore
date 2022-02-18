@@ -5,12 +5,13 @@ using Microsoft.Extensions.Hosting;
 using NetCore.Infrastructure.Database;
 using NetCore.Shared.Extentions;
 using System;
+using System.Threading.Tasks;
 
 namespace NetCore.Tools.Migration
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
 
@@ -19,7 +20,7 @@ namespace NetCore.Tools.Migration
                 try
                 {
                     var application = scope.ServiceProvider.GetRequiredService<MigrationService>();
-                    application.Run(args);
+                    await application.RunAsync(args);
                 }
                 catch (Exception e)
                 {

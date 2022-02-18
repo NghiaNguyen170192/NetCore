@@ -29,7 +29,9 @@ namespace NetCore.Api.Controllers
         public async Task<ActionResult> Get(QueryPersonRequest request)
         {
             var response = await _mediator.Send(request);
-            return Ok(response);
+            throw new NotImplementedException();
+
+            //return Ok(response);
         }
 
         // POST api/values
