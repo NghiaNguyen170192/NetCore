@@ -17,7 +17,6 @@ namespace NetCore.Tools.Migration
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly DatabaseContext _databaseContext;
         private readonly ILogger _logger;
-        private long _totalRecord = 0;
 
         public MigrationService(IServiceScopeFactory scopeFactory, ILogger logger)
         {

@@ -15,18 +15,16 @@ namespace NetCore.Tools.Migration
         {
             var host = CreateHostBuilder(args).Build();
 
-            using (var scope = host.Services.CreateScope())
+            using var scope = host.Services.CreateScope();
+            try
             {
-                try
-                {
-                    var application = scope.ServiceProvider.GetRequiredService<MigrationService>();
-                    await application.RunAsync(args);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    return;
-                }
+                var application = scope.ServiceProvider.GetRequiredService<MigrationService>();
+                await application.RunAsync(args);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                return;
             }
         }
 
