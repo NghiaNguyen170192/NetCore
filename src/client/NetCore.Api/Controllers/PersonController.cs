@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Query;
 using NetCore.Infrastructure.Database.Dtos;
 using NetCore.Infrastructure.Database.Handlers;
 using System;
@@ -25,7 +24,6 @@ namespace NetCore.Api.Controllers
 
         // GET api/values
         [HttpGet]
-        [EnableQuery]
         public async Task<ActionResult> Get(QueryPersonRequest request)
         {
             var response = await _mediator.Send(request);
