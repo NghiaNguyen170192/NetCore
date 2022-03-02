@@ -25,7 +25,12 @@ namespace NetCore.Shared.Extentions
                        var logFileName = $"{DateTime.Now:yyyy-MM-dd}.log";
                        var logFilePath = Path.Combine(logFileDirectory, applicationName,  logFileName);
 
-                       loggerSinkConfiguration.File(formatter: _formatter,path: logFilePath,restrictedToMinimumLevel: logLevel, rollingInterval: RollingInterval.Day, shared: true);
+                       loggerSinkConfiguration.File(
+                           formatter: _formatter,
+                           path: logFilePath,
+                           restrictedToMinimumLevel: logLevel, 
+                           rollingInterval: RollingInterval.Day, 
+                           shared: true);
                        loggerSinkConfiguration.Console(logLevel, DEFAULT_FILE_OUTPUT_TEMPLATE);
                    }));
         }
