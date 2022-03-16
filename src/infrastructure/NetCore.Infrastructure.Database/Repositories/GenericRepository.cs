@@ -13,8 +13,8 @@ namespace NetCore.Infrastructure.Database.Repositories
 
         public GenericRepository(DatabaseContext databaseContext)
         {
-            this._databaseContext = databaseContext;
-            this._dbSet = databaseContext.Set<TEntity>();
+            _databaseContext = databaseContext;
+            _dbSet = databaseContext.Set<TEntity>();
         }
 
         public virtual IEnumerable<TEntity> Get(

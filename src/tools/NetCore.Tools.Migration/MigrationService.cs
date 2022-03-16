@@ -48,7 +48,7 @@ namespace NetCore.Tools.Migration
         private async Task RunSeeds()
         {
             // Get file name our CSV file
-            var input = @"C:\Users\nghia.nguyenquoc.STS\source\customer_db\vng_db\raw-data";
+            var input = @"path_to_file";
             string[] fileEntries = Directory.GetFiles(input);
 
             var clockBulkInsert = new Stopwatch();
@@ -69,35 +69,7 @@ namespace NetCore.Tools.Migration
         private async Task ProcessFile(string fileEntry)
         {
             _logger.Information($"Processing file: {fileEntry}");
-            //var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture);
-            //csvConfiguration.MissingFieldFound = null;
-            //csvConfiguration.BadDataFound = null;
-
-            //long totalFileRecords = 0;
-
-            ////purposely create new context for bulk insert
-            //var dbContext = GetNewDatabaseContext();
-
-            //using (var stream = new StreamReader(fileEntry))
-            //using (var csv = new CsvReader(stream, csvConfiguration))
-            //{
-            //    await csv.ReadAsync();
-            //    csv.ReadHeader();
-            //    while (await csv.ReadAsync())
-            //    {
-            //        var customer = csv.GetRecord<Customer>();
-            //        await dbContext.AddAsync(customer);
-            //        if (totalFileRecords % 1000 == 0)
-            //        {
-            //            _logger.Information($"Saving batch: {totalFileRecords / 1000}");
-            //            await dbContext.SaveChangesAsync();
-            //            await dbContext.DisposeAsync();
-            //            dbContext = GetNewDatabaseContext();
-            //        }
-
-            //        totalFileRecords++;
-            //    }
-            //}
+         
         }
 
         private void RunSeedsTestData()

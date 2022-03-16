@@ -73,6 +73,7 @@ namespace NetCore.IdentityProvider
             {
                 app.UseExceptionHandler("/Error");
             }
+
             RunMigration(app);
         }
 
