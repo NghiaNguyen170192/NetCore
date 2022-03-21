@@ -11,7 +11,10 @@ namespace NetCore.Infrastructure.Database
         {
         }
 
-        public DbSet<Person> Person { get; set; }
+        public DbSet<Person> Persons { get; set; }
+        public DbSet<Configuration> Configurations{ get; set; }
+        public DbSet<ConfigurationTransation> ConfigurationTransations { get; set; }
+        public DbSet<Language> Languages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
