@@ -1,11 +1,17 @@
 ﻿using CommandLine;
+using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Infrastructure.Database;
+using NetCore.Infrastructure.Database.Models.CsvMap;
+using NetCore.Infrastructure.Database.Models.Entities;
 using Serilog;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -48,28 +54,38 @@ namespace NetCore.Tools.Migration
         private async Task RunSeeds()
         {
             // Get file name our CSV file
-            var input = @"path_to_file";
-            string[] fileEntries = Directory.GetFiles(input);
+            var input = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\Seed\languages.csv");
+            var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture);
+            csvConfiguration.MissingFieldFound = null;
+            csvConfiguration.BadDataFound = null;
 
-            var clockBulkInsert = new Stopwatch();
-            clockBulkInsert.Start();
-            var taskList = new List<Task>();
-            foreach (string fileEntry in fileEntries)
+            //purposely create new context for bulk insert
+            //var dbContext = GetNewDatabaseContext();
+
+            using (var stream = new StreamReader(input))
+            using (var csv = new CsvReader(stream, csvConfiguration))
             {
-                taskList.Add(ProcessFile(fileEntry));
+                csv.Context.RegisterClassMap<LanguageMap>();
+
+                await csv.ReadAsync();
+                csv.ReadHeader();
+                while (await csv.ReadAsync())
+                {
+                    var language = csv.GetRecord<Language>();
+                    var isExisted = await _databaseContext.Set<Language>().AnyAsync(x => x.Alpha2 == language.Alpha2 && x.Alpha3 == language.Alpha3);
+                    if (!isExisted)
+                    {
+                        await _databaseContext.Set<Language>().AddAsync(language);
+                    }
+                }
             }
 
-            await Task.WhenAll(taskList);
-
-            clockBulkInsert.Stop();
-
-            _logger.Information($"Time Elapsed: {clockBulkInsert.ElapsedMilliseconds}");
+            await _databaseContext.SaveChangesAsync();
         }
 
         private async Task ProcessFile(string fileEntry)
         {
             _logger.Information($"Processing file: {fileEntry}");
-         
         }
 
         private void RunSeedsTestData()
@@ -105,16 +121,11 @@ namespace NetCore.Tools.Migration
                     _logger.Information($"{nameof(RunMigration)} End");
                 }
 
-                //if (commands.RunSeeds)
-                //{
-                //    _logger.Information($"{nameof(RunSeeds)} Start");
-                //    await RunSeeds();
-                //    _logger.Information($"{nameof(RunSeeds)} End");
-                //}
-
-                if (commands.RunSeedsTestData)
+                if (commands.RunSeeds)
                 {
-                    RunSeedsTestData();
+                    _logger.Information($"{nameof(RunSeeds)} Start");
+                    await RunSeeds();
+                    _logger.Information($"{nameof(RunSeeds)} End");
                 }
             }
             catch (Exception exception)
@@ -128,7 +139,6 @@ namespace NetCore.Tools.Migration
         {
 
         }
-         
         private DatabaseContext GetNewDatabaseContext()
         {
             var dbContext = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<DatabaseContext>();

@@ -40,4 +40,10 @@
     <ProjectReference Include="..\..\shared\NetCore.Shared\NetCore.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="App_Data\Seed\languages.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

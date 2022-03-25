@@ -65,6 +65,10 @@ namespace NetCore.Api
                     options.TokenValidationParameters = GetTokenValidationParameters();
                 });
 
+            services.AddRouting(options => options.LowercaseUrls = true);
+
+            services.AddControllers();
+
             services.AddMediatR(typeof(Infrastructure.Database.Handlers.AssemblyReference).GetTypeInfo().Assembly);
 
             if (_environment.IsDevelopment())

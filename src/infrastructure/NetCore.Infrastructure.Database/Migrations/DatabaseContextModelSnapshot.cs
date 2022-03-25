@@ -96,7 +96,13 @@ namespace NetCore.Infrastructure.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Code")
+                    b.Property<string>("Alpha2")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Alpha3")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CountryCode")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("CreatedById")
@@ -105,9 +111,6 @@ namespace NetCore.Infrastructure.Database.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Description")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<Guid>("ModifiedById")
                         .HasColumnType("uniqueidentifier");
 
@@ -115,6 +118,18 @@ namespace NetCore.Infrastructure.Database.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Region")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RegionCode")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubRegion")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SubRegionCode")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
