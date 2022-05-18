@@ -11,7 +11,7 @@ services:
       - SA_PASSWORD=nM2ZvJm-H4eFisl
     restart: unless-stopped
 
-  sonar:
-    image: sonarqube:community
-    ports:
-      - "9000:9000"
+  #sonar:
+  #  image: sonarqube:community
+  #  ports:
+  #    - "9000:9000"
