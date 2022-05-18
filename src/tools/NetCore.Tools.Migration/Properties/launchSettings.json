@@ -1,8 +1,15 @@
 {
   "profiles": {
     "NetCore.Tools.Migration": {
-      "commandLineArgs": "-m -s -t",
       "commandName": "Project",
+      "commandLineArgs": "-m -s -t",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "Docker": {
+      "commandName": "Docker",
+      "commandLineArgs": "-m -s -t",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

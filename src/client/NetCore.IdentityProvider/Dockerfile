@@ -7,22 +7,21 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
-COPY ["src/client/NetCore.Api/NetCore.Api.csproj", "src/client/NetCore.Api/"]
-COPY ["src/infrastructure/NetCore.Infrastructure.Database.Dtos/NetCore.Infrastructure.Database.Dtos.csproj", "src/infrastructure/NetCore.Infrastructure.Database.Dtos/"]
-COPY ["src/infrastructure/NetCore.Infrastructure.Database.Handlers/NetCore.Infrastructure.Database.Handlers.csproj", "src/infrastructure/NetCore.Infrastructure.Database.Handlers/"]
+COPY ["src/client/NetCore.IdentityProvider/NetCore.IdentityProvider.csproj", "src/client/NetCore.IdentityProvider/"]
 COPY ["src/infrastructure/NetCore.Infrastructure.Database/NetCore.Infrastructure.Database.csproj", "src/infrastructure/NetCore.Infrastructure.Database/"]
 COPY ["src/infrastructure/NetCore.Infrastructure.Database.Models/NetCore.Infrastructure.Database.Models.csproj", "src/infrastructure/NetCore.Infrastructure.Database.Models/"]
+COPY ["src/infrastructure/NetCore.Infrastructure.AuthenticationDatabase/NetCore.Infrastructure.AuthenticationDatabase.csproj", "src/infrastructure/NetCore.Infrastructure.AuthenticationDatabase/"]
 COPY ["src/shared/NetCore.Shared/NetCore.Shared.csproj", "src/shared/NetCore.Shared/"]
 
-RUN dotnet restore "src/client/NetCore.Api/NetCore.Api.csproj"
+RUN dotnet restore "src/client/NetCore.IdentityProvider/NetCore.IdentityProvider.csproj"
 COPY . .
 
-RUN dotnet build "src/client/NetCore.Api/NetCore.Api.csproj" -c Release -o /app/build
+RUN dotnet build "src/client/NetCore.IdentityProvider/NetCore.IdentityProvider.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "src/client/NetCore.Api/NetCore.Api.csproj" -c Release -o /app/publish
+RUN dotnet publish "src/client/NetCore.IdentityProvider/NetCore.IdentityProvider.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "NetCore.Api.dll"]
+ENTRYPOINT ["dotnet", "NetCore.IdentityProvider.dll"]

@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Infrastructure.AuthenticationDatabase;
 using NetCore.Infrastructure.AuthenticationDatabase.Models;
-using NetCore.Infrastructurer;
+using NetCore.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;

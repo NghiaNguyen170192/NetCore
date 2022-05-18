@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NetCore.Infrastructure.Database.Dtos;
 using NetCore.Infrastructure.Database.Handlers;
@@ -9,12 +7,7 @@ using System.Threading.Tasks;
 
 namespace NetCore.Api.Controllers
 {
-    
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
-    //[Authorize(Roles = "user")]
-    [ApiController]
-    [Route("api/[controller]")]
-    public class PersonController : ControllerBase
+    public class PersonController : AuthorizedBaseController
     {
         private readonly IMediator _mediator;
 
