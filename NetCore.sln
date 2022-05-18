@@ -33,6 +33,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Infrastructure.Data
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.IdentityProvider", "src\client\NetCore.IdentityProvider\NetCore.IdentityProvider.csproj", "{2A6B4DAD-C214-49CE-A673-ED917C4E61DB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{DA5D2ED7-AD6D-4F7D-98B3-1BDAFB9CC360}"
+	ProjectSection(SolutionItems) = preProject
+		docker\docker-compose.yml = docker\docker-compose.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿#nullable enable
+
+using MediatR;
 using System;
 
 namespace NetCore.Infrastructure.Database.Handlers

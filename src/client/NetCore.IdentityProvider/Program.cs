@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
-using NetCore.Shared.Extentions;
+using NetCore.Shared.Extensions;
 
 namespace NetCore.IdentityProvider
 {

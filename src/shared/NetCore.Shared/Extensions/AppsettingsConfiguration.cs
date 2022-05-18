@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using System.IO;
 
-namespace NetCore.Shared.Extentions
+namespace NetCore.Shared.Extensions
 {
     public static class AppsettingsConfiguration
     {
