@@ -10,7 +10,7 @@ using NetCore.Infrastructure.Database;
 namespace NetCore.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20220321094444_InitialDatabase")]
+    [Migration("20220525084605_InitialDatabase")]
     partial class InitialDatabase
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
