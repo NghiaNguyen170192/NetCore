@@ -1,6 +1,4 @@
 ﻿using MediatR;
-using NetCore.Infrastructure.Database;
-using NetCore.Infrastructure.Database.Models;
 using NetCore.Infrastructure.Database.Models.Entities;
 using System.Linq;
 using System.Threading;

@@ -1,8 +1,3 @@
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
-using Xunit;
-using System.Threading.Tasks;
-
 namespace NetCore.UnitTests
 {
     public class ConnectivityTest

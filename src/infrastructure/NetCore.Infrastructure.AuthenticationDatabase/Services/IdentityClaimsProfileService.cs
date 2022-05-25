@@ -3,7 +3,6 @@ using IdentityServer4.Models;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
 using NetCore.Infrastructure.AuthenticationDatabase.Models;
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 

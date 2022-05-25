@@ -9,8 +9,6 @@ using NetCore.Infrastructure.Database.Models.Entities;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;

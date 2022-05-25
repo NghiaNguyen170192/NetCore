@@ -9,12 +9,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Infrastructure.AuthenticationDatabase;
 using NetCore.Infrastructure.AuthenticationDatabase.Models;
-using NetCore.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
-using System.Threading.Tasks;
 
 namespace NetCore.Infrastructure.Data
 {
