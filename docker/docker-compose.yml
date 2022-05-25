@@ -2,16 +2,19 @@ version: "3.9"
 
 services:
   netcore-db:
-    image: mcr.microsoft.com/mssql/server:2019-latest
     hostname: netcore-db
-    ports:
-      - "1433:1433"
+    image: mcr.microsoft.com/mssql/server:2019-latest
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=nM2ZvJm-H4eFisl
+      - SA_PASSWORD=nM2ZvJm-H4eFisl    
+    ports:
+      - "1433:1433"
     restart: unless-stopped
-
-  #sonar:
-  #  image: sonarqube:community
-  #  ports:
-  #    - "9000:9000"
+    
+  redis:
+    hostname: netcore-redis
+    image: 'bitnami/redis:latest'
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass nM2ZvJm-H4eFisl
+    restart: unless-stopped

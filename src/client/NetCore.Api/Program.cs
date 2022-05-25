@@ -16,8 +16,8 @@ namespace NetCore.Api
         {
             return Host
                 .CreateDefaultBuilder(args)
-                .ConfigureAppConfiguration((HostBuilderContext hostbuilderContext, IConfigurationBuilder configurationBuilder) => 
-                    configurationBuilder.AddAppSettings(hostbuilderContext, args))
+                .ConfigureAppConfiguration((hostBuilderContext, configurationBuilder) => 
+                    configurationBuilder.AddAppSettings(hostBuilderContext, args))
                 .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
                 .AddLoggingConfiguration("netcore-api");
         }

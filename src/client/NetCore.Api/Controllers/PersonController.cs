@@ -18,9 +18,9 @@ namespace NetCore.Api.Controllers
 
         // GET api/values
         [HttpGet]
-        public async Task<ActionResult> Get(QueryPersonRequest request)
+        public async Task<ActionResult> Get(Guid id)
         {
-            var response = await _mediator.Send(request);
+            var response = await _mediator.Send(new QueryPersonRequest(id));
             return Ok(response);
         }
 

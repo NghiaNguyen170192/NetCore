@@ -22,7 +22,7 @@ namespace NetCore.Api
     {
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _environment;
-        private readonly DatabaseOptions _databaseOptions;
+        private readonly DatabaseConfigurations _databaseConfigurations;
         private readonly AuthenticationServerConfiguration _authenticationServerConfiguration;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
@@ -31,8 +31,8 @@ namespace NetCore.Api
             _configuration = configuration;
             _environment = environment;
 
-            _databaseOptions = new DatabaseOptions();
-            _configuration.GetSection("ConnectionStrings").Bind(_databaseOptions);
+            _databaseConfigurations = new DatabaseConfigurations();
+            _configuration.GetSection("ConnectionStrings").Bind(_databaseConfigurations);
 
             _authenticationServerConfiguration = new AuthenticationServerConfiguration();
             _configuration.GetSection("AuthenticationServer").Bind(_authenticationServerConfiguration);
@@ -42,9 +42,9 @@ namespace NetCore.Api
         {
             services.AddDbContext<DatabaseContext>(builder =>
             {
-                builder.UseSqlServer(_databaseOptions.ApplicationConnectionString, options =>
+                builder.UseSqlServer(_databaseConfigurations.ApplicationConnectionString, options =>
                 {
-                    options.MigrationsAssembly(_databaseOptions.MigrationsAssembly);
+                    options.MigrationsAssembly(_databaseConfigurations.MigrationsAssembly);
                 });
             });
 
@@ -70,7 +70,8 @@ namespace NetCore.Api
             services.AddControllers();
 
             services.AddMediatR(typeof(Infrastructure.Database.Handlers.AssemblyReference).GetTypeInfo().Assembly);
-
+            services.AddSignalR().AddStackExchangeRedis(_databaseConfigurations.RedisConnectionString);
+            
             if (_environment.IsDevelopment())
             {
                 services.AddSwaggerGen(options =>

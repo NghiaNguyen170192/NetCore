@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using IdentityServer4.EntityFramework.Entities;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using NetCore.Shared.Extensions;
@@ -16,7 +17,7 @@ namespace NetCore.IdentityProvider
         {
             return Host
               .CreateDefaultBuilder(args)
-              .ConfigureAppConfiguration((HostBuilderContext hostbuilderContext, IConfigurationBuilder configurationBuilder) =>
+              .ConfigureAppConfiguration((hostbuilderContext, configurationBuilder) =>
                   configurationBuilder.AddAppSettings(hostbuilderContext, args))
               .ConfigureWebHostDefaults(webBuilder => webBuilder.UseStartup<Startup>())
               .AddLoggingConfiguration("netcore-idp");

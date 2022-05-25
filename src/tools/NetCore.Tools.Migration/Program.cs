@@ -32,15 +32,15 @@ namespace NetCore.Tools.Migration
         {
             return Host.CreateDefaultBuilder(args)
                 .UseEnvironment(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"))
-                .ConfigureAppConfiguration((HostBuilderContext hostBuilderContext, IConfigurationBuilder configurationBuilder) => configurationBuilder.AddAppSettings(hostBuilderContext, args))
+                .ConfigureAppConfiguration((hostBuilderContext, configurationBuilder) => configurationBuilder.AddAppSettings(hostBuilderContext, args))
                 .ConfigureServices((hostBuilderContext, services) =>
                 {
-                    var databaseOptions = new DatabaseOptions();
-                    hostBuilderContext.Configuration.GetSection("ConnectionStrings").Bind(databaseOptions);
+                    var databaseConfigurations = new DatabaseConfigurations();
+                    hostBuilderContext.Configuration.GetSection("ConnectionStrings").Bind(databaseConfigurations);
 
                     services.AddDbContext<DatabaseContext>(builder =>
                     {
-                        builder.UseSqlServer(databaseOptions.ApplicationConnectionString, o => o.MigrationsAssembly(databaseOptions.MigrationsAssembly));
+                        builder.UseSqlServer(databaseConfigurations.ApplicationConnectionString, o => o.MigrationsAssembly(databaseConfigurations.MigrationsAssembly));    
                     });
 
                     services.AddSingleton<MigrationService>();
