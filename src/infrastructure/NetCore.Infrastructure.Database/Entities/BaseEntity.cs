@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace NetCore.Infrastructure.Database.Models
+namespace NetCore.Infrastructure.Database
 {
     public abstract class BaseEntity
     {

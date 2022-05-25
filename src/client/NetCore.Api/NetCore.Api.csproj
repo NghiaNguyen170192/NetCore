@@ -26,7 +26,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\infrastructure\NetCore.Infrastructure.Database.Dtos\NetCore.Infrastructure.Database.Dtos.csproj" />
     <ProjectReference Include="..\..\infrastructure\NetCore.Infrastructure.Database.Handlers\NetCore.Infrastructure.Database.Handlers.csproj" />
     <ProjectReference Include="..\..\infrastructure\NetCore.Infrastructure.Database\NetCore.Infrastructure.Database.csproj" />
     <ProjectReference Include="..\..\shared\NetCore.Shared\NetCore.Shared.csproj" />

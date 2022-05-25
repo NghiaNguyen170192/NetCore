@@ -28,7 +28,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\infrastructure\NetCore.Infrastructure.AuthenticationDatabase\NetCore.Infrastructure.AuthenticationDatabase.csproj" />
-    <ProjectReference Include="..\..\infrastructure\NetCore.Infrastructure.Database.Models\NetCore.Infrastructure.Database.Models.csproj" />
     <ProjectReference Include="..\..\infrastructure\NetCore.Infrastructure.Database\NetCore.Infrastructure.Database.csproj" />
     <ProjectReference Include="..\..\shared\NetCore.Shared\NetCore.Shared.csproj" />
   </ItemGroup>

@@ -1,11 +1,8 @@
 ﻿using CommandLine;
-using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Infrastructure.Database;
-using NetCore.Infrastructure.Database.Models.CsvMap;
-using NetCore.Infrastructure.Database.Models.Entities;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -60,23 +57,23 @@ namespace NetCore.Tools.Migration
             //purposely create new context for bulk insert
             //var dbContext = GetNewDatabaseContext();
 
-            using (var stream = new StreamReader(input))
-            using (var csv = new CsvReader(stream, csvConfiguration))
-            {
-                csv.Context.RegisterClassMap<LanguageMap>();
+            //using (var stream = new StreamReader(input))
+            //using (var csv = new CsvReader(stream, csvConfiguration))
+            //{
+            //    csv.Context.RegisterClassMap<LanguageMap>();
 
-                await csv.ReadAsync();
-                csv.ReadHeader();
-                while (await csv.ReadAsync())
-                {
-                    var language = csv.GetRecord<Language>();
-                    var isExisted = await _databaseContext.Set<Language>().AnyAsync(x => x.Alpha2 == language.Alpha2 && x.Alpha3 == language.Alpha3);
-                    if (!isExisted)
-                    {
-                        await _databaseContext.Set<Language>().AddAsync(language);
-                    }
-                }
-            }
+            //    await csv.ReadAsync();
+            //    csv.ReadHeader();
+            //    while (await csv.ReadAsync())
+            //    {
+            //        var language = csv.GetRecord<Language>();
+            //        var isExisted = await _databaseContext.Set<Language>().AnyAsync(x => x.Alpha2 == language.Alpha2 && x.Alpha3 == language.Alpha3);
+            //        if (!isExisted)
+            //        {
+            //            await _databaseContext.Set<Language>().AddAsync(language);
+            //        }
+            //    }
+            //}
 
             await _databaseContext.SaveChangesAsync();
         }

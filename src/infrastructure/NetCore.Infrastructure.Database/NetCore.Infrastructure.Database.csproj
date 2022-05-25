@@ -34,8 +34,4 @@
     <Folder Include="Migrations\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\NetCore.Infrastructure.Database.Models\NetCore.Infrastructure.Database.Models.csproj" />
-  </ItemGroup>
-
 </Project>

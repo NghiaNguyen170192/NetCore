@@ -8,7 +8,7 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /src
 COPY ["src/client/NetCore.Api/NetCore.Api.csproj", "src/client/NetCore.Api/"]
-COPY ["src/infrastructure/NetCore.Infrastructure.Database.Dtos/NetCore.Infrastructure.Database.Dtos.csproj", "src/infrastructure/NetCore.Infrastructure.Database.Dtos/"]
+COPY ["src/infrastructure/NetCore.Infrastructure.Database.Handlers.Dtos/NetCore.Infrastructure.Database.Handlers.Dtos.csproj", "src/infrastructure/NetCore.Infrastructure.Database.Handlers.Dtos/"]
 COPY ["src/infrastructure/NetCore.Infrastructure.Database.Handlers/NetCore.Infrastructure.Database.Handlers.csproj", "src/infrastructure/NetCore.Infrastructure.Database.Handlers/"]
 COPY ["src/infrastructure/NetCore.Infrastructure.Database/NetCore.Infrastructure.Database.csproj", "src/infrastructure/NetCore.Infrastructure.Database/"]
 COPY ["src/infrastructure/NetCore.Infrastructure.Database.Models/NetCore.Infrastructure.Database.Models.csproj", "src/infrastructure/NetCore.Infrastructure.Database.Models/"]

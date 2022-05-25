@@ -1,6 +1,4 @@
-﻿using IdentityServer4.EntityFramework.Entities;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
 using NetCore.Shared.Extensions;
 

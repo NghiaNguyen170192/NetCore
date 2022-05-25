@@ -19,7 +19,7 @@ namespace NetCore.Infrastructure.Database.Migrations
                 .HasAnnotation("ProductVersion", "5.0.17")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("NetCore.Infrastructure.Database.Models.Entities.Configuration", b =>
+            modelBuilder.Entity("NetCore.Infrastructure.Database.Entities.Configuration", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -51,7 +51,7 @@ namespace NetCore.Infrastructure.Database.Migrations
                     b.ToTable("Configurations");
                 });
 
-            modelBuilder.Entity("NetCore.Infrastructure.Database.Models.Entities.ConfigurationTransation", b =>
+            modelBuilder.Entity("NetCore.Infrastructure.Database.Entities.ConfigurationTranslation", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -90,7 +90,7 @@ namespace NetCore.Infrastructure.Database.Migrations
                     b.ToTable("ConfigurationTransations");
                 });
 
-            modelBuilder.Entity("NetCore.Infrastructure.Database.Models.Entities.Language", b =>
+            modelBuilder.Entity("NetCore.Infrastructure.Database.Entities.Language", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -137,7 +137,7 @@ namespace NetCore.Infrastructure.Database.Migrations
                     b.ToTable("Languages");
                 });
 
-            modelBuilder.Entity("NetCore.Infrastructure.Database.Models.Entities.Person", b =>
+            modelBuilder.Entity("NetCore.Infrastructure.Database.Entities.Person", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -172,15 +172,15 @@ namespace NetCore.Infrastructure.Database.Migrations
                     b.ToTable("Persons");
                 });
 
-            modelBuilder.Entity("NetCore.Infrastructure.Database.Models.Entities.ConfigurationTransation", b =>
+            modelBuilder.Entity("NetCore.Infrastructure.Database.Entities.ConfigurationTranslation", b =>
                 {
-                    b.HasOne("NetCore.Infrastructure.Database.Models.Entities.Configuration", "Configuration")
+                    b.HasOne("NetCore.Infrastructure.Database.Entities.Configuration", "Configuration")
                         .WithMany("ConfigurationTranslations")
                         .HasForeignKey("ConfigurationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("NetCore.Infrastructure.Database.Models.Entities.Language", "Language")
+                    b.HasOne("NetCore.Infrastructure.Database.Entities.Language", "Language")
                         .WithMany()
                         .HasForeignKey("LanguageId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -191,7 +191,7 @@ namespace NetCore.Infrastructure.Database.Migrations
                     b.Navigation("Language");
                 });
 
-            modelBuilder.Entity("NetCore.Infrastructure.Database.Models.Entities.Configuration", b =>
+            modelBuilder.Entity("NetCore.Infrastructure.Database.Entities.Configuration", b =>
                 {
                     b.Navigation("ConfigurationTranslations");
                 });

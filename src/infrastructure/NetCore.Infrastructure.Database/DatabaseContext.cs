@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NetCore.Infrastructure.Database.Entities;
 using NetCore.Infrastructure.Database.Extensions;
-using NetCore.Infrastructure.Database.Models.Entities;
 
 namespace NetCore.Infrastructure.Database
 {
@@ -12,9 +12,6 @@ namespace NetCore.Infrastructure.Database
         }
 
         public DbSet<Person> Persons { get; set; }
-        public DbSet<Configuration> Configurations{ get; set; }
-        public DbSet<ConfigurationTransation> ConfigurationTransations { get; set; }
-        public DbSet<Language> Languages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

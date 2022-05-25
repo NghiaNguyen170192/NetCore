@@ -41,10 +41,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NetCore.Infrastructure.Database.Models\NetCore.Infrastructure.Database.Models.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Folder Include="Migrations\ApplicationDb\" />
     <Folder Include="Migrations\ConfigurationDb\" />
     <Folder Include="Migrations\PersistedGrantDb\" />
