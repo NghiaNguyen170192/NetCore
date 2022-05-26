@@ -70,8 +70,7 @@ namespace NetCore.Api
             services.AddControllers();
 
             services.AddMediatR(typeof(Infrastructure.Database.Handlers.AssemblyReference).GetTypeInfo().Assembly);
-            services.AddSignalR().AddStackExchangeRedis(_databaseConfigurations.RedisConnectionString);
-            
+
             if (_environment.IsDevelopment())
             {
                 services.AddSwaggerGen(options =>
