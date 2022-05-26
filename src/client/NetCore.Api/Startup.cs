@@ -22,7 +22,7 @@ namespace NetCore.Api
     {
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _environment;
-        private readonly DatabaseConfigurations _databaseConfigurations;
+        private readonly DatabaseConfiguration _databaseConfiguration;
         private readonly AuthenticationServerConfiguration _authenticationServerConfiguration;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
@@ -31,8 +31,8 @@ namespace NetCore.Api
             _configuration = configuration;
             _environment = environment;
 
-            _databaseConfigurations = new DatabaseConfigurations();
-            _configuration.GetSection("ConnectionStrings").Bind(_databaseConfigurations);
+            _databaseConfiguration = new DatabaseConfiguration();
+            _configuration.GetSection("Database").Bind(_databaseConfiguration);
 
             _authenticationServerConfiguration = new AuthenticationServerConfiguration();
             _configuration.GetSection("AuthenticationServer").Bind(_authenticationServerConfiguration);
@@ -42,9 +42,9 @@ namespace NetCore.Api
         {
             services.AddDbContext<DatabaseContext>(builder =>
             {
-                builder.UseSqlServer(_databaseConfigurations.ApplicationConnectionString, options =>
+                builder.UseSqlServer(_databaseConfiguration.ApplicationConnectionString, options =>
                 {
-                    options.MigrationsAssembly(_databaseConfigurations.MigrationsAssembly);
+                    options.MigrationsAssembly(_databaseConfiguration.MigrationsAssembly);
                 });
             });
 

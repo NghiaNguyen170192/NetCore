@@ -1,6 +1,6 @@
-﻿namespace NetCore.Infrastructure.Database
+﻿namespace NetCore.Shared.Configurations
 {
-    public class DatabaseConfigurations
+    public class DatabaseConfiguration
     {
         public string ApplicationConnectionString { get; set; }
 

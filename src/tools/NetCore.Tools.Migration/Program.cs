@@ -6,6 +6,7 @@ using NetCore.Infrastructure.Database;
 using NetCore.Shared.Extensions;
 using System;
 using System.Threading.Tasks;
+using NetCore.Shared.Configurations;
 
 namespace NetCore.Tools.Migration
 {
@@ -21,9 +22,9 @@ namespace NetCore.Tools.Migration
                 var application = scope.ServiceProvider.GetRequiredService<MigrationService>();
                 await application.RunAsync(args);
             }
-            catch (Exception e)
+            catch (Exception exception)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(exception);
                 return;
             }
         }
@@ -35,12 +36,12 @@ namespace NetCore.Tools.Migration
                 .ConfigureAppConfiguration((hostBuilderContext, configurationBuilder) => configurationBuilder.AddAppSettings(hostBuilderContext, args))
                 .ConfigureServices((hostBuilderContext, services) =>
                 {
-                    var databaseConfigurations = new DatabaseConfigurations();
-                    hostBuilderContext.Configuration.GetSection("ConnectionStrings").Bind(databaseConfigurations);
+                    var databaseConfiguration = new DatabaseConfiguration();
+                    hostBuilderContext.Configuration.GetSection("Database").Bind(databaseConfiguration);
 
                     services.AddDbContext<DatabaseContext>(builder =>
                     {
-                        builder.UseSqlServer(databaseConfigurations.ApplicationConnectionString, o => o.MigrationsAssembly(databaseConfigurations.MigrationsAssembly));    
+                        builder.UseSqlServer(databaseConfiguration.ApplicationConnectionString, o => o.MigrationsAssembly(databaseConfiguration.MigrationsAssembly));    
                     });
 
                     services.AddSingleton<MigrationService>();

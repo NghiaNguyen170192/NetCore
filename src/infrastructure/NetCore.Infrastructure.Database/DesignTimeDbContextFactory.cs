@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Options;
+using NetCore.Shared.Configurations;
 
 namespace NetCore.Infrastructure.Database
 {
@@ -10,11 +11,11 @@ namespace NetCore.Infrastructure.Database
         public DatabaseContext CreateDbContext(string[] args)
         {
             var sqlConnection = new SqlConnection();
-            var databaseConfigurations = Options.Create(new DatabaseConfigurations());
-            return CreateDbContext(sqlConnection, databaseConfigurations);
+            var databaseConfiguration = Options.Create(new DatabaseConfiguration());
+            return CreateDbContext(sqlConnection, databaseConfiguration);
         }
 
-        public DatabaseContext CreateDbContext(SqlConnection sqlConnection, IOptions<DatabaseConfigurations> options)
+        public DatabaseContext CreateDbContext(SqlConnection sqlConnection, IOptions<DatabaseConfiguration> options)
         {
             var optionsBuilder = new DbContextOptionsBuilder<DatabaseContext>();
 

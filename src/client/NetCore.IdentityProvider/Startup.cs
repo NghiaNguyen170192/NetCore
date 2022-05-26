@@ -10,8 +10,8 @@ using Microsoft.IdentityModel.Logging;
 using NetCore.Infrastructure.AuthenticationDatabase;
 using NetCore.Infrastructure.AuthenticationDatabase.Models;
 using NetCore.Infrastructure.Data;
-using NetCore.Infrastructure.Database;
 using NetCore.Infrastructure.Services;
+using NetCore.Shared.Configurations;
 
 namespace NetCore.IdentityProvider
 {
@@ -19,7 +19,7 @@ namespace NetCore.IdentityProvider
     {
         private readonly IConfiguration _configuration;
         private readonly IWebHostEnvironment _environment;
-        private readonly DatabaseConfigurations _databaseConfigurations;
+        private readonly DatabaseConfiguration _databaseConfiguration;
 
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
@@ -27,16 +27,16 @@ namespace NetCore.IdentityProvider
             _configuration = configuration;
             _environment = environment;
 
-            _databaseConfigurations = new DatabaseConfigurations();
-            _configuration.GetSection("ConnectionStrings").Bind(_databaseConfigurations);
+            _databaseConfiguration = new DatabaseConfiguration();
+            _configuration.GetSection("Database").Bind(_databaseConfiguration);
         }
 
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(builder =>
-                builder.UseSqlServer(_databaseConfigurations.IdpConnectionString, sqlOptions =>
+                builder.UseSqlServer(_databaseConfiguration.IdpConnectionString, sqlOptions =>
                 {
-                    sqlOptions.MigrationsAssembly(_databaseConfigurations.MigrationsAssembly);
+                    sqlOptions.MigrationsAssembly(_databaseConfiguration.MigrationsAssembly);
                 }));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -46,11 +46,11 @@ namespace NetCore.IdentityProvider
             var builders = services.AddIdentityServer()
                 .AddOperationalStore(options =>
                     options.ConfigureDbContext = builder =>
-                        builder.UseSqlServer(_databaseConfigurations.IdpConnectionString, sqlOptions => sqlOptions.MigrationsAssembly(_databaseConfigurations.MigrationsAssembly))
+                        builder.UseSqlServer(_databaseConfiguration.IdpConnectionString, sqlOptions => sqlOptions.MigrationsAssembly(_databaseConfiguration.MigrationsAssembly))
                         )
                 .AddConfigurationStore(options =>
                     options.ConfigureDbContext = builder =>
-                        builder.UseSqlServer(_databaseConfigurations.IdpConnectionString, sqlOptions => sqlOptions.MigrationsAssembly(_databaseConfigurations.MigrationsAssembly)))
+                        builder.UseSqlServer(_databaseConfiguration.IdpConnectionString, sqlOptions => sqlOptions.MigrationsAssembly(_databaseConfiguration.MigrationsAssembly)))
                 .AddAspNetIdentity<ApplicationUser>();
 
             if (_environment.IsDevelopment())
