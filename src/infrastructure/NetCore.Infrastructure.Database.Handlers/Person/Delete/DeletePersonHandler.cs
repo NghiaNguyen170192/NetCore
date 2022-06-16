@@ -1,24 +1,24 @@
 ﻿using MediatR;
 using NetCore.Infrastructure.Database.Entities;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using NetCore.Infrastructure.Database.Repositories;
 
 namespace NetCore.Infrastructure.Database.Handlers
 {
     public class DeletePersonHandler : IRequestHandler<DeletePersonRequest>
     {
-        private readonly DatabaseContext _databaseContext;
+        private readonly IRepository<Person> _repository;
 
-        public DeletePersonHandler(DatabaseContext databaseContext)
+        public DeletePersonHandler(IRepository<Person> repository)
         {
-            _databaseContext = databaseContext;
+            _repository = repository;
         }
 
         public async Task<Unit> Handle(DeletePersonRequest request, CancellationToken cancellationToken)
         {
-            var person = _databaseContext.Set<Person>().Single(x => x.Id == request.Id);
-            _databaseContext.Set<Person>().Remove(person);
+            var person = await _repository.GetByIdAsync(request.Id, cancellationToken);
+            _repository.Remove(person);
 
             return await Task.FromResult(Unit.Value);
         }

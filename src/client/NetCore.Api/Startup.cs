@@ -71,6 +71,9 @@ namespace NetCore.Api
 
             services.AddMediatR(typeof(Infrastructure.Database.Handlers.AssemblyReference).GetTypeInfo().Assembly);
 
+            services.AddStackExchangeRedisCache(options =>
+                options.Configuration = _configuration.GetValue<string>("Redis:ConnectionString"));
+
             if (_environment.IsDevelopment())
             {
                 services.AddSwaggerGen(options =>

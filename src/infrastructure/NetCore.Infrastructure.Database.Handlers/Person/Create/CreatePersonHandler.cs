@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using NetCore.Infrastructure.Database.Entities;
+using NetCore.Infrastructure.Database.Repositories;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,11 +9,11 @@ namespace NetCore.Infrastructure.Database.Handlers
 {
     public class CreatePersonHandler : IRequestHandler<CreatePersonRequest, CreatePersonResponse>
     {
-        private readonly DatabaseContext _databaseContext;
+        private readonly IRepository<Person> _repository;
 
-        public CreatePersonHandler(DatabaseContext databaseContext)
+        public CreatePersonHandler(IRepository<Person> repository)
         {
-            _databaseContext = databaseContext;
+            _repository = repository;
         }
 
         public async Task<CreatePersonResponse> Handle(CreatePersonRequest request, CancellationToken cancellationToken)
@@ -23,15 +24,15 @@ namespace NetCore.Infrastructure.Database.Handlers
             }
 
             var person = MapPerson(request);
-            await _databaseContext.Set<Person>().AddAsync(person, cancellationToken);
-            await _databaseContext.SaveChangesAsync(cancellationToken);
+            await _repository.AddAsync(person, cancellationToken);
+            await _repository.SaveChangesAsync(cancellationToken);
 
             return await Task.FromResult(MapResponse(person));
         }
 
         private bool IsExisted(CreatePersonRequest request)
         {
-            return _databaseContext.Set<Person>().Any(x => x.NameConst == request.NameConst);
+            return _repository.Collection.Any(person => person.NameConst == request.NameConst);
         }
 
         private Person MapPerson(CreatePersonRequest request)
