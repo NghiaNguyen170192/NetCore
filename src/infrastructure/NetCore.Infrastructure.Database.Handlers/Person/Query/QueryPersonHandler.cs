@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using NetCore.Infrastructure.Database.Entities;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,7 +28,8 @@ namespace NetCore.Infrastructure.Database.Handlers
 
         private QueryPersonResponse MapResponse(Person person)
         {
-            return new QueryPersonResponse (person.Id, person.NameConst, person.PrimaryName, person.BirthYear, person.DeathYear);
+            return new QueryPersonResponse (person.Id, person.FirstName, person.LastName,  person.Email, person.Phone, person.BirthDate, person.Website);
+
         }
     }
 }

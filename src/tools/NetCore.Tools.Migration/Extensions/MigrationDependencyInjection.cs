@@ -1,0 +1,49 @@
+﻿using Microsoft.AspNetCore.Rewrite;
+using Microsoft.Extensions.DependencyInjection;
+using NetCore.Infrastructure.Database.Repositories;
+using NetCore.Shared.Extensions;
+using NetCore.Tools.Migration.Common;
+using NetCore.Tools.Migration.Common.Interface;
+using System.Linq;
+using System.Reflection;
+
+namespace NetCore.Tools.Migration.Extensions;
+
+public static class MigrationDependencyInjection
+{
+    public static IServiceCollection RegisterSeeds(this IServiceCollection services)
+    {
+        services.AddSeedRunner<IBaseDataSeed>();
+        services.AddSeedRunner<ITestDataSeed>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddSeedRunner<T>(this IServiceCollection services)
+        where T : IDataSeed
+    {
+        services.AddSeedsType<T>();
+        //services.RegisterClassesFromCallingAssemblyInterface<T>();
+        services.AddScoped<IDataSeedRunner<T>, DataSeedRunner<T>>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddSeedsType<T>(this IServiceCollection services)
+        where T : IDataSeed
+    {
+        services.Scan(selector => selector
+            .FromCallingAssembly()
+            .AddClasses(classes => classes
+                .AssignableTo<T>())
+                .AsImplementedInterfaces()
+                .WithScopedLifetime());
+
+        return services;
+    }
+
+    public static void RegisterMigrationTasks(this IServiceCollection services)
+    {
+        services.RegisterClassesFromAssemblyInterface<IMigrationTask>();
+    }
+}

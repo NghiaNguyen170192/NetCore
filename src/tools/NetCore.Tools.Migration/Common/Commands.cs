@@ -1,8 +1,8 @@
 ﻿using CommandLine;
 
-namespace NetCore.Tools.Migration
+namespace NetCore.Tools.Migration.Common
 {
-    public class Options
+    public class Command
     {
         [Option('m', "migration", Required = true, HelpText = "Run Migration.")]
         public bool RunMigration { get; set; }

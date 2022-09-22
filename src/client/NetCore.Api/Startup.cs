@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,8 +12,11 @@ using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NetCore.Infrastructure.Database;
+using NetCore.Infrastructure.Database.Repositories;
 using NetCore.Shared.Configurations;
+using NetCore.Shared.Extensions;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 
@@ -69,10 +73,12 @@ namespace NetCore.Api
 
             services.AddControllers();
 
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
             services.AddMediatR(typeof(Infrastructure.Database.Handlers.AssemblyReference).GetTypeInfo().Assembly);
 
-            services.AddStackExchangeRedisCache(options =>
-                options.Configuration = _configuration.GetValue<string>("Redis:ConnectionString"));
+            //services.AddStackExchangeRedisCache(options =>
+            //    options.Configuration = _configuration.GetValue<string>("Redis:ConnectionString"));
 
             if (_environment.IsDevelopment())
             {

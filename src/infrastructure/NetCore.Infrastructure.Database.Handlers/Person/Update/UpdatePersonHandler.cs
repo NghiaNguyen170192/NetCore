@@ -38,12 +38,12 @@ namespace NetCore.Infrastructure.Database.Handlers
 
         private void MapPerson(UpdatePersonRequest request, Person existingPerson)
         {
-            existingPerson.BirthYear = request.BirthYear.Value;
-            existingPerson.DeathYear = request.DeathYear.Value;
-            existingPerson.NameConst = request.NameConst;
-            existingPerson.PrimaryName = request.PrimaryName;
+            //existingPerson.BirthYear = request.BirthYear.Value;
+            //existingPerson.DeathYear = request.DeathYear.Value;
+            //existingPerson.NameConst = request.NameConst;
+            //existingPerson.PrimaryName = request.PrimaryName;
 
-            //if (request.BirthYear !=  null && request.BirthYear != existingPerson.BirthYear)
+            //if (request.BirthYear != null && request.BirthYear != existingPerson.BirthYear)
             //{
             //    existingPerson.BirthYear = request.BirthYear.Value;
             //}

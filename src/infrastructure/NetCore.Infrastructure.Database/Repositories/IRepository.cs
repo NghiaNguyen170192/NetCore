@@ -1,34 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using NetCore.Infrastructure.Database.Commons;
 
-namespace NetCore.Infrastructure.Database.Repositories
+namespace NetCore.Infrastructure.Database.Repositories;
+
+public interface IRepository<TEntity> where TEntity : BaseEntity
 {
-    public interface IRepository<TEntity> where TEntity : BaseEntity
-    {
-        IQueryable<TEntity> Collection { get; }
+    IQueryable<TEntity> Collection { get; }
 
-        Task<EntityEntry<TEntity>> AddAsync(TEntity entity, CancellationToken cancellationToken);
+    Task<EntityEntry<TEntity>> AddAsync(TEntity entity, CancellationToken cancellationToken);
 
-        Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken);
+    Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken);
 
-        EntityEntry<TEntity> Remove(TEntity entity);
+    EntityEntry<TEntity> Remove(TEntity entity);
 
-        void RemoveRange(IEnumerable<TEntity> entities);
+    void RemoveRange(IEnumerable<TEntity> entities);
 
-        Task<IReadOnlyList<TEntity>> GetAllAsync();
+    Task<IReadOnlyList<TEntity>> GetAllAsync();
 
-        Task<TEntity> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<TEntity> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
-        EntityEntry<TEntity> Update(TEntity entity);
+    EntityEntry<TEntity> Update(TEntity entity);
 
-        void UpdateRange(IEnumerable<TEntity> entities);
+    void UpdateRange(IEnumerable<TEntity> entities);
 
-        int SaveChanges();
+    int SaveChanges();
 
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken);
-    }
+    Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+
+    Task<bool> ExistAsync(Expression<Func<TEntity, bool>> expression);
 }
