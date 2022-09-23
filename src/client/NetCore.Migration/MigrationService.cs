@@ -5,8 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Infrastructure.Database;
 using NetCore.Shared.Extensions;
-using NetCore.Tools.Migration.Common;
-using NetCore.Tools.Migration.Common.Interface;
+using NetCore.Migration.Common;
+using NetCore.Migration.Common.Interface;
 using Serilog;
 using System;
 using System.Collections.Generic;
@@ -15,7 +15,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NetCore.Tools.Migration
+namespace NetCore.Migration
 {
     public class MigrationService
     {

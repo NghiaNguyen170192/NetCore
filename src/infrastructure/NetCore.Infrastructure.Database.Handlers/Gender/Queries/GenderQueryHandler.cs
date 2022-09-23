@@ -1,16 +1,15 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore;
 using NetCore.Infrastructure.Database.Entities;
+using NetCore.Infrastructure.Database.Handlers.Queries.Dtos;
 using NetCore.Infrastructure.Database.Repositories;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace NetCore.Infrastructure.Database.Handlers.Queries;
 
-public class GenderQueryHandler : IRequestHandler<GenderQuery, QueryGenderResponse>
+public class GenderQueryHandler : IRequestHandler<GenderQuery, GenderQueryDto>
 {
-    private readonly DatabaseContext _databaseContext;
     private readonly IRepository<Gender> _repository;
 
     public GenderQueryHandler(IRepository<Gender> repository)
@@ -18,14 +17,14 @@ public class GenderQueryHandler : IRequestHandler<GenderQuery, QueryGenderRespon
         _repository = repository;
     }
 
-    public async Task<QueryGenderResponse> Handle(GenderQuery request, CancellationToken cancellationToken)
+    public async Task<GenderQueryDto> Handle(GenderQuery request, CancellationToken cancellationToken)
     {
-        var entity = _repository.Collection.SingleOrDefault(x => x.Id == request.Id);
+        var entity = await _repository.Collection.SingleOrDefaultAsync(x => x.Id == request.Id);
         return MapResponse(entity);
     }
 
-    private QueryGenderResponse MapResponse(Gender entity)
+    private GenderQueryDto MapResponse(Gender entity)
     {
-        return new QueryGenderResponse (entity.Id, entity.Name);
+        return new GenderQueryDto (entity.Id, entity.Name);
     }
 }

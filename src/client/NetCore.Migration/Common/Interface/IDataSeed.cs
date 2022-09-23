@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace NetCore.Tools.Migration.Common.Interface;
+namespace NetCore.Migration.Common.Interface;
 
 public interface IDataSeed
 {

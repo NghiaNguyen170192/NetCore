@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "NetCore.Tools.Migration": {
+    "NetCore.Migration": {
       "commandName": "Project",
       "commandLineArgs": "-d -m -s -t",
       "environmentVariables": {

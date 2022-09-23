@@ -15,10 +15,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Infrastructure.Data
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Infrastructure.Database.Handlers", "src\infrastructure\NetCore.Infrastructure.Database.Handlers\NetCore.Infrastructure.Database.Handlers.csproj", "{E86780FD-39C0-42AB-89C3-5A6D2560F7AC}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{8897CC84-F33C-4D42-9883-A36A19D9F77D}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Tools.Migration", "src\tools\NetCore.Tools.Migration\NetCore.Tools.Migration.csproj", "{2996D2B3-E2A3-4476-AD67-5DB66CA21D07}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "shared", "shared", "{FB109B9F-E397-42EA-857B-9F802CE05544}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Shared", "src\shared\NetCore.Shared\NetCore.Shared.csproj", "{01322737-5755-46C5-9791-790BEFF72DE3}"
@@ -33,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docker", "docker", "{DA5D2E
 	ProjectSection(SolutionItems) = preProject
 		docker\docker-compose.yml = docker\docker-compose.yml
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCore.Migration", "src\client\NetCore.Migration\NetCore.Migration.csproj", "{0E0EB791-10C5-48C4-9359-DEA0630ECE82}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -56,10 +54,6 @@ Global
 		{E86780FD-39C0-42AB-89C3-5A6D2560F7AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E86780FD-39C0-42AB-89C3-5A6D2560F7AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E86780FD-39C0-42AB-89C3-5A6D2560F7AC}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2996D2B3-E2A3-4476-AD67-5DB66CA21D07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2996D2B3-E2A3-4476-AD67-5DB66CA21D07}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2996D2B3-E2A3-4476-AD67-5DB66CA21D07}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2996D2B3-E2A3-4476-AD67-5DB66CA21D07}.Release|Any CPU.Build.0 = Release|Any CPU
 		{01322737-5755-46C5-9791-790BEFF72DE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{01322737-5755-46C5-9791-790BEFF72DE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01322737-5755-46C5-9791-790BEFF72DE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -72,6 +66,10 @@ Global
 		{2A6B4DAD-C214-49CE-A673-ED917C4E61DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2A6B4DAD-C214-49CE-A673-ED917C4E61DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2A6B4DAD-C214-49CE-A673-ED917C4E61DB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E0EB791-10C5-48C4-9359-DEA0630ECE82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E0EB791-10C5-48C4-9359-DEA0630ECE82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E0EB791-10C5-48C4-9359-DEA0630ECE82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E0EB791-10C5-48C4-9359-DEA0630ECE82}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -81,10 +79,10 @@ Global
 		{603DF5F1-EF76-4C69-B635-02EFE779157A} = {A8389E25-C8D3-42A8-AFC3-BD0ACB353854}
 		{D1A1EE53-81F6-4519-AB90-9537FC8CBBF1} = {A8389E25-C8D3-42A8-AFC3-BD0ACB353854}
 		{E86780FD-39C0-42AB-89C3-5A6D2560F7AC} = {A8389E25-C8D3-42A8-AFC3-BD0ACB353854}
-		{2996D2B3-E2A3-4476-AD67-5DB66CA21D07} = {8897CC84-F33C-4D42-9883-A36A19D9F77D}
 		{01322737-5755-46C5-9791-790BEFF72DE3} = {FB109B9F-E397-42EA-857B-9F802CE05544}
 		{5655160C-2835-48C3-B954-BD336C0CA691} = {8CF5EDB0-4E23-4832-ABF2-3A0C4086713A}
 		{2A6B4DAD-C214-49CE-A673-ED917C4E61DB} = {13530044-21F0-4198-BA59-3E74A1B0509D}
+		{0E0EB791-10C5-48C4-9359-DEA0630ECE82} = {13530044-21F0-4198-BA59-3E74A1B0509D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {84C310A6-A8D7-4AA3-82EA-8D5FDE8C8000}

@@ -3,7 +3,7 @@ using CsvHelper;
 using Microsoft.EntityFrameworkCore;
 using NetCore.Infrastructure.Database.Entities;
 using NetCore.Infrastructure.Database.Repositories;
-using NetCore.Tools.Migration.Common;
+using NetCore.Migration.Common;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using NetCore.Infrastructure.Database;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace NetCore.Tools.Migration.Seeds.BaseData;
+namespace NetCore.Migration.Seeds.BaseData;
 
 public class CountrySeed : BaseDataSeed
 {

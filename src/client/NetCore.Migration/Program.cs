@@ -7,11 +7,11 @@ using NetCore.Shared.Extensions;
 using System;
 using System.Threading.Tasks;
 using NetCore.Shared.Configurations;
-using NetCore.Tools.Migration.Common.Interface;
-using NetCore.Tools.Migration.Extensions;
+using NetCore.Migration.Common.Interface;
+using NetCore.Migration.Extensions;
 using NetCore.Infrastructure.Database.Repositories;
 
-namespace NetCore.Tools.Migration;
+namespace NetCore.Migration;
 
 public class Program
 {

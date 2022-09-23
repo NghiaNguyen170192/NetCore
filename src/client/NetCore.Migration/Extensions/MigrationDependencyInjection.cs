@@ -2,12 +2,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Infrastructure.Database.Repositories;
 using NetCore.Shared.Extensions;
-using NetCore.Tools.Migration.Common;
-using NetCore.Tools.Migration.Common.Interface;
+using NetCore.Migration.Common;
+using NetCore.Migration.Common.Interface;
 using System.Linq;
 using System.Reflection;
 
-namespace NetCore.Tools.Migration.Extensions;
+namespace NetCore.Migration.Extensions;
 
 public static class MigrationDependencyInjection
 {

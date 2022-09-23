@@ -1,6 +1,6 @@
 ﻿using CommandLine;
 
-namespace NetCore.Tools.Migration.Common
+namespace NetCore.Migration.Common
 {
     public class Command
     {

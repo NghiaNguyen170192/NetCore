@@ -1,12 +1,12 @@
 ﻿using NetCore.Shared.Extensions;
-using NetCore.Tools.Migration.Common.Interface;
+using NetCore.Migration.Common.Interface;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace NetCore.Tools.Migration.Common;
+namespace NetCore.Migration.Common;
 
 public class DataSeedRunner<T> : IDataSeedRunner<T>
         where T : IDataSeed

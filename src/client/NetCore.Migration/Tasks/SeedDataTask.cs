@@ -2,16 +2,16 @@
 using CsvHelper;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Infrastructure.Database;
-using NetCore.Tools.Migration.Common;
+using NetCore.Migration.Common;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
-using NetCore.Tools.Migration.Common.Interface;
+using NetCore.Migration.Common.Interface;
 
-namespace NetCore.Tools.Migration.Tasks;
+namespace NetCore.Migration.Tasks;
 
 public class SeedDataTask : IMigrationTask
 {

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using NetCore.Tools.Migration.Common.Interface;
+using NetCore.Migration.Common.Interface;
 
-namespace NetCore.Tools.Migration.Common;
+namespace NetCore.Migration.Common;
 
 public abstract class BaseDataSeed : IBaseDataSeed
 {

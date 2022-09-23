@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NetCore.Infrastructure.Database;
-using NetCore.Tools.Migration.Common;
-using NetCore.Tools.Migration.Common.Interface;
+using NetCore.Migration.Common;
+using NetCore.Migration.Common.Interface;
 using Serilog;
 
-namespace NetCore.Tools.Migration.Tasks;
+namespace NetCore.Migration.Tasks;
 
 public class DeleteDatabaseTask : IMigrationTask
 {
