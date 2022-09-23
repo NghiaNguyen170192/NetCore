@@ -21,14 +21,14 @@ public class Repository<TEntity> : IRepository<TEntity>, IDisposable where TEnti
         _databaseContext = databaseContext;
     }
 
-    public async Task<EntityEntry<TEntity>> AddAsync(TEntity entity, CancellationToken cancellationToken)
+    public async Task<EntityEntry<TEntity>> AddAsync(TEntity entity)
     {
-        return await _databaseContext.Set<TEntity>().AddAsync(entity, cancellationToken);
+        return await _databaseContext.Set<TEntity>().AddAsync(entity);
     }
 
-    public async Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken)
+    public async Task AddRangeAsync(IEnumerable<TEntity> entities)
     {
-        await _databaseContext.Set<TEntity>().AddRangeAsync(entities, cancellationToken);
+        await _databaseContext.Set<TEntity>().AddRangeAsync(entities);
     }
 
     public EntityEntry<TEntity> Remove(TEntity entity)
@@ -46,9 +46,9 @@ public class Repository<TEntity> : IRepository<TEntity>, IDisposable where TEnti
         throw new NotImplementedException();
     }
 
-    public async Task<TEntity> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+    public async Task<TEntity> GetByIdAsync(Guid id)
     {
-        return await _databaseContext.Set<TEntity>().FindAsync(id, cancellationToken);
+        return await _databaseContext.Set<TEntity>().FindAsync(id);
     }
 
     public EntityEntry<TEntity> Update(TEntity entity)
@@ -66,9 +66,9 @@ public class Repository<TEntity> : IRepository<TEntity>, IDisposable where TEnti
         return _databaseContext.SaveChanges();
     }
 
-    public async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
+    public async Task<int> SaveChangesAsync()
     {            
-        return await _databaseContext.SaveChangesAsync(cancellationToken);
+        return await _databaseContext.SaveChangesAsync();
     }
 
     public async Task<bool> ExistAsync(Expression<Func<TEntity, bool>> expression)

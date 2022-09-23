@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using NetCore.Shared.Configurations;
 using NetCore.Tools.Migration.Common.Interface;
 using NetCore.Tools.Migration.Extensions;
+using NetCore.Infrastructure.Database.Repositories;
 
 namespace NetCore.Tools.Migration;
 
@@ -49,6 +50,7 @@ public class Program
                 services.AddScoped<MigrationService>();
                 services.RegisterMigrationTasks(); // DI for migration task
                 services.RegisterSeeds(); // DI for seeds on SeedDataTask
+                services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             })
             .AddLoggingConfiguration("netcore-migration-logs");
     }

@@ -9,8 +9,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Threading.Tasks;
-using NetCore.Shared.Extensions;
-using System.Linq;
 using NetCore.Tools.Migration.Common.Interface;
 
 namespace NetCore.Tools.Migration.Tasks;
@@ -22,6 +20,7 @@ public class SeedDataTask : IMigrationTask
     private readonly ILogger _logger;
     private readonly IDataSeedRunner<IBaseDataSeed> _baseDataSeeds;
     private readonly IDataSeedRunner<ITestDataSeed> _testDataSeeds;
+    private readonly string TASK_NAME;
 
     public SeedDataTask(IServiceScopeFactory scopeFactory, ILogger logger, 
         IDataSeedRunner<IBaseDataSeed> baseDataSeeds,
@@ -32,16 +31,17 @@ public class SeedDataTask : IMigrationTask
         _databaseContext = GetNewDatabaseContext();
         _baseDataSeeds = baseDataSeeds;
         _testDataSeeds= testDataSeeds;
+        TASK_NAME = this.GetType().FullName;
     }
 
     public IEnumerable<Type> Dependencies => new List<Type>()
     {
-        typeof(RunPendingMigrationTask)
+        typeof(ApplyPendingMigrationTask)
     };
 
     public async Task ExecuteAsync(Command command)
     {
-        _logger.Information($"Start [{typeof(SeedDataTask)}]");
+        _logger.Information($"Start [{TASK_NAME}]");
         if (command.RunSeeds)
         {
             await _baseDataSeeds.RunSeedsAsync();
@@ -51,38 +51,13 @@ public class SeedDataTask : IMigrationTask
         {
             await _testDataSeeds.RunSeedsAsync();
         }
+
+        _logger.Information($"End [{TASK_NAME}]");
     }
 
     private void RunSeedsFromCsv()
     {
-        // Get file name our CSV file
-        var input = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\Seed\languages.csv");
-        var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture);
-        csvConfiguration.MissingFieldFound = null;
-        csvConfiguration.BadDataFound = null;
-
-        //purposely create new context for bulk insert
-        var dbContext = GetNewDatabaseContext();
-
-        using (var stream = new StreamReader(input))
-        using (var csv = new CsvReader(stream, csvConfiguration))
-        {
-            //csv.Context.RegisterClassMap<LanguageMap>();
-
-            //await csv.ReadAsync();
-            //csv.ReadHeader();
-            //while (await csv.ReadAsync())
-            //{
-            //    var language = csv.GetRecord<Language>();
-            //    var isExisted = await _databaseContext.Set<Language>().AnyAsync(x => x.Alpha2 == language.Alpha2 && x.Alpha3 == language.Alpha3);
-            //    if (!isExisted)
-            //    {
-            //        await _databaseContext.Set<Language>().AddAsync(language);
-            //    }
-            //}
-        }
-
-        //await _databaseContext.SaveChangesAsync();
+      
     }
 
     private DatabaseContext GetNewDatabaseContext()

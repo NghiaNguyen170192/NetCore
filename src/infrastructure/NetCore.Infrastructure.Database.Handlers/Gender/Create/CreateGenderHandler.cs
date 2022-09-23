@@ -24,8 +24,8 @@ namespace NetCore.Infrastructure.Database.Handlers
             }
 
             var gender = Map(request);
-            await _repository.AddAsync(gender, cancellationToken);
-            await _repository.SaveChangesAsync(cancellationToken);
+            await _repository.AddAsync(gender);
+            await _repository.SaveChangesAsync();
 
             return await Task.FromResult(MapResponse(gender));
         }

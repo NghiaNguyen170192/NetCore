@@ -46,7 +46,9 @@ namespace NetCore.Tools.Migration
                 var sortedMigrationTasks = _migrationTasks.TopologicalSort(x => x.Dependencies).ToList();
                 foreach (var migrationTask in sortedMigrationTasks)
                 {
+                    _logger.Information("-----------------------------------");
                     await migrationTask.ExecuteAsync(command);
+                    _logger.Information("-----------------------------------");
                 }
             }
             catch (Exception exception)

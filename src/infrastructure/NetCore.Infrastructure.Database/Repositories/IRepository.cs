@@ -13,9 +13,9 @@ public interface IRepository<TEntity> where TEntity : BaseEntity
 {
     IQueryable<TEntity> Collection { get; }
 
-    Task<EntityEntry<TEntity>> AddAsync(TEntity entity, CancellationToken cancellationToken);
+    Task<EntityEntry<TEntity>> AddAsync(TEntity entity);
 
-    Task AddRangeAsync(IEnumerable<TEntity> entities, CancellationToken cancellationToken);
+    Task AddRangeAsync(IEnumerable<TEntity> entities);
 
     EntityEntry<TEntity> Remove(TEntity entity);
 
@@ -23,7 +23,7 @@ public interface IRepository<TEntity> where TEntity : BaseEntity
 
     Task<IReadOnlyList<TEntity>> GetAllAsync();
 
-    Task<TEntity> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+    Task<TEntity> GetByIdAsync(Guid id);
 
     EntityEntry<TEntity> Update(TEntity entity);
 
@@ -31,7 +31,7 @@ public interface IRepository<TEntity> where TEntity : BaseEntity
 
     int SaveChanges();
 
-    Task<int> SaveChangesAsync(CancellationToken cancellationToken);
+    Task<int> SaveChangesAsync();
 
     Task<bool> ExistAsync(Expression<Func<TEntity, bool>> expression);
 }

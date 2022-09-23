@@ -1,6 +1,5 @@
-﻿namespace NetCore.Infrastructure.Database.Handlers
+﻿namespace NetCore.Infrastructure.Database.Handlers;
+
+public class AssemblyReference
 {
-    public class AssemblyReference
-    {
-    }
 }

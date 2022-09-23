@@ -17,7 +17,7 @@ namespace NetCore.Infrastructure.Database.Handlers
 
         public async Task<Unit> Handle(DeletePersonRequest request, CancellationToken cancellationToken)
         {
-            var person = await _repository.GetByIdAsync(request.Id, cancellationToken);
+            var person = await _repository.GetByIdAsync(request.Id);
             _repository.Remove(person);
 
             return await Task.FromResult(Unit.Value);

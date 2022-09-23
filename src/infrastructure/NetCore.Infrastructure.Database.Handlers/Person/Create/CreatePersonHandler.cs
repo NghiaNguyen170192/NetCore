@@ -24,8 +24,8 @@ namespace NetCore.Infrastructure.Database.Handlers
             }
 
             var person = Map(request);
-            await _repository.AddAsync(person, cancellationToken);
-            await _repository.SaveChangesAsync(cancellationToken);
+            await _repository.AddAsync(person);
+            await _repository.SaveChangesAsync();
 
             return await Task.FromResult(MapResponse(person));
         }
