@@ -32,9 +32,6 @@ public class CountrySeed : BaseDataSeed
     {
         // Get file name our CSV file
         //var input = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\Seed\languages.csv");
-        //var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture);
-        //csvConfiguration.MissingFieldFound = null;
-        //csvConfiguration.BadDataFound = null;
 
         ////purposely create new context for bulk insert
         //var dbContext = GetNewDatabaseContext();

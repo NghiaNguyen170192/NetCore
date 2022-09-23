@@ -50,7 +50,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="App_Data\Seed\languages.csv">
+    <None Update="App_Data\Seed\country.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

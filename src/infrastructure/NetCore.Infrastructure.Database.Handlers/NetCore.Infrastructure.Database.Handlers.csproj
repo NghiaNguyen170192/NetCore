@@ -8,7 +8,4 @@
   <ItemGroup>
     <ProjectReference Include="..\NetCore.Infrastructure.Database\NetCore.Infrastructure.Database.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Gender\Commands\" />
-  </ItemGroup>
 </Project>

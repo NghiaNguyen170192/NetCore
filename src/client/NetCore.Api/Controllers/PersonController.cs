@@ -1,7 +1,9 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NetCore.Infrastructure.Database.Handlers;
-using NetCore.Infrastructure.Database.Handlers.DTO;
+using NetCore.Infrastructure.Database.Handlers.Commands;
+using NetCore.Infrastructure.Database.Handlers.Commands.Dtos;
+using NetCore.Infrastructure.Database.Handlers.Queries;
 using System;
 using System.Threading.Tasks;
 
@@ -20,13 +22,13 @@ public class PersonController : AuthorizedBaseController
     [HttpGet]
     public async Task<ActionResult> Get(Guid id)
     {
-        var response = await _mediator.Send(new QueryPersonRequest(id));
+        var response = await _mediator.Send(new PersonQuery(id));
         return Ok(response);
     }
 
     // POST api/values
     [HttpPost]
-    public async Task<ActionResult> Create([FromBody] CreatePersonRequest request)
+    public async Task<ActionResult> Create([FromBody] CreatePersonCommand request)
     {
         var response = await _mediator.Send(request);
         return Ok(response);
@@ -34,9 +36,9 @@ public class PersonController : AuthorizedBaseController
 
     // PUT api/values/5
     [HttpPut("{id}")]
-    public async Task<ActionResult> Put(Guid id, [FromBody] UpdatePersonModel model)
+    public async Task<ActionResult> Put(Guid id, [FromBody] UpdatePersonDto model)
     {
-        var request = new UpdatePersonRequest(id, model.NameConst, model.PrimaryName, model.BirthYear, model.DeathYear);
+        var request = new UpdatePersonCommand(id, model.NameConst, model.PrimaryName, model.BirthYear, model.DeathYear);
         var response = await _mediator.Send(request);
         return Ok(response);
     }
@@ -45,7 +47,7 @@ public class PersonController : AuthorizedBaseController
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(Guid id)
     {
-        var response = await _mediator.Send(new DeletePersonRequest(id));
+        var response = await _mediator.Send(new DeletePersonCommand(id));
         return Ok(response);
     }
 }

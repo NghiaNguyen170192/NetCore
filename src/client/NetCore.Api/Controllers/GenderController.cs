@@ -1,7 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using NetCore.Infrastructure.Database.Handlers;
-using NetCore.Infrastructure.Database.Handlers.DTO;
+using NetCore.Infrastructure.Database.Handlers.Commands;
+using NetCore.Infrastructure.Database.Handlers.Commands.Dtos;
+using NetCore.Infrastructure.Database.Handlers.Queries;
 using System;
 using System.Threading.Tasks;
 
@@ -20,7 +21,7 @@ public class GenderController : AuthorizedBaseController
     [HttpGet]
     public async Task<ActionResult> Get(Guid id)
     {
-        var response = await _mediator.Send(new QueryGenderRequest(id));
+        var response = await _mediator.Send(new GenderQuery(id));
         return Ok(response);
     }
 
@@ -34,9 +35,9 @@ public class GenderController : AuthorizedBaseController
 
     // PUT api/values/5
     [HttpPut("{id}")]
-    public async Task<ActionResult> Put(Guid id, [FromBody] UpdateGenderModel model)
+    public async Task<ActionResult> Put(Guid id, [FromBody] UpdateGenderDto model)
     {
-        var request = new UpdateGenderRequest(id, model.Name);
+        var request = new UpdateGenderCommand(id, model.Name);
         var response = await _mediator.Send(request);
         return Ok(response);
     }
@@ -45,7 +46,7 @@ public class GenderController : AuthorizedBaseController
     [HttpDelete("{id}")]
     public async Task<ActionResult> Delete(Guid id)
     {
-        var response = await _mediator.Send(new DeleteGenderRequest(id));
+        var response = await _mediator.Send(new DeleteGenderCommand(id));
         return Ok(response);
     }
 }

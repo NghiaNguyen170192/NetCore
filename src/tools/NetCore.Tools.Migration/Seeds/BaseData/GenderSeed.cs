@@ -22,7 +22,7 @@ public class GenderSeed : BaseDataSeed
 
     public async override Task SeedAsync()
     {
-        var genders = new List<Gender>()
+        var seeds = new List<Gender>()
         {
             new Gender
             {
@@ -34,15 +34,17 @@ public class GenderSeed : BaseDataSeed
             }
         };
 
-        foreach (var gender in genders)
+        foreach (var seed in seeds)
         {
             var existing = await _repository.Collection
                                           .Select(x => x.Name)
-                                          .FirstOrDefaultAsync(x => x == gender.Name);
+                                          .FirstOrDefaultAsync(x => x == seed.Name);
+
+            var existing2 = await _repository.ExistAsync(x => x.Name == seed.Name);
 
             if (existing == null)
             {
-                await _repository.AddAsync(gender);
+                await _repository.AddAsync(seed);
             }
         }
         
