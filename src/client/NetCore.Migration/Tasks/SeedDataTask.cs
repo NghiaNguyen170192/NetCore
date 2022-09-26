@@ -1,13 +1,7 @@
-﻿using CsvHelper.Configuration;
-using CsvHelper;
-using Microsoft.Extensions.DependencyInjection;
-using NetCore.Infrastructure.Database;
-using NetCore.Migration.Common;
+﻿using NetCore.Migration.Common;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Threading.Tasks;
 using NetCore.Migration.Common.Interface;
 
@@ -15,20 +9,16 @@ namespace NetCore.Migration.Tasks;
 
 public class SeedDataTask : IMigrationTask
 {
-    private readonly IServiceScopeFactory _scopeFactory;
-    private readonly DatabaseContext _databaseContext;
     private readonly ILogger _logger;
     private readonly IDataSeedRunner<IBaseDataSeed> _baseDataSeeds;
     private readonly IDataSeedRunner<ITestDataSeed> _testDataSeeds;
     private readonly string TASK_NAME;
 
-    public SeedDataTask(IServiceScopeFactory scopeFactory, ILogger logger, 
+    public SeedDataTask(ILogger logger, 
         IDataSeedRunner<IBaseDataSeed> baseDataSeeds,
         IDataSeedRunner<ITestDataSeed> testDataSeeds)
     {
-        _scopeFactory = scopeFactory;
         _logger = logger;
-        _databaseContext = GetNewDatabaseContext();
         _baseDataSeeds = baseDataSeeds;
         _testDataSeeds= testDataSeeds;
         TASK_NAME = this.GetType().FullName;
@@ -53,18 +43,5 @@ public class SeedDataTask : IMigrationTask
         }
 
         _logger.Information($"End [{TASK_NAME}]");
-    }
-
-    private void RunSeedsFromCsv()
-    {
-      
-    }
-
-    private DatabaseContext GetNewDatabaseContext()
-    {
-        var dbContext = _scopeFactory.CreateScope().ServiceProvider.GetRequiredService<DatabaseContext>();
-        dbContext.ChangeTracker.AutoDetectChangesEnabled = false;
-
-        return dbContext;
     }
 }

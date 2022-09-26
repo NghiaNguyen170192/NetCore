@@ -7,9 +7,10 @@ using NetCore.Shared.Extensions;
 using System;
 using System.Threading.Tasks;
 using NetCore.Shared.Configurations;
-using NetCore.Migration.Common.Interface;
 using NetCore.Migration.Extensions;
 using NetCore.Infrastructure.Database.Repositories;
+using System.Reflection;
+using MediatR;
 
 namespace NetCore.Migration;
 
@@ -51,6 +52,8 @@ public class Program
                 services.RegisterMigrationTasks(); // DI for migration task
                 services.RegisterSeeds(); // DI for seeds on SeedDataTask
                 services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+                services.AddMediatR(typeof(Application.AssemblyReference).GetTypeInfo().Assembly);
             })
             .AddLoggingConfiguration("netcore-migration-logs");
     }

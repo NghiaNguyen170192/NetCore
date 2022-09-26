@@ -1,11 +1,7 @@
-﻿using Microsoft.AspNetCore.Rewrite;
-using Microsoft.Extensions.DependencyInjection;
-using NetCore.Infrastructure.Database.Repositories;
+﻿using Microsoft.Extensions.DependencyInjection;
 using NetCore.Shared.Extensions;
 using NetCore.Migration.Common;
 using NetCore.Migration.Common.Interface;
-using System.Linq;
-using System.Reflection;
 
 namespace NetCore.Migration.Extensions;
 
@@ -23,7 +19,6 @@ public static class MigrationDependencyInjection
         where T : IDataSeed
     {
         services.AddSeedsType<T>();
-        //services.RegisterClassesFromCallingAssemblyInterface<T>();
         services.AddScoped<IDataSeedRunner<T>, DataSeedRunner<T>>();
 
         return services;

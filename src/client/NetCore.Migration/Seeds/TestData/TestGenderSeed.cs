@@ -1,48 +1,33 @@
-﻿using Microsoft.EntityFrameworkCore;
-using NetCore.Infrastructure.Database.Entities;
-using NetCore.Infrastructure.Database.Repositories;
+﻿using MediatR;
+using NetCore.Application.Commands;
 using NetCore.Migration.Common;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace NetCore.Migration.Seeds.BaseData;
 
 public class TestGenderSeed : TestDataSeed
 {
-    private readonly IRepository<Gender> _repository;
+    private readonly IMediator _mediator;
 
-    public TestGenderSeed(IRepository<Gender> repository)
+    public TestGenderSeed(IMediator mediator)
     {
-        _repository = repository;
+        _mediator = mediator;
     }
-
 
     public override IEnumerable<Type> Dependencies => new List<Type>();
 
     public async override Task SeedAsync()
     {
-        var genders = new List<Gender>()
+        var seeds = new string[]
         {
-            new Gender
-            {
-                Name = "Other"
-            },
+                "Others"
         };
 
-        foreach (var gender in genders)
+        foreach (var seed in seeds)
         {
-            var existing = await _repository.Collection
-                                          .Select(x => x.Name)
-                                          .FirstOrDefaultAsync(x => x == gender.Name);
-
-            if (existing == null)
-            {
-                await _repository.AddAsync(gender);
-            }
+            await _mediator.Send(new CreateGenderCommand(seed));
         }
-
-        await _repository.SaveChangesAsync();
     }
 }
