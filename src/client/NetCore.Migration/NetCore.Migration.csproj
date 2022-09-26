@@ -6,6 +6,7 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..\..</DockerfileContext>
     <RollForward>Major</RollForward>
+    <UserSecretsId>e47e60ff-59d2-42cb-b3bb-6af475480ba5</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
@@ -34,13 +35,14 @@
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="CsvHelper" Version="27.2.1" />
+    <PackageReference Include="CsvHelper" Version="28.0.1" />
     <PackageReference Include="IdentityServer4" Version="4.1.2" />
     <PackageReference Include="IdentityServer4.AspNetIdentity" Version="4.1.2" />
     <PackageReference Include="IdentityServer4.EntityFramework" Version="4.1.2" />
     <PackageReference Include="IdentityServer4.EntityFramework.Storage" Version="4.1.2" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.17" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.2" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="5.0.0" />
@@ -50,6 +52,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\application\NetCore.Application\NetCore.Application.csproj" />
     <ProjectReference Include="..\..\infrastructure\NetCore.Infrastructure.AuthenticationDatabase\NetCore.Infrastructure.AuthenticationDatabase.csproj" />
     <ProjectReference Include="..\..\infrastructure\NetCore.Infrastructure.Database\NetCore.Infrastructure.Database.csproj" />
     <ProjectReference Include="..\..\shared\NetCore.Shared\NetCore.Shared.csproj" />

@@ -75,7 +75,7 @@ namespace NetCore.Api
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-            services.AddMediatR(typeof(Infrastructure.Database.Handlers.AssemblyReference).GetTypeInfo().Assembly);
+            services.AddMediatR(typeof(Application.AssemblyReference).GetTypeInfo().Assembly);
 
             //services.AddStackExchangeRedisCache(options =>
             //    options.Configuration = _configuration.GetValue<string>("Redis:ConnectionString"));

@@ -1,9 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using NetCore.Infrastructure.Database.Handlers;
-using NetCore.Infrastructure.Database.Handlers.Commands;
-using NetCore.Infrastructure.Database.Handlers.Commands.Dtos;
-using NetCore.Infrastructure.Database.Handlers.Queries;
+using NetCore.Application.Commands;
+using NetCore.Application.Commands.Dtos;
+using NetCore.Application.Queries;
 using System;
 using System.Threading.Tasks;
 

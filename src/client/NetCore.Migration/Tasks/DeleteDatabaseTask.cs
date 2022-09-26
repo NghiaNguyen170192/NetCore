@@ -34,6 +34,13 @@ public class DeleteDatabaseTask : IMigrationTask
             return;
         }
 
+        if(!await _databaseContext.Database.CanConnectAsync())
+        {
+            _logger.Information($"Cannot connect to database.");
+            _logger.Information($"End {TASK_NAME}");
+            return;
+        }
+
         _logger.Information($"Deleting Database");
         await _databaseContext.Database.EnsureDeletedAsync();
         _logger.Information($"End [{TASK_NAME}]");

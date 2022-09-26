@@ -1,17 +1,10 @@
 ﻿using CommandLine;
-using CsvHelper;
-using CsvHelper.Configuration;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using NetCore.Infrastructure.Database;
 using NetCore.Shared.Extensions;
 using NetCore.Migration.Common;
 using NetCore.Migration.Common.Interface;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,13 +12,11 @@ namespace NetCore.Migration
 {
     public class MigrationService
     {
-        private readonly DatabaseContext _databaseContext;
         private readonly ILogger _logger;
         private readonly IEnumerable<IMigrationTask> _migrationTasks;
 
-        public MigrationService(DatabaseContext databaseContext, ILogger logger, IEnumerable<IMigrationTask> migrationTasks)
+        public MigrationService(ILogger logger, IEnumerable<IMigrationTask> migrationTasks)
         {
-            _databaseContext = databaseContext;
             _logger = logger;
             _migrationTasks = migrationTasks;
         }
@@ -58,13 +49,14 @@ namespace NetCore.Migration
             }
         }
 
-        private async Task HandleParseError(IEnumerable<Error> errors)
+        private Task HandleParseError(IEnumerable<Error> errors)
         {
             foreach (var error in errors)
             {
                 _logger.Error(error.ToString());    
             }
-        }
 
+            return Task.CompletedTask;
+        }
     }
 }
