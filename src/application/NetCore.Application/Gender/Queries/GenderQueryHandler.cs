@@ -19,7 +19,7 @@ public class GenderQueryHandler : IRequestHandler<GenderQuery, GenderQueryDto>
 
     public async Task<GenderQueryDto> Handle(GenderQuery request, CancellationToken cancellationToken)
     {
-        var entity = await _repository.Collection.SingleOrDefaultAsync(x => x.Id == request.Id);
+        var entity = await _repository.Collection.SingleOrDefaultAsync(x => x.Id == request.Id, cancellationToken: cancellationToken);
         return MapResponse(entity);
     }
 

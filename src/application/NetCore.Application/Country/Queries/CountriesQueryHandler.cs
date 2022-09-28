@@ -7,9 +7,7 @@ using NetCore.Infrastructure.Database.Repositories;
 
 namespace NetCore.Application.Queries;
 
-public class CountriesQueryHandler : 
-    //IRequestHandler<CountriesQuery, IEnumerable<CountryQueryDto>>,
-    IRequestHandler<CountriesQuery2, IEnumerable<CountryQueryDto>>
+public class CountriesQueryHandler : IRequestHandler<CountriesQuery, IEnumerable<CountryQueryDto>>
 {
     private readonly IRepository<Country> _repository;
 
@@ -18,15 +16,7 @@ public class CountriesQueryHandler :
         _repository = repository;
     }
 
-    //public async Task<IEnumerable<CountryQueryDto>> Handle(CountriesQuery request, CancellationToken cancellationToken)
-    //{
-    //    return _repository.Collection
-    //        .Select(x => new CountryQueryDto(x.Id, x.Name, x.CountryCode, x.Alpha2, x.Alpha3))
-    //        .AsNoTracking()
-    //        .AsEnumerable();
-    //}
-
-    public async Task<IEnumerable<CountryQueryDto>> Handle(CountriesQuery2 request, CancellationToken cancellationToken)
+    public async Task<IEnumerable<CountryQueryDto>> Handle(CountriesQuery request, CancellationToken cancellationToken)
     {
         return _repository.Collection
             .AsNoTracking()

@@ -63,25 +63,24 @@ namespace NetCore.Infrastructure.Data
 
         public static void Migration(IApplicationBuilder app)
         {
-            using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            using (var persistedGrantDbContext = scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>())
-            using (var configurationDbContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>())
-            using (var applicationDbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>())
+            using var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope();
+            using var persistedGrantDbContext = scope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>();
+            using var configurationDbContext = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+            using var applicationDbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+            if (persistedGrantDbContext.Database.GetPendingMigrations().Any())
             {
-                if (persistedGrantDbContext.Database.GetPendingMigrations().Any())
-                {
-                    persistedGrantDbContext.Database.Migrate();
-                }
+                persistedGrantDbContext.Database.Migrate();
+            }
 
-                if (configurationDbContext.Database.GetPendingMigrations().Any())
-                {
-                    configurationDbContext.Database.Migrate();
-                }
+            if (configurationDbContext.Database.GetPendingMigrations().Any())
+            {
+                configurationDbContext.Database.Migrate();
+            }
 
-                if (applicationDbContext.Database.GetPendingMigrations().Any())
-                {
-                    applicationDbContext.Database.Migrate();
-                }
+            if (applicationDbContext.Database.GetPendingMigrations().Any())
+            {
+                applicationDbContext.Database.Migrate();
             }
         }
 
@@ -122,79 +121,77 @@ namespace NetCore.Infrastructure.Data
 
         public static async void InitializeDbData(IApplicationBuilder app, string secret)
         {
-            using (var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
-            using (var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>())
-            using (var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>())
+            using var scope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope();
+            using var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            using var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var context = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+
+            if (!context.Clients.Any())
             {
-                var context = scope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-
-                if (!context.Clients.Any())
+                foreach (var client in Config.GetClients())
                 {
-                    foreach (var client in Config.GetClients())
-                    {
-                        client.ClientSecrets = GetSecrets(secret);
-                        context.Clients.Add(client.ToEntity());
-                    }
-                    context.SaveChanges();
+                    client.ClientSecrets = GetSecrets(secret);
+                    context.Clients.Add(client.ToEntity());
                 }
+                context.SaveChanges();
+            }
 
-                if (!context.IdentityResources.Any())
+            if (!context.IdentityResources.Any())
+            {
+                foreach (var resource in Config.GetIdentityResources())
                 {
-                    foreach (var resource in Config.GetIdentityResources())
-                    {
-                        context.IdentityResources.Add(resource.ToEntity());
-                    }
-                    context.SaveChanges();
+                    context.IdentityResources.Add(resource.ToEntity());
                 }
+                context.SaveChanges();
+            }
 
-                if (!context.ApiScopes.Any())
+            if (!context.ApiScopes.Any())
+            {
+                foreach (var resource in Config.GetApiScopes())
                 {
-                    foreach (var resource in Config.GetApiScopes())
-                    {
-                        context.ApiScopes.Add(resource.ToEntity());
-                    }
-                    context.SaveChanges();
+                    context.ApiScopes.Add(resource.ToEntity());
                 }
+                context.SaveChanges();
+            }
 
-                if (!context.ApiResources.Any())
+            if (!context.ApiResources.Any())
+            {
+                foreach (var resource in Config.GetApiResources())
                 {
-                    foreach (var resource in Config.GetApiResources())
-                    {
-                        context.ApiResources.Add(resource.ToEntity());
-                    }
-                    context.SaveChanges();
+                    context.ApiResources.Add(resource.ToEntity());
                 }
+                context.SaveChanges();
+            }
 
-                if (userManager.Users.Any() && roleManager.Roles.Any())
+            if (userManager.Users.Any() && roleManager.Roles.Any())
+            {
+                return;
+            }
+
+            foreach (var testUser in Users.Get())
+            {
+                var identityUser = new ApplicationUser(testUser.Username)
                 {
-                    return;
-                }
+                    Id = testUser.SubjectId,
+                };
 
-                foreach (var testUser in Users.Get())
+                var result = await userManager.CreateAsync(identityUser, testUser.Password);
+                if (result.Succeeded)
                 {
-                    var identityUser = new ApplicationUser(testUser.Username)
+                    await userManager.AddClaimsAsync(identityUser, testUser.Claims.ToList());
+                    var claimRole = testUser.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Role);
+                    if (claimRole != null)
                     {
-                        Id = testUser.SubjectId,
-                    };
-
-                    var result = await userManager.CreateAsync(identityUser, testUser.Password);
-                    if (result.Succeeded)
-                    {
-                        await userManager.AddClaimsAsync(identityUser, testUser.Claims.ToList());
-                        var claimRole = testUser.Claims.FirstOrDefault(x => x.Type == JwtClaimTypes.Role);
-                        if (claimRole != null)
-                        {
-                            var identityRole = new IdentityRole(claimRole.Value);
-                            await roleManager.CreateAsync(identityRole);
-                            await userManager.AddToRoleAsync(identityUser, identityRole.Name);
-                        }
+                        var identityRole = new IdentityRole(claimRole.Value);
+                        await roleManager.CreateAsync(identityRole);
+                        await userManager.AddToRoleAsync(identityUser, identityRole.Name);
                     }
                 }
             }
         }
         private static List<Secret> GetSecrets(string secret)
         {
-            List<Secret> secrets = new List<Secret>
+            List<Secret> secrets = new()
             {
                 new Secret(secret.Sha256())
             };

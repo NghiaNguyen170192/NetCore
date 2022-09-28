@@ -1,10 +1,8 @@
 ﻿using MediatR;
 using NetCore.Infrastructure.Database.Entities;
-using System.Threading;
-using System.Threading.Tasks;
 using NetCore.Infrastructure.Database.Repositories;
 
-namespace  NetCore.Application.Commands;
+namespace NetCore.Application.Commands;
 
 public class DeleteGenderHandler : IRequestHandler<DeleteGenderCommand>
 {

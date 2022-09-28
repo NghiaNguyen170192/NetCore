@@ -5,11 +5,8 @@ using NetCore.Application.Commands;
 using NetCore.Application.Commands.Dtos;
 using NetCore.Application.Queries;
 using NetCore.Application.Queries.Dtos;
-using NetCore.Infrastructure.Database.Entities;
-using NetCore.Infrastructure.Database.Repositories;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace NetCore.Api.Controllers;
@@ -17,12 +14,10 @@ namespace NetCore.Api.Controllers;
 public class CountryController : AuthorizedBaseController
 {
     private readonly IMediator _mediator;
-    private readonly IRepository<Country> _repository;
 
-    public CountryController(IMediator mediator, IRepository<Country> repository)
+    public CountryController(IMediator mediator)
     {
         _mediator = mediator;
-        _repository = repository;
     }
 
     // GET api/values
@@ -64,7 +59,7 @@ public class CountryController : AuthorizedBaseController
     [Route("~/api/v1/countries")]
     public async Task<ActionResult<IEnumerable<CountryQueryDto>>> GetCountries()
     {
-        var response = await _mediator.Send(new CountriesQuery2());
+        var response = await _mediator.Send(new CountriesQuery());
         return Ok(response);
     }
 }

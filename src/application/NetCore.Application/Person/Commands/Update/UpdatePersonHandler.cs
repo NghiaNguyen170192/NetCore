@@ -35,14 +35,14 @@ public class UpdatePersonHandler : IRequestHandler<UpdatePersonCommand>
 
     private void MapPerson(UpdatePersonCommand request, Person existingEntity)
     {
-        //existingEntity.BirthYear = request.BirthYear.Value;
+        //existingEntity.FirstName = request.FirstName;
         //existingEntity.DeathYear = request.DeathYear.Value;
         //existingEntity.NameConst = request.NameConst;
         //existingEntity.PrimaryName = request.PrimaryName;
 
-        //if (request.BirthYear != null && request.BirthYear != existingEntity.BirthYear)
+        //if (request.FirstName != null && request.FirstName != existingEntity.FirstName)
         //{
-        //    existingEntity.BirthYear = request.BirthYear.Value;
+        //    existingEntity.FirstName = request.FirstName.;
         //}
 
         //if (request.DeathYear != null && request.DeathYear != existingEntity.DeathYear)

@@ -33,18 +33,16 @@ public class CountrySeed : BaseDataSeed
             BadDataFound = null
         };
 
-        using (var stream = new StreamReader(input))
-        using (var csv = new CsvReader(stream, csvConfiguration))
-        {
-            csv.Context.RegisterClassMap<CountryCsvMap>();
+        using var stream = new StreamReader(input);
+        using var csv = new CsvReader(stream, csvConfiguration);
+        csv.Context.RegisterClassMap<CountryCsvMap>();
 
-            await csv.ReadAsync();
-            csv.ReadHeader();
-            while (await csv.ReadAsync())
-            {
-                var countrySeed = csv.GetRecord<Country>();
-                await _mediator.Send(new CreateCountryCommand(countrySeed.Name, countrySeed.CountryCode, countrySeed.Alpha2, countrySeed.Alpha3));
-            }
+        await csv.ReadAsync();
+        csv.ReadHeader();
+        while (await csv.ReadAsync())
+        {
+            var countrySeed = csv.GetRecord<Country>();
+            await _mediator.Send(new CreateCountryCommand(countrySeed.Name, countrySeed.CountryCode, countrySeed.Alpha2, countrySeed.Alpha3));
         }
     }
 }

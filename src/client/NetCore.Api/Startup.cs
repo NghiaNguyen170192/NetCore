@@ -13,7 +13,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.Edm;
 using Microsoft.OData.ModelBuilder;
 using Microsoft.OpenApi.Models;
-using NetCore.Application.Queries;
 using NetCore.Application.Queries.Dtos;
 using NetCore.Infrastructure.Database;
 using NetCore.Infrastructure.Database.Entities;
@@ -190,7 +189,7 @@ public class Startup
         return certificate;
     }
 
-    private  IEdmModel GetEdmModel()
+    private IEdmModel GetEdmModel()
     {
         var odataBuilder = new ODataConventionModelBuilder();
 

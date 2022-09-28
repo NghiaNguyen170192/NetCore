@@ -17,7 +17,7 @@ public class CountryQueryHandler : IRequestHandler<CountryQuery, CountryQueryDto
 
     public async Task<CountryQueryDto> Handle(CountryQuery request, CancellationToken cancellationToken)
     {
-        var entity = await _repository.Collection.SingleOrDefaultAsync(x => x.Id == request.Id);
+        var entity = await _repository.Collection.SingleOrDefaultAsync(x => x.Id == request.Id, cancellationToken: cancellationToken);
         return MapResponse(entity);
     }
 

@@ -32,7 +32,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Migration", "src\cl
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "application", "application", "{0A371970-E447-48A5-B5FB-C98DF4BE5B49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCore.Application", "src\application\NetCore.Application\NetCore.Application.csproj", "{2195D25A-0910-45BC-AD31-502FF16334DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Application", "src\application\NetCore.Application\NetCore.Application.csproj", "{2195D25A-0910-45BC-AD31-502FF16334DD}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution items", "solution items", "{75712FA5-A9EE-4261-B93A-C2E165018B5C}"
+	ProjectSection(SolutionItems) = preProject
+		stylecop.json = stylecop.json
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
