@@ -74,13 +74,17 @@ public class Startup
         services.AddRouting(options => options.LowercaseUrls = true);
         services.AddControllers().AddOData(opt => opt
                 .Filter().Expand().Select().OrderBy()
-                .SetMaxTop(10)
+                //.SetMaxTop(100)
                 .AddRouteComponents("odata", GetEdmModel()));
 
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddMediatR(typeof(Application.AssemblyReference).GetTypeInfo().Assembly);
-        //services.AddStackExchangeRedisCache(options =>
-        //    options.Configuration = _configuration.GetValue<string>("Redis:ConnectionString"));
+
+        //caching
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = _configuration.GetValue<string>("Redis:ConnectionString");
+        });
 
         if (_environment.IsDevelopment())
         {
