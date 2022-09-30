@@ -23,8 +23,6 @@ public class CountryQueryHandler : IRequestHandler<CountryQuery, CountryQueryDto
 
     private CountryQueryDto MapResponse(Country entity)
     {
-        //return new CountryQueryDto (entity.Id, entity.Name, entity.CountryCode, entity.Alpha2, entity.Alpha3);
-
         return new CountryQueryDto()
         {
             Id = entity.Id,

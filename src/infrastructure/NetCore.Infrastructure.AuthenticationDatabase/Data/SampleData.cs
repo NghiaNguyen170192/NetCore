@@ -189,6 +189,7 @@ namespace NetCore.Infrastructure.Data
                 }
             }
         }
+
         private static List<Secret> GetSecrets(string secret)
         {
             List<Secret> secrets = new()

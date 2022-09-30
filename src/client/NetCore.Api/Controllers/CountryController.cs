@@ -53,7 +53,6 @@ public class CountryController : AuthorizedBaseController
         return Ok(response);
     }
     
-    // GET api/values
     [HttpGet]
     [EnableQuery]
     [Route("~/api/v1/countries")]

@@ -1,9 +1,6 @@
 ﻿using MediatR;
 using NetCore.Infrastructure.Database.Entities;
 using NetCore.Infrastructure.Database.Repositories;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace NetCore.Application.Commands;
 

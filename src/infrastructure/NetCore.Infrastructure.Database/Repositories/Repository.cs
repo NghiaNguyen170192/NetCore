@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -14,7 +13,7 @@ public class Repository<TEntity> : IRepository<TEntity>, IDisposable where TEnti
 {
     private readonly DatabaseContext _databaseContext;
 
-    public IQueryable<TEntity> Collection => _databaseContext.Set<TEntity>().AsQueryable();
+    public IQueryable<TEntity> Collection => _databaseContext.Set<TEntity>().Take(100).AsQueryable();
 
     public Repository(DatabaseContext databaseContext)
     {

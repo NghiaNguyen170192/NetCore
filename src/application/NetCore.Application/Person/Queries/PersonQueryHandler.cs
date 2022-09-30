@@ -23,6 +23,14 @@ public class PersonQueryHandler : IRequestHandler<PersonQuery, PersonQueryDto>
 
     private PersonQueryDto MapResponse(Person person)
     {
-        return new PersonQueryDto (person.Id, person.FirstName, person.LastName,  person.Email, person.Phone, person.BirthDate, person.Website);
+        return new PersonQueryDto
+        {
+            Id = person.Id,
+            FirstName = person.FirstName,
+            LastName = person.LastName,
+            Email = person.Email,
+            BirthDate = person.BirthDate,
+            Website = person.Website,
+        };
     }
 }

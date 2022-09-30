@@ -1,9 +1,12 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
 using NetCore.Application.Commands;
 using NetCore.Application.Commands.Dtos;
 using NetCore.Application.Queries;
+using NetCore.Application.Queries.Dtos;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace NetCore.Api.Controllers;
@@ -47,6 +50,15 @@ public class PersonController : AuthorizedBaseController
     public async Task<ActionResult> Delete(Guid id)
     {
         var response = await _mediator.Send(new DeletePersonCommand(id));
+        return Ok(response);
+    }
+
+    [HttpGet]
+    [EnableQuery]
+    [Route("~/api/v1/persons")]
+    public async Task<ActionResult<IEnumerable<PersonQueryDto>>> GetPersons()
+    {
+        var response = await _mediator.Send(new PersonsQuery());
         return Ok(response);
     }
 }

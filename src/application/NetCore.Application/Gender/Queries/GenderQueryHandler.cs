@@ -25,6 +25,10 @@ public class GenderQueryHandler : IRequestHandler<GenderQuery, GenderQueryDto>
 
     private GenderQueryDto MapResponse(Gender entity)
     {
-        return new GenderQueryDto (entity.Id, entity.Name);
+        return new GenderQueryDto
+        {
+            Id = entity.Id,
+            Name = entity.Name
+        };
     }
 }
