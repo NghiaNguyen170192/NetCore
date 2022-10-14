@@ -72,14 +72,16 @@ public class Startup
             });
 
         services.AddRouting(options => options.LowercaseUrls = true);
-        services.AddControllers().AddOData(opt => opt
+        services
+            .AddControllers()
+            .AddOData(opt => opt
                 .Filter().Expand().Select().OrderBy()
-                //.SetMaxTop(100)
+                .SetMaxTop(100)
                 .AddRouteComponents("odata", GetEdmModel()));
-
+        
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddMediatR(typeof(Application.AssemblyReference).GetTypeInfo().Assembly);
-
+        
         //caching
         services.AddStackExchangeRedisCache(options =>
         {

@@ -6,7 +6,7 @@ using NetCore.Application.Commands.Dtos;
 using NetCore.Application.Queries;
 using NetCore.Application.Queries.Dtos;
 using System;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace NetCore.Api.Controllers;
@@ -56,7 +56,7 @@ public class CountryController : AuthorizedBaseController
     [HttpGet]
     [EnableQuery]
     [Route("~/api/v1/countries")]
-    public async Task<ActionResult<IEnumerable<CountryQueryDto>>> GetCountries()
+    public async Task<ActionResult<IQueryable<CountryQueryDto>>> GetCountries()
     {
         var response = await _mediator.Send(new CountriesQuery());
         return Ok(response);

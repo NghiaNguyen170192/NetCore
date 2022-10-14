@@ -13,7 +13,7 @@ public class Repository<TEntity> : IRepository<TEntity>, IDisposable where TEnti
 {
     private readonly DatabaseContext _databaseContext;
 
-    public IQueryable<TEntity> Collection => _databaseContext.Set<TEntity>().AsQueryable();
+    public IQueryable<TEntity> Collection => _databaseContext.Set<TEntity>();
 
     public Repository(DatabaseContext databaseContext)
     {

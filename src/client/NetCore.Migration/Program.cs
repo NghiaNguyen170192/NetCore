@@ -11,7 +11,6 @@ using NetCore.Migration.Extensions;
 using NetCore.Infrastructure.Database.Repositories;
 using System.Reflection;
 using MediatR;
-using AutoMapper.Configuration;
 
 namespace NetCore.Migration;
 
@@ -57,10 +56,10 @@ public class Program
                 services.AddMediatR(typeof(Application.AssemblyReference).GetTypeInfo().Assembly);
                 
                 //caching
-                services.AddStackExchangeRedisCache(options =>
-                {
-                    options.Configuration = hostBuilderContext.Configuration.GetValue<string>("Redis:ConnectionString");
-                });
+                //services.AddStackExchangeRedisCache(options =>
+                //{
+                //    options.Configuration = hostBuilderContext.Configuration.GetValue<string>("Redis:ConnectionString");
+                //});
             })
             .AddLoggingConfiguration("netcore-migration-logs");
     }
