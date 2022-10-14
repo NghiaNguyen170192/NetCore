@@ -14,7 +14,7 @@
     <None Remove="appsettings.Development.json" />
     <None Remove="appsettings.json" />
     <None Remove="appsettings.Production.json" />
-    <None Remove="App_Data\Seed\country.csv" />
+    <None Remove="App_Data\Seeds\country.csv" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,7 +34,7 @@
       <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
-    <Content Include="App_Data\Seed\country.csv">
+    <Content Include="App_Data\Seeds\country.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

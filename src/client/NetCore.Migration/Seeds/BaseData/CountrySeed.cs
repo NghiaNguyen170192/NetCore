@@ -26,7 +26,7 @@ public class CountrySeed : BaseDataSeed
     public async override Task SeedAsync()
     {
         // Get file name our CSV file
-        var input = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"App_Data\Seed\country.csv");
+        var input = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "Seeds", "country.csv");
         var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
             MissingFieldFound = null,

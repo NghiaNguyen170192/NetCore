@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  netcore-db:
+    container_name: netcore-db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=nM2ZvJm-H4eFisl
+    healthcheck:
+      test: /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$$SA_PASSWORD" -Q "SELECT 1" || exit 1
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    hostname: netcore-db
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - "1433:1433"
+    restart: always
+   
+  netcore-migration:
+    container_name: netcore-migration
+    build: 
+      context: .
+      dockerfile: src/client/NetCore.Migration/Dockerfile
+    command: ["dotnet", "run", "-d", "-m", "-s", "-t"]
+    depends_on: 
+      netcore-db:
+        condition: service_healthy     
+    ports:
+      - 5000:5000
+    env_file: variables.env
+
+  # netcore-api:
+  #   container_name: api
+  #   build: 
+  #     context: .
+  #     dockerfile: src/client/NetCore.Api/Dockerfile
+  #   command: ["dotnet", "--urls", "https://localhost:6000"]
+  #   depends_on: 
+  #     - netcore-db
+  #     - netcore-migration
+  #   ports:
+  #     - 6000:6000
+  #   env_file: variables.env
