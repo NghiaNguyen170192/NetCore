@@ -18,11 +18,18 @@
       "applicationUrl": "https://localhost:6001;http://localhost:6000"
     },
     "Docker": {
-      "commandName": "Docker",
-      "launchBrowser": true,
-      "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
-      "publishAllPorts": true,
-      "useSSL": true
+        "commandName": "Docker",
+        "launchBrowser": true,
+        "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}/swagger",
+        "publishAllPorts": true,
+        "useSSL": true,
+        "applicationUrl": "https://localhost:6001;http://localhost:6000",
+        "environmentVariables": {
+            "ASPNETCORE_URLS": "https://+:443;http://+:80",
+            "ASPNETCORE_HTTPS_PORT": "6000"
+        },
+        "httpPort": 6000,
+        "sslPort": 6001
     }
   }
 }

@@ -3,24 +3,9 @@
 [![.NET](https://github.com/NghiaNguyen170192/NetCore/actions/workflows/netcore-ci.yml/badge.svg)](https://github.com/NghiaNguyen170192/NetCore/actions/workflows/netcore-ci.yml)
 
 ## Requisites
-.Net Core 5.0
+.Net Core 6.0
 
 IdentityServer 4
-
-<br />
-
-## To Run Application:
-### Vs Code
-
-```bash
-cd .\docker\
-
-docker-compose up -d
-
-dotnet restore
-
-dotnet build NetCore.sln
-```
 
 <br />
 
@@ -44,4 +29,14 @@ dotnet ef migrations add InittialDatabase --context ConfigurationDbContext -o .\
 dotnet ef migrations add InittialDatabase --context PersistedGrantDbContext -o .\Migrations\PersistedGrantDb
 ```
 
+<br />
+
+## To Run Application local:
+### Vs Code
+
+```bash
+docker compose --env-file .\.env -f .\docker-compose.dev.yml up -d
+```
+
+It will automatically setup local database and apply migration to the database. 
 <br />
