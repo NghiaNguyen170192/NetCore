@@ -31,11 +31,11 @@ dotnet ef migrations add InittialDatabase --context PersistedGrantDbContext -o .
 
 <br />
 
-## To Run Application local:
+## To Run Application locally:
 ### Vs Code
 
 ```bash
-docker compose --env-file .\.env -f .\docker-compose.dev.yml up -d
+docker compose --env-file .\.env.local -f .\docker-compose.local.yml up -d
 ```
 
 It will automatically setup local database and apply migration to the database. 
