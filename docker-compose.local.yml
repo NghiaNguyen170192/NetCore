@@ -49,4 +49,10 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${ASPNETCORE_Kestrel__Certificates__Default__Password}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=${ASPNETCORE_Kestrel__Certificates__Default__Path}
      volumes:
-      - ~/.netcoreapi/https:/https:ro
+      - ./certificates/.netcore-api/https:/https:ro
+
+  # redis:
+  #   container_name: redis
+  #   image: 'redislabs/redismod'
+  #   ports:
+  #   - '6379:6379'
