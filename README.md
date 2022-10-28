@@ -40,5 +40,7 @@ dotnet ef migrations add InittialDatabase --context PersistedGrantDbContext -o .
 docker compose --env-file .\.env -f .\docker-compose.local.yml up -d
 ```
 
-It will automatically setup local database and apply migration to the database. 
+It will automatically create and apply migration to  local database.
+
+Open [API Endpoint](https://localhost:6001/swagger/index.html) for accessing available API
 <br />
