@@ -8,7 +8,7 @@ using System;
 using System.Threading.Tasks;
 using NetCore.Shared.Configurations;
 using NetCore.Migration.Extensions;
-using NetCore.Infrastructure.Database.Repositories;
+using NetCore.Application.Repositories;
 using System.Reflection;
 using MediatR;
 

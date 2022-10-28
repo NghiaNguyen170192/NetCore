@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OData.Edm;
@@ -16,8 +17,9 @@ using Microsoft.OpenApi.Models;
 using NetCore.Application.Queries.Dtos;
 using NetCore.Infrastructure.Database;
 using NetCore.Infrastructure.Database.Entities;
-using NetCore.Infrastructure.Database.Repositories;
+using NetCore.Application.Repositories;
 using NetCore.Shared.Configurations;
+using StackExchange.Redis;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
@@ -81,14 +83,22 @@ public class Startup
         
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddMediatR(typeof(Application.AssemblyReference).GetTypeInfo().Assembly);
-        
-        //caching
-        services.AddStackExchangeRedisCache(options =>
-        {
-            options.Configuration = _configuration.GetValue<string>("Redis:ConnectionString");
-        });
 
-        if (_environment.IsDevelopment())
+		//caching
+		//services.AddStackExchangeRedisCache(options =>
+		//{
+		//    options.Configuration = _configuration.GetValue<string>("Redis:ConnectionString");
+		//});
+
+		services.AddSingleton<ConnectionMultiplexer>(sp =>
+		{
+            var connectionString = _configuration.GetValue<string>("Redis:ConnectionString");
+			var configuration = ConfigurationOptions.Parse(connectionString, true);
+
+			return ConnectionMultiplexer.Connect(configuration);
+		});
+
+		if (_environment.IsDevelopment())
         {
             services.AddSwaggerGen(options =>
             {

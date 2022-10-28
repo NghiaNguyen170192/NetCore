@@ -51,11 +51,11 @@ services:
      volumes:
       - ~/.netcoreapi/https:/https:ro
 
-  proxy:
-    build: 
-      context: .
-      dockerfile: nginx/Dockerfile
-    ports:
-      - 80:80
-    depends_on: 
-      - backend
+  # proxy:
+  #   build: 
+  #     context: .
+  #     dockerfile: nginx/Dockerfile
+  #   ports:
+  #     - 80:80
+  #   depends_on: 
+  #     - backend

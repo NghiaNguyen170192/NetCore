@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using NetCore.Infrastructure.Database.Entities;
-using NetCore.Infrastructure.Database.Repositories;
+using NetCore.Application.Repositories;
 
 namespace NetCore.Application.Commands;
 
@@ -15,17 +15,17 @@ public class CreatePersonHandler : IRequestHandler<CreatePersonCommand, Guid>
 
     public async Task<Guid> Handle(CreatePersonCommand request, CancellationToken cancellationToken)
     {
-        if (!await Exist(request))
+        if (await Exist(request))
         {
-            var entity = Map(request);
-            await _repository.AddAsync(entity);
-            await _repository.SaveChangesAsync();
+			throw new ArgumentException("Data Exists");
+		}
 
-            return entity.Id;
-        }
+		var entity = Map(request);
+		await _repository.AddAsync(entity);
+		await _repository.SaveChangesAsync();
 
-        return Guid.Empty;
-    }
+		return entity.Id;
+	}
 
     private async Task<bool> Exist(CreatePersonCommand request)
     {

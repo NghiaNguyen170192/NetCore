@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using NetCore.Infrastructure.Database.Entities;
-using NetCore.Infrastructure.Database.Repositories;
+using NetCore.Application.Repositories;
 using System;
 using System.Linq;
 using System.Threading;

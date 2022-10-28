@@ -1,29 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using NetCore.Infrastructure.Database;
 using NetCore.Infrastructure.Database.Commons;
+using StackExchange.Redis;
 
-namespace NetCore.Infrastructure.Database.Repositories;
+namespace NetCore.Application.Repositories;
 
 public class Repository<TEntity> : IRepository<TEntity>, IDisposable where TEntity : BaseEntity
 {
     private readonly DatabaseContext _databaseContext;
+	private readonly ConnectionMultiplexer _redis;
+	private readonly StackExchange.Redis.IDatabase _redisDatabase;
 
-    public IQueryable<TEntity> Collection => _databaseContext.Set<TEntity>();
+	public IQueryable<TEntity> Collection => _databaseContext.Set<TEntity>();
 
-    public Repository(DatabaseContext databaseContext)
+    public Repository(DatabaseContext databaseContext, ConnectionMultiplexer redis)
     {
         _databaseContext = databaseContext;
-    }
+		_redis = redis;
+		_redisDatabase = redis.GetDatabase();
+	}
 
     public async Task<EntityEntry<TEntity>> AddAsync(TEntity entity)
     {
-        return await _databaseContext.Set<TEntity>().AddAsync(entity);
-    }
+		var result = await _databaseContext.Set<TEntity>().AddAsync(entity);
+		var created = await _redisDatabase.StringSetAsync(entity.Id.ToString(), JsonSerializer.Serialize(entity));
+        return result;
+	}
 
     public async Task AddRangeAsync(IEnumerable<TEntity> entities)
     {

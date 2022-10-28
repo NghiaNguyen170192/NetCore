@@ -2,7 +2,7 @@
 using NetCore.Infrastructure.Database.Entities;
 using System.Threading;
 using System.Threading.Tasks;
-using NetCore.Infrastructure.Database.Repositories;
+using NetCore.Application.Repositories;
 
 namespace NetCore.Application.Commands;
 

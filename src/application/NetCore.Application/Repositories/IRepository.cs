@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NetCore.Infrastructure.Database.Commons;
 
-namespace NetCore.Infrastructure.Database.Repositories;
+namespace NetCore.Application.Repositories;
 
 public interface IRepository<TEntity> where TEntity : BaseEntity
 {
