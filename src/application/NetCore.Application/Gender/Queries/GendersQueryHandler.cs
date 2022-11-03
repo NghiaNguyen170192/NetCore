@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using NetCore.Application.Queries.Dtos;
 using NetCore.Infrastructure.Database.Entities;
-using NetCore.Application.Repositories;
+using NetCore.Application.Repositories.Interfaces;
 
 namespace NetCore.Application.Queries;
 

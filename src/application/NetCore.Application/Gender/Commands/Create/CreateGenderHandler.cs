@@ -1,19 +1,19 @@
 ﻿using MediatR;
-using NetCore.Application.Repositories;
+using NetCore.Application.Repositories.Interfaces;
+using NetCore.Infrastructure.Database.Commons;
 using NetCore.Infrastructure.Database.Entities;
-using StackExchange.Redis;
-using System.Text.Json;
 
 namespace NetCore.Application.Commands;
 
 public class CreateGenderHandler : IRequestHandler<CreateGenderCommand, Guid>
 {
     private readonly IRepository<Gender> _repository;
+    private readonly IRepository<Gender> _cacheRepository;
 
-	public CreateGenderHandler(IRepository<Gender> repository, ConnectionMultiplexer redis)
+	public CreateGenderHandler(IRepository<Gender> repository, IRepository<Gender> redisRepository)
     {
         _repository = repository;
-
+		_cacheRepository = redisRepository;
 	}
 
     public async Task<Guid> Handle(CreateGenderCommand request, CancellationToken cancellationToken)
@@ -23,14 +23,27 @@ public class CreateGenderHandler : IRequestHandler<CreateGenderCommand, Guid>
 			throw new ArgumentException("Data Exists");
 		}
 
-        var entity = Map(request);
-        await _repository.AddAsync(entity);
-        await _repository.SaveChangesAsync();
-		
-		return entity.Id;
+        var entity = await CreateEntity(request);
+        await CreateEntityInCache(entity);
+
+        return entity.Id;
     }
 
-    private async Task<bool> Exist(CreateGenderCommand request)
+    private async Task<Gender> CreateEntity(CreateGenderCommand request)
+    {
+		var entity = Map(request);
+		await _repository.AddAsync(entity);
+		await _repository.SaveChangesAsync();
+
+		return entity;
+	}
+
+	private async Task CreateEntityInCache(Gender entity)
+    {
+        await _cacheRepository.AddAsync(entity);
+    }
+
+	private async Task<bool> Exist(CreateGenderCommand request)
     {
         return await _repository.ExistAsync(entity => entity.Name == request.Name);
     }

@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using NetCore.Infrastructure.Database.Entities;
-using NetCore.Application.Repositories;
+using NetCore.Application.Repositories.Interfaces;
 
 namespace NetCore.Application.Commands;
 

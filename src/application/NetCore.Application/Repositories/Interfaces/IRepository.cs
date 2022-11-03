@@ -2,13 +2,13 @@
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NetCore.Infrastructure.Database.Commons;
 
-namespace NetCore.Application.Repositories;
+namespace NetCore.Application.Repositories.Interfaces;
 
 public interface IRepository<TEntity> where TEntity : BaseEntity
 {
     IQueryable<TEntity> Collection { get; }
 
-    Task<EntityEntry<TEntity>> AddAsync(TEntity entity);
+    Task<TEntity> AddAsync(TEntity entity);
 
     Task AddRangeAsync(IEnumerable<TEntity> entities);
 
@@ -23,7 +23,7 @@ public interface IRepository<TEntity> where TEntity : BaseEntity
     EntityEntry<TEntity> Update(TEntity entity);
 
     void UpdateRange(IEnumerable<TEntity> entities);
-
+    
     int SaveChanges();
 
     Task<int> SaveChangesAsync();

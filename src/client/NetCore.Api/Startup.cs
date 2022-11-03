@@ -23,6 +23,7 @@ using StackExchange.Redis;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
+using NetCore.Application.Repositories.Interfaces;
 
 namespace NetCore.Api;
 
@@ -81,15 +82,10 @@ public class Startup
                 .SetMaxTop(100)
                 .AddRouteComponents("odata", GetEdmModel()));
         
-        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
         services.AddMediatR(typeof(Application.AssemblyReference).GetTypeInfo().Assembly);
 
-		//caching
-		//services.AddStackExchangeRedisCache(options =>
-		//{
-		//    options.Configuration = _configuration.GetValue<string>("Redis:ConnectionString");
-		//});
-
+        //caching
 		services.AddSingleton<ConnectionMultiplexer>(sp =>
 		{
             var connectionString = _configuration.GetValue<string>("Redis:ConnectionString");

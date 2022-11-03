@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using NetCore.Application.Queries.Dtos;
 using NetCore.Infrastructure.Database.Entities;
-using NetCore.Application.Repositories;
+using NetCore.Application.Repositories.Interfaces;
 
 namespace NetCore.Application.Queries;
 
@@ -18,7 +18,6 @@ public class CountriesQueryHandler : IRequestHandler<CountriesQuery, IQueryable<
 
     public async Task<IQueryable<CountryQueryDto>> Handle(CountriesQuery request, CancellationToken cancellationToken)
     {
-
         var dbCountries = _repository.Collection
             .AsNoTracking()
             .Select(x => new CountryQueryDto()

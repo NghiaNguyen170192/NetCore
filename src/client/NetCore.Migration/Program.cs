@@ -11,6 +11,7 @@ using NetCore.Migration.Extensions;
 using NetCore.Application.Repositories;
 using System.Reflection;
 using MediatR;
+using NetCore.Application.Repositories.Interfaces;
 
 namespace NetCore.Migration;
 
@@ -51,7 +52,7 @@ public class Program
                 services.AddScoped<MigrationService>();
                 services.RegisterMigrationTasks(); // DI for migration task
                 services.RegisterSeeds(); // DI for seeds on SeedDataTask
-                services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+                services.AddScoped(typeof(IRepository<>), typeof(GenericRepository<>));
 
                 services.AddMediatR(typeof(Application.AssemblyReference).GetTypeInfo().Assembly);
                 
