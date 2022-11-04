@@ -18,10 +18,9 @@ public class GenericRepository<TEntity> : IRepository<TEntity>, IDisposable wher
 		_databaseContext = databaseContext;
 	}
 
-	public async Task<TEntity> AddAsync(TEntity entity)
+	public async Task<EntityEntry<TEntity>> AddAsync(TEntity entity)
 	{
-		var dbEntity = await _databaseContext.Set<TEntity>().AddAsync(entity);
-		return dbEntity.Entity;
+		return await _databaseContext.Set<TEntity>().AddAsync(entity);
 	}
 
 	public async Task AddRangeAsync(IEnumerable<TEntity> entities)

@@ -1,13 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking;
-using NetCore.Application.Repositories.Interfaces;
+﻿using NetCore.Application.Repositories.Interfaces;
 using NetCore.Infrastructure.Database.Commons;
 using StackExchange.Redis;
-using System.Linq.Expressions;
 using System.Text.Json;
 
 namespace NetCore.Application.Repositories;
 
-public class CacheRepository<TEntity> : IRepository<TEntity>, IDisposable where TEntity : BaseEntity
+public class CacheRepository<TEntity> : ICacheRepository<TEntity>, IDisposable where TEntity : BaseEntity
 {
 	private readonly ConnectionMultiplexer _multiplexer;
 	private readonly IDatabase _cacheDatabase;
@@ -78,50 +76,5 @@ public class CacheRepository<TEntity> : IRepository<TEntity>, IDisposable where 
 	{
 		_multiplexer.Dispose();
 		GC.SuppressFinalize(this);
-	}
-
-	Task<EntityEntry<TEntity>> IRepository<TEntity>.AddAsync(TEntity entity)
-	{
-		throw new NotImplementedException();
-	}
-
-	EntityEntry<TEntity> IRepository<TEntity>.Remove(TEntity entity)
-	{
-		throw new NotImplementedException();
-	}
-
-	void IRepository<TEntity>.RemoveRange(IEnumerable<TEntity> entities)
-	{
-		throw new NotImplementedException();
-	}
-
-	public Task<IReadOnlyList<TEntity>> GetAllAsync()
-	{
-		throw new NotImplementedException();
-	}
-
-	EntityEntry<TEntity> IRepository<TEntity>.Update(TEntity entity)
-	{
-		throw new NotImplementedException();
-	}
-
-	void IRepository<TEntity>.UpdateRange(IEnumerable<TEntity> entities)
-	{
-		throw new NotImplementedException();
-	}
-
-	public int SaveChanges()
-	{
-		throw new NotImplementedException();
-	}
-
-	public Task<int> SaveChangesAsync()
-	{
-		throw new NotImplementedException();
-	}
-
-	public Task<bool> ExistAsync(Expression<Func<TEntity, bool>> expression)
-	{
-		throw new NotImplementedException();
 	}
 }

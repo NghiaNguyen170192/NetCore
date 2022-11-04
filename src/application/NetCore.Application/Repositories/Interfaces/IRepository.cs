@@ -8,7 +8,7 @@ public interface IRepository<TEntity> where TEntity : BaseEntity
 {
     IQueryable<TEntity> Collection { get; }
 
-    Task<TEntity> AddAsync(TEntity entity);
+    Task<EntityEntry<TEntity>> AddAsync(TEntity entity);
 
     Task AddRangeAsync(IEnumerable<TEntity> entities);
 
