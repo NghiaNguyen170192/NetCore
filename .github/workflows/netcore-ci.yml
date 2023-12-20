@@ -1,0 +1,34 @@
+name: .NET
+
+on:
+  push:
+    branches: [develop, staging, master]
+  pull_request:
+    branches: [develop, staging, master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 7.0.x
+
+      # - name: Add nuget.org as nuget package source
+      #   run: dotnet nuget add source https://api.nuget.org/v3/index.json --name nuget.org
+
+      - name: Install dependencies
+        run: dotnet restore
+        working-directory:  src
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+        working-directory:  src
+
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
+        working-directory:  src
