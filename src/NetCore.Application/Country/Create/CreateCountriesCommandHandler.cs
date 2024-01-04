@@ -4,7 +4,10 @@ using NetCore.Domain.SharedKernel;
 
 namespace NetCore.Application.Country.Create;
 
-public class CreateCountriesCommandHandler : IRequestHandler<CreateCountriesCommand, IEnumerable<Guid>>
+public class CreateCountriesCommandHandler :
+    IRequestHandler<CreateCountriesCommand, IEnumerable<Guid>>,
+    IRequestHandler<CreateCountryCommand, Guid>
+    
 {
 	private readonly IUnitOfWork _unitOfWork;
 	private readonly ICountryRepository _countryRepository;
@@ -21,18 +24,22 @@ public class CreateCountriesCommandHandler : IRequestHandler<CreateCountriesComm
 	{
 		var countries = request.Countries.Select(ToDbEntity).ToList();
 
-		await AddToDbAsync(countries, cancellationToken);
+        await _countryRepository.AddAsync(countries, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-		return countries.Select(x => x.Id);
+        return countries.Select(x => x.Id);
 	}
 
-	private async Task AddToDbAsync(IEnumerable<Domain.Entities.Country> countries, CancellationToken cancellationToken)
-	{
-		await _countryRepository.AddAsync(countries, cancellationToken);
-		await _unitOfWork.SaveChangesAsync(cancellationToken);
-	}
+    public async Task<Guid> Handle(CreateCountryCommand request, CancellationToken cancellationToken)
+    {
+		var country = request.ToDbEntity();
+        await _countryRepository.AddAsync(country, cancellationToken);
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-	private Domain.Entities.Country ToDbEntity(CreateCountryCommand request)
+		return country.Id;
+    }
+
+    private Domain.Entities.Country ToDbEntity(CreateCountryCommand request)
 	{
 		return new Domain.Entities.Country(
 			request.Name,
