@@ -34,6 +34,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Infrastructure.Data
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.UI", "client\NetCore.UI\NetCore.UI.csproj", "{9EEAAA40-30B8-42E4-BF8F-DBB63809DEA4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCore.AppHost", "client\NetCore\NetCore.AppHost\NetCore.AppHost.csproj", "{C3A25658-0FEB-4937-BF14-2F4275792836}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.ServiceDefaults", "client\NetCore\NetCore.ServiceDefaults\NetCore.ServiceDefaults.csproj", "{166EB445-73E8-487D-9C59-0BC5B07590B6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,6 +76,14 @@ Global
 		{9EEAAA40-30B8-42E4-BF8F-DBB63809DEA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9EEAAA40-30B8-42E4-BF8F-DBB63809DEA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9EEAAA40-30B8-42E4-BF8F-DBB63809DEA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3A25658-0FEB-4937-BF14-2F4275792836}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3A25658-0FEB-4937-BF14-2F4275792836}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3A25658-0FEB-4937-BF14-2F4275792836}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3A25658-0FEB-4937-BF14-2F4275792836}.Release|Any CPU.Build.0 = Release|Any CPU
+		{166EB445-73E8-487D-9C59-0BC5B07590B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{166EB445-73E8-487D-9C59-0BC5B07590B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{166EB445-73E8-487D-9C59-0BC5B07590B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{166EB445-73E8-487D-9C59-0BC5B07590B6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,6 +98,8 @@ Global
 		{1B0C2F55-E2CC-4A51-BC72-35C8197A5608} = {8CF5EDB0-4E23-4832-ABF2-3A0C4086713A}
 		{C6E5494A-B56A-4C18-BC40-E77F6106929C} = {8CF5EDB0-4E23-4832-ABF2-3A0C4086713A}
 		{9EEAAA40-30B8-42E4-BF8F-DBB63809DEA4} = {13530044-21F0-4198-BA59-3E74A1B0509D}
+		{C3A25658-0FEB-4937-BF14-2F4275792836} = {13530044-21F0-4198-BA59-3E74A1B0509D}
+		{166EB445-73E8-487D-9C59-0BC5B07590B6} = {13530044-21F0-4198-BA59-3E74A1B0509D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {84C310A6-A8D7-4AA3-82EA-8D5FDE8C8000}

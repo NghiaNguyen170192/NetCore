@@ -1,5 +1,6 @@
 ﻿using System.Globalization;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
@@ -11,6 +12,12 @@ public static class LoggingConfiguration
 {
 	private const string DefaultFileOutputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] {Message}{NewLine}{Exception}";
 	private static readonly MessageTemplateTextFormatter Formatter = new(DefaultFileOutputTemplate, CultureInfo.InvariantCulture);
+
+	public static IServiceCollection AddNewLogger(this IServiceCollection services, string applicationName)
+    {
+
+        return services;
+	}
 
 	public static IHostBuilder AddLogger(this IHostBuilder hostBuilder, string applicationName)
 	{
