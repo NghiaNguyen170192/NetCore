@@ -7,11 +7,12 @@ using NetCore.Infrastructure.Database.Extensions;
 using Microsoft.Extensions.Configuration;
 using NetCore.Infrastructure.Database.AppSettingConfigurations;
 
+var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? string.Empty;
 var host = Host
 	.CreateDefaultBuilder(args)
-	.UseEnvironment(Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") ?? string.Empty)
+	.UseEnvironment(environment)
 	.ConfigureAppConfiguration((context, builder)
-		=> builder.AddAppSettings(context, args))
+		=> builder.AddAppSettings(environment, args))
 	.ConfigureServices((context, services) =>
 	{
 		var databaseConfiguration = new DatabaseConfiguration();

@@ -12,7 +12,7 @@ using NetCore.Infrastructure.Database;
 namespace NetCore.Infrastructure.Database.Migrations
 {
     [DbContext(typeof(ApplicationDatabaseContext))]
-    [Migration("20231219031654_InitialDatabase")]
+    [Migration("20240109045705_InitialDatabase")]
     partial class InitialDatabase
     {
         /// <inheritdoc />
@@ -20,7 +20,7 @@ namespace NetCore.Infrastructure.Database.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.10")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
