@@ -9,7 +9,7 @@
 		<AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
 	</ItemGroup>
 	<ItemGroup>
-		<PackageReference Include="CsvHelper" Version="30.0.1" />
+		<PackageReference Include="CsvHelper" Version="31.0.3" />
 		<PackageReference Include="Redis.OM" Version="0.6.1" />
 	</ItemGroup>
 	<ItemGroup>
