@@ -44,6 +44,7 @@ docker compose --env-file .\.env -f .\docker-compose.local.yml build
 
 ## To run NetCore on local Docker:
 ```bash
+docker network create netcore-network
 docker compose --env-file .\.env -f .\docker-compose.local.yml up -d
 ```
 

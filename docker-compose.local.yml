@@ -39,7 +39,7 @@ services:
     build:
       context: .
       dockerfile: src/client/NetCore.Migration/Dockerfile
-    command: ["dotnet", "run", "-d", "-m", "-s", "-t"]
+    command: ["dotnet", "run", "-d", "-m", "-s", "-t"]    
     depends_on:
       db:
         condition: service_healthy
@@ -71,8 +71,9 @@ services:
       - ./certificates/.netcore-api/https:/https:ro
     networks:
       - netcore-network
-    healthcheck:
-      test: ["CMD","curl", "--fail", "https://localhost:6001/healthz || exit"]
+    # healthcheck:
+    #   test: ["CMD","curl", "--fail", "https://localhost:6001/healthz || exit"]
+    restart: always
 
   netcore-ui:
     container_name: netcore-ui
@@ -81,8 +82,7 @@ services:
       context: .
       dockerfile: src/client/NetCore.UI/Dockerfile
     depends_on:
-      netcore-api:
-        condition: service_healthy
+      - netcore-api
     ports:
       - 6010:80
       - 6011:443
@@ -95,6 +95,7 @@ services:
     #   - ./certificates/.netcore-api/https:/https:ro
     networks:
       - netcore-network
+    restart: always 
 
 
 networks:

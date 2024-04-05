@@ -14,8 +14,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "solution items", "solution items", "{75712FA5-A9EE-4261-B93A-C2E165018B5C}"
 	ProjectSection(SolutionItems) = preProject
 		..\.env = ..\.env
+		..\.github\workflows\codeql-analysis.yml = ..\.github\workflows\codeql-analysis.yml
 		..\docker-compose.local.yml = ..\docker-compose.local.yml
 		..\docker-compose.prod.yml = ..\docker-compose.prod.yml
+		..\.github\workflows\netcore-ci.yml = ..\.github\workflows\netcore-ci.yml
 		..\README.md = ..\README.md
 		stylecop.json = stylecop.json
 	EndProjectSection
@@ -34,7 +36,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.Infrastructure.Data
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.UI", "client\NetCore.UI\NetCore.UI.csproj", "{9EEAAA40-30B8-42E4-BF8F-DBB63809DEA4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NetCore.AppHost", "client\NetCore\NetCore.AppHost\NetCore.AppHost.csproj", "{C3A25658-0FEB-4937-BF14-2F4275792836}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.AppHost", "client\NetCore\NetCore.AppHost\NetCore.AppHost.csproj", "{C3A25658-0FEB-4937-BF14-2F4275792836}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NetCore.ServiceDefaults", "client\NetCore\NetCore.ServiceDefaults\NetCore.ServiceDefaults.csproj", "{166EB445-73E8-487D-9C59-0BC5B07590B6}"
 EndProject
