@@ -75,17 +75,17 @@ services:
     #   test: ["CMD","curl", "--fail", "https://localhost:6001/healthz || exit"]
     restart: always
 
-  netcore-ui:
-    container_name: netcore-ui
-    hostname: netcore-ui
-    build:
-      context: .
-      dockerfile: src/client/NetCore.UI/Dockerfile
-    depends_on:
-      - netcore-api
-    ports:
-      - 6010:80
-      - 6011:443
+  # netcore-ui:
+  #   container_name: netcore-ui
+  #   hostname: netcore-ui
+  #   build:
+  #     context: .
+  #     dockerfile: src/client/NetCore.UI/Dockerfile
+  #   depends_on:
+  #     - netcore-api
+  #   ports:
+  #     - 6010:80
+  #     - 6011:443
     # environment:
     #   - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
     #   - ASPNETCORE_URLS=${ASPNETCORE_URLS}
@@ -93,9 +93,9 @@ services:
     #   - ASPNETCORE_Kestrel__Certificates__Default__Path=${ASPNETCORE_Kestrel__Certificates__Default__Path}
     # volumes:
     #   - ./certificates/.netcore-api/https:/https:ro
-    networks:
-      - netcore-network
-    restart: always 
+    # networks:
+    #   - netcore-network
+    # restart: always 
 
 
 networks:
