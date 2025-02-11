@@ -8,14 +8,9 @@ using NetCore.Migration.Common.Interface;
 
 namespace NetCore.Migration.Seeds.Base;
 
-public class CountrySeed : IDataSeed
+public class CountrySeed(IMediator mediator) : IDataSeed
 {
-    private readonly IMediator _mediator;
     private readonly string _basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "Seeds");
-    public CountrySeed(IMediator mediator)
-    {
-        _mediator = mediator;
-    }
 
     public IEnumerable<Type> Dependencies => new List<Type>();
 
@@ -38,7 +33,7 @@ public class CountrySeed : IDataSeed
         var commands = new List<CreateCountryCommand>();
         while (await csv.ReadAsync())
         {
-            await _mediator.Send(GetCommand(csv));
+            await mediator.Send(GetCommand(csv));
         }
     }
 

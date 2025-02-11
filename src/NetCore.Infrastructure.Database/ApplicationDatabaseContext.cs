@@ -7,15 +7,11 @@ using NetCore.Infrastructure.Database.Extensions;
 
 namespace NetCore.Infrastructure.Database;
 
-public class ApplicationDatabaseContext : DbContext, IUnitOfWork
+public class ApplicationDatabaseContext(
+    DbContextOptions<ApplicationDatabaseContext> databaseContextOptions,
+    IMediator mediator)
+    : DbContext(databaseContextOptions), IUnitOfWork
 {
-    private readonly IMediator _mediator;
-    public ApplicationDatabaseContext(DbContextOptions<ApplicationDatabaseContext> databaseContextOptions, IMediator mediator)
-        : base(databaseContextOptions)
-    {
-        _mediator = mediator;
-    }
-
     public DbSet<Country> Countries { get; set; }
 
     protected override void OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder modelBuilder)
@@ -34,7 +30,7 @@ public class ApplicationDatabaseContext : DbContext, IUnitOfWork
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
     {
-        await _mediator.DispatchDomainEventsAsync(this);
+        await mediator.DispatchDomainEventsAsync(this);
         AuditableSaveChanges();
         return await base.SaveChangesAsync(cancellationToken);
     }

@@ -9,20 +9,13 @@ using NetCore.Application.Country.QueryCountries;
 namespace NetCore.Api.Controllers;
 
 [Route("~/api/v1/countries")]
-public class CountryController : AuthorizedBaseController
+public class CountryController(IMediator mediator) : AuthorizedBaseController
 {
-	private readonly IMediator _mediator;
-
-	public CountryController(IMediator mediator)
-	{
-		_mediator = mediator;
-	}
-
-	[HttpPost]
+    [HttpPost]
 	[ProducesResponseType((int)HttpStatusCode.Created)]
 	public async Task<ActionResult> Create([FromBody] CreateCountriesCommand request)
 	{
-		var ids = await _mediator.Send(request);
+		var ids = await mediator.Send(request);
 		return Ok(ids);
 	}
 
@@ -35,7 +28,7 @@ public class CountryController : AuthorizedBaseController
 
 	public async Task<ActionResult<IQueryable<QueryCountryDto>>> GetCountries()
 	{
-		var response = await _mediator.Send(new QueryCountries());
+		var response = await mediator.Send(new QueryCountries());
 		return Ok(response);
 	}
 }

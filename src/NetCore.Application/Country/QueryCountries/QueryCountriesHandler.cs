@@ -4,18 +4,12 @@ using NetCore.Domain.IRepositories;
 
 namespace NetCore.Application.Country.QueryCountries;
 
-public class QueryCountriesHandler : IRequestHandler<QueryCountries, IQueryable<QueryCountryDto>>
+public class QueryCountriesHandler(ICountryRepository countryRepository)
+    : IRequestHandler<QueryCountries, IQueryable<QueryCountryDto>>
 {
-	private readonly ICountryRepository _countryRepository;
-
-	public QueryCountriesHandler(ICountryRepository countryRepository)
+    public Task<IQueryable<QueryCountryDto>> Handle(QueryCountries request, CancellationToken cancellationToken)
 	{
-		_countryRepository = countryRepository;
-	}
-
-	public Task<IQueryable<QueryCountryDto>> Handle(QueryCountries request, CancellationToken cancellationToken)
-	{
-		return Task.FromResult(_countryRepository.GetAll()
+		return Task.FromResult(countryRepository.GetAll()
 			.Select(country => new QueryCountryDto
 			{
 				Id = country.Id,

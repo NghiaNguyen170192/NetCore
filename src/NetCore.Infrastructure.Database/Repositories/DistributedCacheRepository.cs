@@ -6,18 +6,13 @@ using Redis.OM;
 
 namespace NetCore.Infrastructure.Database.Repositories;
 
-public class DistributedCacheRepository<T> : ICacheRepository<T> where T : class
+public class DistributedCacheRepository<T>(RedisConnectionProvider provider) : ICacheRepository<T>
+    where T : class
 {
-	private readonly RedisCollection<T> _collection;
-	private readonly TimeSpan _timeout;
+	private readonly RedisCollection<T> _collection = (RedisCollection<T>)provider.RedisCollection<T>();
+	private readonly TimeSpan _timeout = TimeSpan.FromHours(1);
 
-	public DistributedCacheRepository(RedisConnectionProvider provider)
-	{
-		_collection = (RedisCollection<T>)provider.RedisCollection<T>();
-		_timeout = TimeSpan.FromHours(1);
-	}
-	
-	public async Task<string> AddAsync(T item)
+    public async Task<string> AddAsync(T item)
 	{
 		var result = await _collection.InsertAsync(item, _timeout);
 		await _collection.SaveAsync();
