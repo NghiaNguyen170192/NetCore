@@ -6,8 +6,8 @@ public abstract class Entity
 {
     private int? _requestedHashCode;
 
-    private List<INotification> _domainEvents = new();
-    public IReadOnlyCollection<INotification> DomainEvents => _domainEvents?.AsReadOnly();
+    private readonly List<INotification> _domainEvents = new();
+    public IReadOnlyCollection<INotification> DomainEvents => _domainEvents.AsReadOnly();
 
     public virtual Guid Id { get; set; }
 
@@ -39,23 +39,21 @@ public abstract class Entity
         return Id == default;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
-        if (obj == null || !(obj is Entity))
+        if (obj is not Entity entity)
             return false;
 
-        if (ReferenceEquals(this, obj))
+        if (ReferenceEquals(this, entity))
             return true;
 
-        if (GetType() != obj.GetType())
+        if (GetType() != entity.GetType())
             return false;
 
-        var item = (Entity)obj;
-
-        if (item.IsTransient() || IsTransient())
+        if (entity.IsTransient() || IsTransient())
             return false;
 
-        return item.Id == Id;
+        return entity.Id == Id;
     }
 
     public override int GetHashCode()
