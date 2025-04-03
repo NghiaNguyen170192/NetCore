@@ -17,6 +17,6 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<Applicatio
 
 		optionsBuilder.UseSqlServer(sqlConnection, o => o.MigrationsAssembly(migrationsAssembly));
 
-		return new ApplicationDatabaseContext(optionsBuilder.Options, new NoMediator());
+		return new ApplicationDatabaseContext(optionsBuilder.Options);
 	}
 }

@@ -1,13 +1,11 @@
-﻿using MediatR;
-
-namespace NetCore.Domain.SharedKernel;
+﻿namespace NetCore.Domain.SharedKernel;
 
 public abstract class Entity
 {
 	private int? _requestedHashCode;
 
-	private List<INotification> _domainEvents=  new();
-	public IReadOnlyCollection<INotification> DomainEvents => _domainEvents?.AsReadOnly();
+	//private List<INotification> _domainEvents=  new();
+	//public IReadOnlyCollection<INotification> DomainEvents => _domainEvents?.AsReadOnly();
 
 	public virtual Guid Id { get; set; }
 
@@ -19,20 +17,20 @@ public abstract class Entity
 
 	public Guid ModifiedBy { get; set; }
 
-	protected void AddDomainEvent(INotification eventItem)
-	{
-		_domainEvents.Add(eventItem);
-	}
+	//protected void AddDomainEvent(INotification eventItem)
+	//{
+	//	_domainEvents.Add(eventItem);
+	//}
 
-	protected void RemoveDomainEvent(INotification eventItem)
-	{
-		_domainEvents?.Remove(eventItem);
-	}
+	//protected void RemoveDomainEvent(INotification eventItem)
+	//{
+	//	_domainEvents?.Remove(eventItem);
+	//}
 
-	public void ClearDomainEvents()
-	{
-		_domainEvents?.Clear();
-	}
+	//public void ClearDomainEvents()
+	//{
+	//	_domainEvents?.Clear();
+	//}
 
 	protected bool IsTransient()
 	{

@@ -1,5 +1,4 @@
-﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NetCore.Domain.Entities;
 using NetCore.Domain.SharedKernel;
@@ -8,8 +7,7 @@ using NetCore.Infrastructure.Database.Extensions;
 namespace NetCore.Infrastructure.Database;
 
 public class ApplicationDatabaseContext(
-    DbContextOptions<ApplicationDatabaseContext> databaseContextOptions,
-    IMediator mediator)
+    DbContextOptions<ApplicationDatabaseContext> databaseContextOptions)
     : DbContext(databaseContextOptions), IUnitOfWork
 {
     public DbSet<Country> Countries { get; set; }
@@ -30,7 +28,6 @@ public class ApplicationDatabaseContext(
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken)
     {
-        await mediator.DispatchDomainEventsAsync(this);
         AuditableSaveChanges();
         return await base.SaveChangesAsync(cancellationToken);
     }

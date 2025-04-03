@@ -8,7 +8,7 @@ public class BaseTest
 		.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
 		.Options;
 
-		var databaseContext = new ApplicationDatabaseContext(options, new NoMediator());
+		var databaseContext = new ApplicationDatabaseContext(options);
 		await databaseContext.Database.EnsureCreatedAsync();
 
 		return databaseContext;

@@ -1,14 +1,13 @@
 ﻿using System.Globalization;
 using CsvHelper;
 using CsvHelper.Configuration;
-using MediatR;
 using NetCore.Application.Country.Create;
 using NetCore.Application.Country.CsvMap;
 using NetCore.Migration.Common.Interface;
 
 namespace NetCore.Migration.Seeds.Base;
 
-public class CountrySeed(IMediator mediator) : IDataSeed
+public class CountrySeed : IDataSeed
 {
     private readonly string _basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "Seeds");
 
@@ -33,7 +32,7 @@ public class CountrySeed(IMediator mediator) : IDataSeed
         var commands = new List<CreateCountryCommand>();
         while (await csv.ReadAsync())
         {
-            await mediator.Send(GetCommand(csv));
+            //await mediator.Send(GetCommand(csv));
         }
     }
 

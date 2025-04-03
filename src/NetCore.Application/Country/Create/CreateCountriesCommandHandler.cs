@@ -1,5 +1,4 @@
-﻿using MediatR;
-using NetCore.Domain.IRepositories;
+﻿using NetCore.Domain.IRepositories;
 using NetCore.Domain.SharedKernel;
 
 namespace NetCore.Application.Country.Create;
@@ -7,10 +6,6 @@ namespace NetCore.Application.Country.Create;
 public class CreateCountriesCommandHandler(
     IUnitOfWork unitOfWork,
     ICountryRepository countryRepository)
-    :
-        IRequestHandler<CreateCountriesCommand, IEnumerable<Guid>>,
-        IRequestHandler<CreateCountryCommand, Guid>
-
 {
     public async Task<IEnumerable<Guid>> Handle(CreateCountriesCommand request, CancellationToken cancellationToken)
 	{

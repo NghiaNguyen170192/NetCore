@@ -12,7 +12,7 @@ public class MigrationTest
 	{
 		var optionsBuilder = new DbContextOptionsBuilder<ApplicationDatabaseContext>();
 		optionsBuilder.UseSqlServer(new SqlConnection(), o => o.MigrationsAssembly("NetCore.Infrastructure.Database"));
-		_context = new ApplicationDatabaseContext(optionsBuilder.Options, new NoMediator());
+		_context = new ApplicationDatabaseContext(optionsBuilder.Options);
 		_migrationsAssembly = _context.GetService<IMigrationsAssembly>();
 	}
 

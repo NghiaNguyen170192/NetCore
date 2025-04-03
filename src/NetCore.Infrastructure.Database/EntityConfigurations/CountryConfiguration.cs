@@ -7,7 +7,7 @@ public class CountryConfiguration : EntityTypeConfiguration<Country>
 {
 	public override void Configure(EntityTypeBuilder<Country> builder)
 	{
-		builder.Ignore(b => b.DomainEvents);
+		//builder.Ignore(b => b.DomainEvents);
 
 		builder.Property(c => c.Name).IsRequired().HasMaxLength(256);
 		builder.Property(c => c.CountryCode).IsRequired().HasMaxLength(3);

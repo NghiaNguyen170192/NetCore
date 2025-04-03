@@ -1,10 +1,9 @@
-﻿using MediatR;
-
+﻿
 namespace NetCore.Application.Country.Create;
 
-public sealed record CreateCountryCommand(string Name, string CountryCode, string Alpha2, string Alpha3) : IRequest<Guid>;
+public sealed record CreateCountryCommand(string Name, string CountryCode, string Alpha2, string Alpha3);
 
-public sealed record CreateCountriesCommand(IEnumerable<CreateCountryCommand> Countries) : IRequest<IEnumerable<Guid>>;
+public sealed record CreateCountriesCommand(IEnumerable<CreateCountryCommand> Countries);
 
 public static class CountryExtension
 {
