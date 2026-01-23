@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			//sequential sonar scanner run: second task
+			"label": "netcore-build",
+			"command": "dotnet",
+			"type": "process",
+			"args": [
+				"build"
+			],
+			"problemMatcher": "$msCompile"
+		}
+	]
+}

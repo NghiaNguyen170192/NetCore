@@ -1,0 +1,150 @@
+﻿@page "/fetchdata"
+
+<PageTitle>Countries</PageTitle>
+@using NetCore.Application.Country.DTOs
+@using System.Text.Json
+@using System.Text
+@inject HttpClient HttpClient
+
+<h1>Countries</h1>
+
+<p>This component demonstrates fetching data from a service.</p>
+
+<input type="text" value="@SearchInput" @onchange="OnChangeTask" />
+<br />
+<span>
+	Show Name
+	<input type="checkbox" @bind="@ShowName" />
+</span>
+
+<span>
+	Show Country Code
+	<input type="checkbox" @bind="@ShowCountryCode" />
+</span>
+
+<span>
+	Show Alpha2
+	<input type="checkbox" @bind="@ShowAlpha2" />
+</span>
+<span>
+	Show Alpha3
+	<input type="checkbox" @bind="@ShowAlpha3" />
+</span>
+
+
+@if (_countryDtos == null)
+{
+	<p><em>Loading...</em></p>
+}
+else
+{
+	<table class="table">
+		<thead>
+			<tr>
+				@if (ShowName)
+				{
+					<th>Name</th>
+				}
+
+				@if (ShowCountryCode)
+				{
+					<th>Country Code</th>
+				}
+
+				@if (ShowAlpha2)
+				{
+					<th>Alpha 2</th>
+				}
+
+				@if (ShowAlpha3)
+				{
+					<th>Alpha 3</th>
+				}
+			</tr>
+		</thead>
+		<tbody>
+			@foreach (var dto in _countryDtos)
+			{
+				<tr id="@dto.Id">
+					@if (ShowName)
+					{
+						<td>@dto.Name</td>
+					}
+
+					@if (ShowCountryCode)
+					{
+						<td>@dto.CountryCode</td>
+					}
+
+					@if (ShowAlpha2)
+					{
+						<td>@dto.Alpha2</td>
+					}
+
+					@if (ShowAlpha3)
+					{
+						<td>@dto.Alpha3</td>
+					}
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	private List<QueryCountryDto>? _countryDtos;
+	private string SearchInput { get; set; } = string.Empty;
+
+	public bool ShowName { get; set; } = true;
+	public bool ShowCountryCode { get; set; } = true;
+	public bool ShowAlpha2 { get; set; } = true;
+	public bool ShowAlpha3 { get; set; } = true;
+
+	protected override async Task OnInitializedAsync()
+	{
+		await FetchCountry(SearchInput);
+	}
+
+	private async Task FetchCountry(string search)
+	{
+		var selectFields = GetSelectFields();
+		var response = await HttpClient.GetAsync($"api/v1/countries?top=10&filter=contains(name, '{search}')&{selectFields}");
+		var content = await response.Content.ReadAsStreamAsync();
+
+		if (!response.IsSuccessStatusCode)
+		{
+			throw new ApplicationException("error");
+		}
+
+		_countryDtos = await JsonSerializer.DeserializeAsync<List<QueryCountryDto>>(content);
+	}
+
+	private async Task OnChangeTask(ChangeEventArgs args)
+	{
+		SearchInput = args.Value?.ToString() ?? string.Empty;
+		await FetchCountry(SearchInput);
+	}
+
+	private string GetSelectFields()
+	{
+		var builder = new StringBuilder();
+		List<string> selectFields = new List<string>();
+
+		if (ShowName)
+			selectFields.Add("name");
+		if (ShowCountryCode)
+			selectFields.Add("countrycode");
+		if (ShowAlpha2)
+			selectFields.Add("alpha2");
+		if (ShowAlpha3)
+			selectFields.Add("alpha3");
+
+		if (selectFields.Any())
+		{
+			builder.Append("select=");
+			builder.AppendJoin(',', selectFields);
+		}
+
+		return builder.ToString();
+	}
+}

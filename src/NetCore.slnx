@@ -1,0 +1,32 @@
+<Solution>
+  <Folder Name="/solution items/">
+    <File Path=".editorconfig" />
+    <File Path="../.env" />
+    <File Path="../.github/workflows/codeql-analysis.yml" />
+    <File Path="../docker-compose.local.yml" />
+    <File Path="../docker-compose.prod.yml" />
+    <File Path="../.github/workflows/netcore-ci.yml" />
+    <File Path="../README.md" />
+    <File Path="stylecop.json" />
+  </Folder>
+  <Folder Name="/client/">
+    <Project Path="client\NetCore.Api\NetCore.Api.csproj" Type="C#" />
+    <Project Path="client\NetCore.Migration\NetCore.Migration.csproj" Type="C#" />
+    <Project Path="client\NetCore.UI\NetCore.UI.csproj" Type="C#" />
+    <Folder Name="/NetCore/">
+      <Project Path="client\NetCore\NetCore.ServiceDefaults\NetCore.ServiceDefaults.csproj" Type="C#" />
+    </Folder>
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="NetCore.Application\NetCore.Application.csproj" Type="C#" />
+    <Project Path="NetCore.Domain\NetCore.Domain.csproj" Type="C#" />
+    <Project Path="NetCore.Infrastructure.Database\NetCore.Infrastructure.Database.csproj" Type="C#" />
+  </Folder>
+  <Folder Name="/test/">
+    <Project Path="test\NetCore.Application.Tests\NetCore.Application.Tests.csproj" Type="C#" />
+    <Project Path="test\NetCore.Infrastructure.Database.Tests\NetCore.Infrastructure.Database.Tests.csproj" Type="C#" />
+  </Folder>
+  <Properties>
+    <SolutionGuid>{84C310A6-A8D7-4AA3-82EA-8D5FDE8C8000}</SolutionGuid>
+  </Properties>
+</Solution>

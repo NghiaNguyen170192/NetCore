@@ -1,0 +1,19 @@
+<Project Sdk="Aspire.AppHost.Sdk/13.0.0">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAspireProject>true</IsAspireProject>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- <PackageReference Include="Aspire.Hosting.AppHost" /> -->
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" />
+    <PackageReference Include="Aspire.Hosting.Redis" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NetCore.Api\NetCore.Api.csproj" />
+    <ProjectReference Include="..\NetCore.UI\NetCore.UI.csproj" />
+    <ProjectReference Include="..\NetCore.Migration\NetCore.Migration.csproj" />
+  </ItemGroup>
+</Project>
