@@ -16,7 +16,7 @@ var host = Host
 	{
 		var databaseConfiguration = context.Configuration.GetSection("Database").Get<DatabaseConfiguration>() ?? new();
 		services.AddApplication();
-		services.AddInfrastructure(databaseConfiguration);
+		services.AddInfrastructure(context.Configuration);
 		services.AddMigrationService();
 	})
 	.AddLogger("netcore-migration-logs")

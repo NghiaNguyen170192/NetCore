@@ -75,4 +75,8 @@
     <PackageVersion Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
     <PackageVersion Include="Scrutor" Version="7.0.0" />
   </ItemGroup>
+
+  <ItemGroup Label="Code Analysis">
+    <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
+  </ItemGroup>
 </Project>

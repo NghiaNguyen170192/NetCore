@@ -8,15 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.AddDefaultOpenApi();
 
-var databaseConfiguration = new DatabaseConfiguration();
-builder.Configuration.GetSection("Database").Bind(databaseConfiguration);
-
 builder.Services.AddProblemDetails();
 
 //Dependency Injections
 builder.Services
     .AddApplication()
-    .AddInfrastructure(databaseConfiguration);
+    .AddInfrastructure(builder.Configuration);
 
 builder.Host.AddLogger("netcore-api");
 

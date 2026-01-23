@@ -18,8 +18,7 @@ public class CountryCreatedDomainEventHandler : IDomainEventHandler<CountryCreat
 
     public Task<Unit> HandleAsync(CountryCreatedDomainEvent request, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation(
-            "Domain Event: Country '{CountryName}' with ID '{CountryId}' was created",
+        _logger.LogInformation("Domain Event: Country '{CountryName}' with ID '{CountryId}' was created",
             request.Name,
             request.CountryId);
 

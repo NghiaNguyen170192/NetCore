@@ -4,7 +4,10 @@ using NetCore.Domain.SharedKernel;
 
 namespace NetCore.Application.Country.Create;
 
-public class CreateCountriesCommandHandler(IUnitOfWork unitOfWork, ICountryRepository countryRepository)
+public class CreateCountriesCommandHandler(
+    IUnitOfWork unitOfWork, 
+    ICountryRepository countryRepository,
+    ICacheRepository<Domain.Entities.Country> cacheRepository)
     : IRequestHandler<CreateCountriesCommand, IEnumerable<Guid>>,
       IRequestHandler<CreateCountryCommand, Guid>
 {
@@ -14,6 +17,8 @@ public class CreateCountriesCommandHandler(IUnitOfWork unitOfWork, ICountryRepos
 
         await countryRepository.AddAsync(countries, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        await cacheRepository.AddAsync(countries);
 
         return countries.Select(x => x.Id);
     }
@@ -23,6 +28,8 @@ public class CreateCountriesCommandHandler(IUnitOfWork unitOfWork, ICountryRepos
         var country = request.ToDbEntity();
         await countryRepository.AddAsync(country, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        await cacheRepository.AddAsync(country);
 
         return country.Id;
     }

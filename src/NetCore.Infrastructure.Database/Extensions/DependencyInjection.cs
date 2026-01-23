@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Domain.IRepositories;
 using NetCore.Domain.SharedKernel;
@@ -10,8 +11,11 @@ namespace NetCore.Infrastructure.Database.Extensions;
 
 public static class DependencyInjection
 {
-	public static IServiceCollection AddInfrastructure(this IServiceCollection services, DatabaseConfiguration databaseConfiguration)
+	public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
 	{
+		var databaseConfiguration = new DatabaseConfiguration();
+		configuration.GetSection("Database").Bind(databaseConfiguration);
+
 		services.AddDbContext<ApplicationDatabaseContext>(builder =>
 		{
 			builder.UseNpgsql(
@@ -26,9 +30,13 @@ public static class DependencyInjection
 		services.AddScoped<ICountryRepository, CountryRepository>();
 		services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDatabaseContext>());
 
-		//Caching
-		//services.AddSingleton(new RedisConnectionProvider(databaseConfiguration.RedisConnectionString));
-		//services.AddScoped(typeof(ICacheRepository<>), typeof(DistributedCacheRepository<>));
+		// Cache configuration
+		services.Configure<CacheConfiguration>(configuration.GetSection("CacheConfiguration"));
+
+		// Distributed caching with Redis
+		// Uncomment to enable caching
+		services.AddSingleton(new RedisConnectionProvider(databaseConfiguration.RedisConnectionString));
+		services.AddScoped(typeof(ICacheRepository<>), typeof(DistributedCacheRepository<>));
 
 		return services;
 	}
