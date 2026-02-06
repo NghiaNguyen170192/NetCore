@@ -5,29 +5,30 @@ namespace NetCore.Migration.Tasks;
 
 public class SeedDataTask : IMigrationTask
 {
-	private readonly ILogger _logger;
-	private readonly IDataSeedRunner _dataSeeds;
-	private readonly string _taskName;
+	private readonly ILogger logger;
+	private readonly IDataSeedRunner dataSeeds;
+	private readonly string taskName;
 
-	public SeedDataTask(ILogger logger,
-		IDataSeedRunner dataSeeds)
+	public SeedDataTask(ILogger logger, IDataSeedRunner dataSeeds)
 	{
-		_logger = logger;
-		_dataSeeds = dataSeeds;
-		_taskName = GetType().FullName ?? string.Empty;
+		this.logger = logger;
+		this.dataSeeds = dataSeeds;
+		taskName = GetType().FullName ?? string.Empty;
 	}
 
 	public IEnumerable<Type> Dependencies => new List<Type>()
 	{
-		typeof(ApplyPendingMigrationTask)
+		typeof(ApplyPendingMigrationTask),
 	};
 
 	public async Task ExecuteAsync(string[] args)
 	{
-		_logger.Information($"Start [{_taskName}]");
-		if (args.Contains("-s")) 
-			await _dataSeeds.RunSeedsAsync();
+		logger.Information($"Start [{taskName}]");
+		if (args.Contains("-s"))
+        {
+            await dataSeeds.RunSeedsAsync();
+        }
 
-		_logger.Information($"End [{_taskName}]");
+		logger.Information($"End [{taskName}]");
 	}
 }

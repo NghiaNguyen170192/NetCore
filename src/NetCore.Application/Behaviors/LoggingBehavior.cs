@@ -30,9 +30,7 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         try
         {
             var response = await next();
-            
             _logger.LogInformation("Handled {RequestName} successfully", requestName);
-            
             return response;
         }
         catch (Exception ex)

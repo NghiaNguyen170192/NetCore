@@ -11,14 +11,14 @@ public class CreateCountryCommandTest
 	[DataRow("test 3", "997", "jk", "jkl")]
 	public void CommandShouldHaveSameInputData(string name, string countryCode, string alpha2, string alpha3)
 	{
-		//Arrange
+		// Arrange
 		var dto1 = new CreateCountryCommand(name, countryCode, alpha2, alpha3);
 		var dto2 = new CreateCountryCommand(name, countryCode, alpha2, alpha3);
 
-		//Act 
+		// Act 
 		var result = dto1.Equals(dto2);
 
-		//Assert
+		// Assert
 		Assert.IsTrue(result);
 
 		Assert.AreEqual(dto1.Name, name);
@@ -39,14 +39,14 @@ public class CreateCountryCommandTest
 	[DataRow("test 3", "997", "jk", "jkl")]
 	public void ToCountryEntityExtensionShouldReturnSameCountryModel(string name, string countryCode, string alpha2, string alpha3)
 	{
-		//Arrange
+		// Arrange
 		var command = new CreateCountryCommand(name, countryCode, alpha2, alpha3);
-		var country = new Domain.Entities.Country(name, countryCode, alpha2, alpha3);
+		var country = Domain.Entities.Country.Create(name, countryCode, alpha2, alpha3);
 
-		//Act 
+		// Act 
 		var countryFromCommand = command.ToDbEntity();
 
-		//Assert
+		// Assert
 		Assert.AreEqual(country.Name, countryFromCommand.Name);
 		Assert.AreEqual(country.CountryCode, countryFromCommand.CountryCode);
 		Assert.AreEqual(country.Alpha2, countryFromCommand.Alpha2);

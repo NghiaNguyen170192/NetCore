@@ -13,7 +13,8 @@ public class ApplicationDatabaseContext(
     IDispatcher? dispatcher = null)
     : DbContext(databaseContextOptions), IUnitOfWork
 {
-    private readonly IDispatcher? _dispatcher = dispatcher;
+    private readonly IDispatcher? dispatcher = dispatcher;
+
     public DbSet<Country> Countries { get; set; }
 
     protected override void OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder modelBuilder)
@@ -54,7 +55,10 @@ public class ApplicationDatabaseContext(
         entry.Entity.ModifiedDate = DateTime.UtcNow;
         entry.Entity.ModifiedBy = Guid.Empty;
 
-        if (entry.State != EntityState.Added) return;
+        if (entry.State != EntityState.Added)
+        {
+            return;
+        }
 
         // Generate ID if not set
         if (entry.Entity.Id == Guid.Empty)
@@ -69,8 +73,10 @@ public class ApplicationDatabaseContext(
     private async Task DispatchDomainEventsAsync(CancellationToken cancellationToken)
     {
         // Skip domain event dispatching if dispatcher is not available (e.g., during migrations)
-        if (_dispatcher is null)
+        if (dispatcher is null)
+        {
             return;
+        }
 
         var domainEntities = ChangeTracker
             .Entries<Entity>()
@@ -85,7 +91,7 @@ public class ApplicationDatabaseContext(
 
         foreach (var domainEvent in domainEvents)
         {
-            await _dispatcher.SendAsync(domainEvent, cancellationToken);
+            await dispatcher.SendAsync(domainEvent, cancellationToken);
         }
     }
 }

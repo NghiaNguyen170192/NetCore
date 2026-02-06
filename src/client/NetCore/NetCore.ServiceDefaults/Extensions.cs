@@ -1,9 +1,5 @@
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Logging;
 using NetCore.ServiceDefaults.Configuration;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
@@ -17,7 +13,7 @@ public static class Extensions
     {
         // Load shared configuration first
         builder.AddSharedConfiguration();
-        
+
         builder.ConfigureOpenTelemetry();
 
         builder.AddDefaultHealthChecks();
@@ -97,7 +93,7 @@ public static class Extensions
                 {
                     Path = sharedConfigPath,
                     Optional = true,
-                    ReloadOnChange = true
+                    ReloadOnChange = true,
                 });
         }
 
@@ -109,7 +105,7 @@ public static class Extensions
                 {
                     Path = sharedEnvConfigPath,
                     Optional = true,
-                    ReloadOnChange = true
+                    ReloadOnChange = true,
                 });
         }
     }
@@ -204,13 +200,13 @@ public static class Extensions
         // Uncomment the following lines to enable the Azure Monitor exporter (requires the Azure.Monitor.OpenTelemetry.Exporter package)
         // builder.Services.AddOpenTelemetry()
         //    .UseAzureMonitor();
-
         return builder;
     }
 
     public static IHostApplicationBuilder AddDefaultHealthChecks(this IHostApplicationBuilder builder)
     {
         builder.Services.AddHealthChecks()
+
             // Add a default liveness check to ensure app is responsive
             .AddCheck("self", () => HealthCheckResult.Healthy(), ["live"]);
 
@@ -220,9 +216,11 @@ public static class Extensions
     public static WebApplication MapDefaultEndpoints(this WebApplication app)
     {
         app.UseHttpsRedirection();
-        //app.UseAuthentication();
+
+        // app.UseAuthentication();
         app.UseRouting();
-        //app.UseAuthorization();
+
+        // app.UseAuthorization();
         app.MapControllers();
 
         // Uncomment the following line to enable the Prometheus endpoint (requires the OpenTelemetry.Exporter.Prometheus.AspNetCore package)
@@ -234,7 +232,7 @@ public static class Extensions
         // Only health checks tagged with the "live" tag must pass for app to be considered alive
         app.MapHealthChecks("/alive", new HealthCheckOptions
         {
-            Predicate = r => r.Tags.Contains("live")
+            Predicate = r => r.Tags.Contains("live"),
         });
 
         return app;

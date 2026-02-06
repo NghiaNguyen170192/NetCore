@@ -8,14 +8,14 @@ public sealed record QueryCountryDto
 	public Guid Id { get; set; }
 
 	[JsonPropertyName("name")]
-    public string Name { get; set; } = string.Empty;
+	public string Name { get; set; } = string.Empty;
 
 	[JsonPropertyName("country-code")]
-    public string CountryCode { get; set; } = string.Empty;
+	public string CountryCode { get; set; } = string.Empty;
 
 	[JsonPropertyName("alpha2")]
-    public string Alpha2 { get; set; } = string.Empty;
+	public string Alpha2 { get; set; } = string.Empty;
 
 	[JsonPropertyName("alpha3")]
-    public string Alpha3 { get; set; } = string.Empty;
+	public string Alpha3 { get; set; } = string.Empty;
 }

@@ -8,30 +8,32 @@ namespace NetCore.Application.Tests;
 
 public class BaseTest
 {
-	protected static async Task<ApplicationDatabaseContext> GetContext()
-	{
-		var options = new DbContextOptionsBuilder<ApplicationDatabaseContext>()
-			.UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
-			.Options;
+    protected static async Task<ApplicationDatabaseContext> GetContext()
+    {
+        var options = new DbContextOptionsBuilder<ApplicationDatabaseContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
 
-		var services = new ServiceCollection();
-		services.AddScoped<IDispatcher, Dispatcher>();
-		var serviceProvider = services.BuildServiceProvider();
+        var services = new ServiceCollection();
+        services.AddScoped<IDispatcher, Dispatcher>();
+        var serviceProvider = services.BuildServiceProvider();
 
-		var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
-		var databaseContext = new ApplicationDatabaseContext(options, dispatcher);
-		await databaseContext.Database.EnsureCreatedAsync();
+        var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
+        var databaseContext = new ApplicationDatabaseContext(options, dispatcher);
+        await databaseContext.Database.EnsureCreatedAsync();
 
-		return databaseContext;
-	}
+        return databaseContext;
+    }
 
-	protected static IDispatcher GetDispatcher(IServiceProvider? serviceProvider = null)
-	{
-		if (serviceProvider != null)
-			return serviceProvider.GetRequiredService<IDispatcher>();
+    protected static IDispatcher GetDispatcher(IServiceProvider? serviceProvider = null)
+    {
+        if (serviceProvider != null)
+        {
+            return serviceProvider.GetRequiredService<IDispatcher>();
+        }
 
-		var services = new ServiceCollection();
-		services.AddScoped<IDispatcher, Dispatcher>();
-		return services.BuildServiceProvider().GetRequiredService<IDispatcher>();
-	}
+        var services = new ServiceCollection();
+        services.AddScoped<IDispatcher, Dispatcher>();
+        return services.BuildServiceProvider().GetRequiredService<IDispatcher>();
+    }
 }

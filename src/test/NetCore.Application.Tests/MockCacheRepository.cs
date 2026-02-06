@@ -9,19 +9,23 @@ namespace NetCore.Application.Tests;
 /// <typeparam name="T">The type of entity to cache.</typeparam>
 public class MockCacheRepository<T> : ICacheRepository<T> where T : class
 {
-    private readonly Dictionary<string, T> _cache = new();
+    private readonly Dictionary<string, T> cache = new();
 
     public int AddAsyncSingleCallCount { get; private set; }
+
     public int AddAsyncBulkCallCount { get; private set; }
+
     public int DeleteAsyncCallCount { get; private set; }
+
     public int FindByIdAsyncCallCount { get; private set; }
+
     public int UpdateAsyncCallCount { get; private set; }
 
     public Task<string> AddAsync(T item)
     {
         AddAsyncSingleCallCount++;
         var key = Guid.NewGuid().ToString();
-        _cache[key] = item;
+        cache[key] = item;
         return Task.FromResult(key);
     }
 
@@ -32,7 +36,7 @@ public class MockCacheRepository<T> : ICacheRepository<T> where T : class
         foreach (var item in items)
         {
             var key = Guid.NewGuid().ToString();
-            _cache[key] = item;
+            cache[key] = item;
             keys.Add(key);
         }
         return Task.FromResult<IEnumerable<string>>(keys);
@@ -41,10 +45,10 @@ public class MockCacheRepository<T> : ICacheRepository<T> where T : class
     public Task DeleteAsync(T item)
     {
         DeleteAsyncCallCount++;
-        var entry = _cache.FirstOrDefault(x => x.Value == item);
+        var entry = cache.FirstOrDefault(x => x.Value == item);
         if (!entry.Equals(default(KeyValuePair<string, T>)))
         {
-            _cache.Remove(entry.Key);
+            cache.Remove(entry.Key);
         }
         return Task.CompletedTask;
     }
@@ -52,18 +56,19 @@ public class MockCacheRepository<T> : ICacheRepository<T> where T : class
     public Task<T?> FindByIdAsync(string id)
     {
         FindByIdAsyncCallCount++;
-        _cache.TryGetValue(id, out var item);
+        cache.TryGetValue(id, out var item);
         return Task.FromResult(item);
     }
 
     public Task UpdateAsync(T item)
     {
         UpdateAsyncCallCount++;
-        var entry = _cache.FirstOrDefault(x => x.Value == item);
+        var entry = cache.FirstOrDefault(x => x.Value == item);
         if (!entry.Equals(default(KeyValuePair<string, T>)))
         {
-            _cache[entry.Key] = item;
+            cache[entry.Key] = item;
         }
+
         return Task.CompletedTask;
     }
 }

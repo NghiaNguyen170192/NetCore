@@ -1,22 +1,22 @@
-﻿using System.Globalization;
-using CsvHelper;
+﻿using CsvHelper;
 using CsvHelper.Configuration;
 using NetCore.Application.Country.Create;
 using NetCore.Application.Country.CsvMap;
 using NetCore.Domain.Messaging;
 using NetCore.Migration.Common.Interface;
+using System.Globalization;
 
 namespace NetCore.Migration.Seeds.Base;
 
 public class CountrySeed(IDispatcher dispatcher) : IDataSeed
 {
-    private readonly string _basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "Seeds");
+    private readonly string basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "Seeds");
 
     public IEnumerable<Type> Dependencies => new List<Type>();
 
     public async Task SeedAsync()
     {
-        var input = Path.Combine(_basePath, "countries.csv");
+        var input = Path.Combine(basePath, "countries.csv");
         var csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
             MissingFieldFound = null,

@@ -6,39 +6,39 @@ namespace NetCore.Migration.Tasks;
 
 public class DeleteDatabaseTask : IMigrationTask
 {
-	private readonly ApplicationDatabaseContext _context;
-	private readonly ILogger _logger;
-	private readonly string _taskName;
+	private readonly ApplicationDatabaseContext context;
+	private readonly ILogger logger;
+	private readonly string taskName;
 
 	public DeleteDatabaseTask(ApplicationDatabaseContext applicationDatabaseContext, ILogger logger)
 	{
-		_logger = logger;
-		_context = applicationDatabaseContext;
-		_taskName = GetType().FullName ?? string.Empty;
+		this.logger = logger;
+		context = applicationDatabaseContext;
+		taskName = GetType().FullName ?? string.Empty;
 	}
 
 	public IEnumerable<Type> Dependencies => new List<Type>();
 
 	public async Task ExecuteAsync(string[] args)
 	{
-		_logger.Information($"Start {_taskName}");
+		logger.Information($"Start {taskName}");
 
 		if (!args.Contains("-d"))
 		{
-			_logger.Information($"No command for running {_taskName}");
-			_logger.Information($"End {_taskName}");
+			logger.Information($"No command for running {taskName}");
+			logger.Information($"End {taskName}");
 			return;
 		}
 
-		if (!await _context.Database.CanConnectAsync())
+		if (!await context.Database.CanConnectAsync())
 		{
-			_logger.Information("Cannot connect to database.");
-			_logger.Information($"End {_taskName}");
+			logger.Information("Cannot connect to database.");
+			logger.Information($"End {taskName}");
 			return;
 		}
 
-		_logger.Information("Deleting Database");
-		await _context.Database.EnsureDeletedAsync();
-		_logger.Information($"End [{_taskName}]");
+		logger.Information("Deleting Database");
+		await context.Database.EnsureDeletedAsync();
+		logger.Information($"End [{taskName}]");
 	}
 }

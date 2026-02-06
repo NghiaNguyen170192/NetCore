@@ -20,8 +20,10 @@ public static class DependencyInjection
 	{
 		var typesFromAssemblies = assemblies.SelectMany(a => a.DefinedTypes.Where(x => x.GetInterfaces().Contains(typeof(T))));
 		foreach (var type in typesFromAssemblies)
-			services.Add(new ServiceDescriptor(typeof(T), type, lifetime));
-	}
+        {
+            services.Add(new ServiceDescriptor(typeof(T), type, lifetime));
+        }
+    }
 
 	private static void RegisterClassesFromAssemblyInterface<T>(this IServiceCollection services)
 	{

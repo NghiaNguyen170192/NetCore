@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
-using System.Net;
 using NetCore.Application.Country.Create;
 using NetCore.Application.Country.DTOs;
-using NetCore.Application.Country.QueryCountries;
+using NetCore.Domain.Messaging;
+using System.Net;
 
 namespace NetCore.Api.Controllers;
 
@@ -11,25 +11,25 @@ namespace NetCore.Api.Controllers;
 public class CountryController : AuthorizedBaseController
 {
     [HttpPost]
-	[ProducesResponseType((int)HttpStatusCode.Created)]
-	public async Task<ActionResult> Create([FromBody] CreateCountriesCommand request)
-	{
-		//var ids = await mediator.Send(request);
-		//return Ok(ids);
+    [ProducesResponseType((int)HttpStatusCode.Created)]
+    public async Task<ActionResult> Create([FromBody] CreateCountriesCommand request)
+    {
+        //var ids = await mediator.Send(request);
+        //return Ok(ids);
         return Ok();
     }
 
-	/// <summary>
-	/// Return OData query from client
-	/// </summary>
-	/// <returns></returns>
-	[HttpGet]
-	[EnableQuery(AllowedFunctions = AllowedFunctions.AllFunctions)]
+    /// <summary>
+    /// Return OData query from client
+    /// </summary>
+    /// <returns></returns>
+    [HttpGet]
+    [EnableQuery(AllowedFunctions = AllowedFunctions.AllFunctions)]
 
-	public async Task<ActionResult<IQueryable<QueryCountryDto>>> GetCountries()
-	{
-		//var response = await mediator.Send(new QueryCountries());
-		//return Ok(response);
+    public async Task<ActionResult<IQueryable<QueryCountryDto>>> GetCountries()
+    {
+        //var response = await mediator.Send(new QueryCountries());
+        //return Ok(response);
         return Ok();
-	}
+    }
 }

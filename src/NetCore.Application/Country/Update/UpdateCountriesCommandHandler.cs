@@ -5,7 +5,7 @@ using NetCore.Domain.SharedKernel;
 namespace NetCore.Application.Country.Update;
 
 public class UpdateCountriesCommandHandler(
-    IUnitOfWork unitOfWork, 
+    IUnitOfWork unitOfWork,
     ICountryRepository countryRepository,
     ICacheRepository<Domain.Entities.Country> cacheRepository)
     : IRequestHandler<UpdateCountriesCommand, bool>,

@@ -6,25 +6,25 @@ using NetCore.Infrastructure.Database.Repositories;
 namespace NetCore.Application.Tests.Country.Create;
 
 [TestClass]
-public class CreateCountryCommandHandlerTest: BaseTest
+public class CreateCountryCommandHandlerTest : BaseTest
 {
-    private readonly ICountryRepository _countryRepository;
-	private readonly IUnitOfWork _unitOfWork;
-	private readonly MockCacheRepository<Domain.Entities.Country> _cacheRepository;
+    private readonly ICountryRepository countryRepository;
+    private readonly IUnitOfWork unitOfWork;
+    private readonly MockCacheRepository<Domain.Entities.Country> cacheRepository;
 
-	public CreateCountryCommandHandlerTest()
+    public CreateCountryCommandHandlerTest()
     {
-	    var context = GetContext().Result;
-	    _unitOfWork = context;
-		_countryRepository = new CountryRepository(context);
-		_cacheRepository = new MockCacheRepository<Domain.Entities.Country>();
+        var context = GetContext().Result;
+        unitOfWork = context;
+        countryRepository = new CountryRepository(context);
+        cacheRepository = new MockCacheRepository<Domain.Entities.Country>();
     }
 
     [TestMethod]
     [DataRow]
     public async Task CreateCountriesCommand_ShouldReturnValidGuids()
     {
-        //Arrange
+        // Arrange
         var command1 = new CreateCountryCommand("test 1", "999", "ab", "abc");
         var command2 = new CreateCountryCommand("test 2", "998", "xy", "xyz");
         var command3 = new CreateCountryCommand("test 3", "997", "jk", "jkl");
@@ -36,44 +36,44 @@ public class CreateCountryCommandHandlerTest: BaseTest
             command3
         };
 
-        var commands = new CreateCountriesCommand(list);
+        var commands = new CreateCountriesCommand { Countries = list };
 
-        var handler = new CreateCountriesCommandHandler(_unitOfWork, _countryRepository, _cacheRepository);
+        var handler = new CreateCountriesCommandHandler(unitOfWork, countryRepository, cacheRepository);
 
-        //Act
+        // Act
         var ids = await handler.HandleAsync(commands, default);
 
-        //Assert
+        // Assert
         Assert.IsNotNull(ids);
         Assert.AreEqual(ids.Count(), commands.Countries.Count());
 
         foreach (var id in ids)
         {
-			Assert.AreNotEqual(id, Guid.Empty);
-		}
+            Assert.AreNotEqual(id, Guid.Empty);
+        }
 
-		Assert.AreEqual(1, _cacheRepository.AddAsyncBulkCallCount);
+        Assert.AreEqual(1, cacheRepository.AddAsyncBulkCallCount);
     }
 
-	[TestMethod]
-	[DataRow]
-	public async Task CreateCountryCommand_ShouldReturnValidGuid()
-	{
-		//Arrange
-		var command = new CreateCountryCommand("test country", "100", "tc", "tst");
-		var handler = new CreateCountriesCommandHandler(_unitOfWork, _countryRepository, _cacheRepository);
+    [TestMethod]
+    [DataRow]
+    public async Task CreateCountryCommand_ShouldReturnValidGuid()
+    {
+        // Arrange
+        var command = new CreateCountryCommand("test country", "100", "tc", "tst");
+        var handler = new CreateCountriesCommandHandler(unitOfWork, countryRepository, cacheRepository);
 
-		//Act
-		var id = await handler.HandleAsync(command, default);
+        // Act
+        var id = await handler.HandleAsync(command, default);
 
-		//Assert
-		Assert.AreNotEqual(id, Guid.Empty);
-		
-		var country = await _countryRepository.FindByIdAsync(id);
-		Assert.IsNotNull(country);
-		Assert.AreEqual("test country", country.Name);
-		Assert.AreEqual("100", country.CountryCode);
+        // Assert
+        Assert.AreNotEqual(id, Guid.Empty);
 
-		Assert.AreEqual(1, _cacheRepository.AddAsyncSingleCallCount);
-	}
+        var country = await countryRepository.FindByIdAsync(id);
+        Assert.IsNotNull(country);
+        Assert.AreEqual("test country", country.Name);
+        Assert.AreEqual("100", country.CountryCode);
+
+        Assert.AreEqual(1, cacheRepository.AddAsyncSingleCallCount);
+    }
 }

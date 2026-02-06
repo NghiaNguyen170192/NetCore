@@ -14,7 +14,7 @@ public class QueryCountriesHandler(ICountryRepository countryRepository)
 				Name = country.Name,
 				CountryCode = country.CountryCode,
 				Alpha2 = country.Alpha2,
-				Alpha3 = country.Alpha3
+				Alpha3 = country.Alpha3,
 			}));
 	}
 }

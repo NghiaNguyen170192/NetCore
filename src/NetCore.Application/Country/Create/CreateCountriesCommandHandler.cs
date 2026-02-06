@@ -5,7 +5,7 @@ using NetCore.Domain.SharedKernel;
 namespace NetCore.Application.Country.Create;
 
 public class CreateCountriesCommandHandler(
-    IUnitOfWork unitOfWork, 
+    IUnitOfWork unitOfWork,
     ICountryRepository countryRepository,
     ICacheRepository<Domain.Entities.Country> cacheRepository)
     : IRequestHandler<CreateCountriesCommand, IEnumerable<Guid>>,
@@ -17,7 +17,7 @@ public class CreateCountriesCommandHandler(
 
         await countryRepository.AddAsync(countries, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-        
+
         await cacheRepository.AddAsync(countries);
 
         return countries.Select(x => x.Id);
@@ -36,6 +36,6 @@ public class CreateCountriesCommandHandler(
 
     private Domain.Entities.Country ToDbEntity(CreateCountryCommand request)
     {
-        return new Domain.Entities.Country(request.Name, request.CountryCode, request.Alpha2, request.Alpha3);
+        return Domain.Entities.Country.Create(request.Name, request.CountryCode, request.Alpha2, request.Alpha3);
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace NetCore.Domain.IRepositories;
 
-public interface ICacheRepository<T> where T : class
+public interface ICacheRepository<T>
+	where T : class
 {
 	Task<string> AddAsync(T item);
 

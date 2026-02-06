@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System.Reflection;
 
 namespace NetCore.Application.Extensions;
 

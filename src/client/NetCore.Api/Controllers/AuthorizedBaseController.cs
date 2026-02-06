@@ -4,7 +4,7 @@ namespace NetCore.Api.Controllers;
 
 // [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
 // [Authorize(Roles = "user")]
-//[EnableCors]
+// [EnableCors]
 [ApiController]
 public class AuthorizedBaseController : ControllerBase
 {

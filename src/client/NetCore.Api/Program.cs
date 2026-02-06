@@ -1,7 +1,6 @@
-﻿using NetCore.ServiceDefaults;
+﻿using NetCore.Application.Extensions;
 using NetCore.Infrastructure.Database.Extensions;
-using NetCore.Application.Extensions;
-using NetCore.Infrastructure.Database.AppSettingConfigurations;
+using NetCore.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
 

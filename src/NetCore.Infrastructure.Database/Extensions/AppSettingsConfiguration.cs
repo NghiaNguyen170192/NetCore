@@ -64,7 +64,7 @@ public static class AppSettingsConfiguration
             Path.Combine(basePath, "..", "NetCore", "NetCore.ServiceDefaults"),
             Path.Combine(basePath, "..", "..", "NetCore", "NetCore.ServiceDefaults"),
             Path.Combine(basePath, "..", "..", "client", "NetCore", "NetCore.ServiceDefaults"),
-            Path.Combine(basePath, "..", "..", "..", "client", "NetCore", "NetCore.ServiceDefaults")
+            Path.Combine(basePath, "..", "..", "..", "client", "NetCore", "NetCore.ServiceDefaults"),
         };
 
         foreach (var candidate in candidates)

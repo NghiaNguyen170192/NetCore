@@ -6,33 +6,33 @@ namespace NetCore.Migration;
 
 public class MigrationService
 {
-	private readonly ILogger _logger;
-	private readonly IEnumerable<IMigrationTask> _sortedMigrationTasks;
+	private readonly ILogger logger;
+	private readonly IEnumerable<IMigrationTask> sortedMigrationTasks;
 
 	public MigrationService(ILogger logger, IEnumerable<IMigrationTask> migrationTasks)
 	{
-		_logger = logger;
-		_sortedMigrationTasks = migrationTasks.TopologicalSort(x => x.Dependencies).ToList();
+		this.logger = logger;
+		sortedMigrationTasks = migrationTasks.TopologicalSort(x => x.Dependencies).ToList();
 	}
 
 	public async Task RunAsync(string[] args)
 	{
-		_logger.Information($"Start with args: {string.Join(" ", args, 0, args.Length)}");
+		logger.Information($"Start with args: {string.Join(" ", args, 0, args.Length)}");
 		try
 		{
-			foreach (var migrationTask in _sortedMigrationTasks)
+			foreach (var migrationTask in sortedMigrationTasks)
 			{
-				_logger.Information("-----------------------------------");
+				logger.Information("-----------------------------------");
 				await migrationTask.ExecuteAsync(args);
-				_logger.Information("-----------------------------------");
+				logger.Information("-----------------------------------");
 			}
 		}
 		catch (Exception exception)
 		{
-			_logger.Error(exception.Message);
-			_logger.Error(exception.StackTrace!);
+			logger.Error(exception.Message);
+			logger.Error(exception.StackTrace!);
 		}
 
-		_logger.Information("End");
+		logger.Information("End");
 	}
 }

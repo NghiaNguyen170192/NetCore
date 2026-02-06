@@ -9,5 +9,6 @@ public class DatabaseConfiguration
     public string Provider { get; set; }
 
     public string MigrationsAssembly { get; set; }
+
     public string RedisConnectionString { get; set; }
 }

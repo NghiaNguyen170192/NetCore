@@ -9,21 +9,18 @@ namespace NetCore.Application.Country.Events;
 /// </summary>
 public class CountryCreatedDomainEventHandler : IDomainEventHandler<CountryCreatedDomainEvent>
 {
-    private readonly ILogger<CountryCreatedDomainEventHandler> _logger;
+    private readonly ILogger<CountryCreatedDomainEventHandler> logger;
 
     public CountryCreatedDomainEventHandler(ILogger<CountryCreatedDomainEventHandler> logger)
     {
-        _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
     public Task<Unit> HandleAsync(CountryCreatedDomainEvent request, CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Domain Event: Country '{CountryName}' with ID '{CountryId}' was created",
-            request.Name,
-            request.CountryId);
+        logger.LogInformation($"Domain Event: Country '{request.Name}' with ID '{request.CountryId}' was created");
 
         // Add additional domain logic here (e.g., send notifications, update related aggregates, etc.)
-
         return Task.FromResult(Unit.Value);
     }
 }

@@ -21,7 +21,7 @@ public class CacheConfiguration
     public string Environment { get; set; } = "dev";
 
     /// <summary>
-    /// Gets or sets whether to use sliding expiration.
+    /// Gets or sets a value indicating whether gets or sets whether to use sliding expiration.
     /// </summary>
     public bool UseSlidingExpiration { get; set; } = false;
 }

@@ -4,10 +4,10 @@ namespace NetCore.Domain.SharedKernel;
 
 public abstract class Entity
 {
-    private int? _requestedHashCode;
-    private readonly List<IDomainEvent> _domainEvents = new();
+    private int? requestedHashCode;
+    private readonly List<IDomainEvent> domainEvents = new();
 
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+    public IReadOnlyCollection<IDomainEvent> DomainEvents => domainEvents.AsReadOnly();
 
     public virtual Guid Id { get; set; }
 
@@ -21,17 +21,17 @@ public abstract class Entity
 
     protected void AddDomainEvent(IDomainEvent eventItem)
     {
-        _domainEvents.Add(eventItem);
+        domainEvents.Add(eventItem);
     }
 
     protected void RemoveDomainEvent(IDomainEvent eventItem)
     {
-        _domainEvents?.Remove(eventItem);
+        domainEvents?.Remove(eventItem);
     }
 
     public void ClearDomainEvents()
     {
-        _domainEvents?.Clear();
+        domainEvents?.Clear();
     }
 
     protected bool IsTransient()
@@ -42,18 +42,26 @@ public abstract class Entity
     public override bool Equals(object? obj)
     {
         if (obj == null || !(obj is Entity))
+        {
             return false;
+        }
 
         if (ReferenceEquals(this, obj))
+        {
             return true;
+        }
 
         if (GetType() != obj.GetType())
+        {
             return false;
+        }
 
         var item = (Entity)obj;
 
         if (item.IsTransient() || IsTransient())
+        {
             return false;
+        }
 
         return item.Id == Id;
     }
@@ -62,10 +70,12 @@ public abstract class Entity
     {
         if (!IsTransient())
         {
-            if (!_requestedHashCode.HasValue)
-                _requestedHashCode = Id.GetHashCode() ^ 31; // XOR for random distribution (http://blogs.msdn.com/b/ericlippert/archive/2011/02/28/guidelines-and-rules-for-gethashcode.aspx)
+            if (!requestedHashCode.HasValue)
+            {
+                requestedHashCode = Id.GetHashCode() ^ 31; // XOR for random distribution (http://blogs.msdn.com/b/ericlippert/archive/2011/02/28/guidelines-and-rules-for-gethashcode.aspx)
+            }
 
-            return _requestedHashCode.Value;
+            return requestedHashCode.Value;
         }
 
         return base.GetHashCode();
@@ -73,10 +83,7 @@ public abstract class Entity
 
     public static bool operator ==(Entity left, Entity right)
     {
-        if (Equals(left, null))
-            return (Equals(right, null));
-
-        return left.Equals(right);
+        return Equals(left, null) ? Equals(right, null) : left.Equals(right);
     }
 
     public static bool operator !=(Entity left, Entity right)

@@ -47,7 +47,7 @@ public class EntityTests
             .Invoke(entity, new object[] { domainEvent });
 
         // Assert
-        Assert.AreEqual(1, entity.DomainEvents.Count);
+        Assert.HasCount(1, entity.DomainEvents);
         Assert.AreSame(domainEvent, entity.DomainEvents.First());
     }
 
@@ -65,7 +65,7 @@ public class EntityTests
         entity.ClearDomainEvents();
 
         // Assert
-        Assert.AreEqual(0, entity.DomainEvents.Count);
+        Assert.IsEmpty(entity.DomainEvents);
     }
 
     [TestMethod]

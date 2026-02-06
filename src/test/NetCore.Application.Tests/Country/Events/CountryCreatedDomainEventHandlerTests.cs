@@ -29,7 +29,7 @@ public class CountryCreatedDomainEventHandlerTests
     {
         // Arrange
         var logger = new NullLogger<CountryCreatedDomainEventHandler>();
-        
+
         // Act
         var handler = new CountryCreatedDomainEventHandler(logger);
 

@@ -16,7 +16,7 @@ public class CountryTests
         var alpha3 = "USA";
 
         // Act
-        var country = new Country(name, countryCode, alpha2, alpha3);
+        var country = Country.Create(name, countryCode, alpha2, alpha3);
 
         // Assert
         Assert.AreEqual(name, country.Name);
@@ -30,7 +30,7 @@ public class CountryTests
     public void Country_IsEntity_ImplementsIAggregateRoot()
     {
         // Arrange & Act
-        var country = new Country("Test", "001", "TS", "TST");
+        var country = Country.Create("Test", "001", "TS", "TST");
 
         // Assert
         Assert.IsInstanceOfType(country, typeof(IAggregateRoot));
@@ -42,8 +42,8 @@ public class CountryTests
     {
         // Arrange
         var testId = Guid.NewGuid();
-        var country1 = new Country("Test1", "001", "T1", "TS1");
-        var country2 = new Country("Test2", "002", "T2", "TS2");
+        var country1 = Country.Create("Test1", "001", "T1", "TS1");
+        var country2 = Country.Create("Test2", "002", "T2", "TS2");
         country1.GetType().GetProperty("Id")!.SetValue(country1, testId);
         country2.GetType().GetProperty("Id")!.SetValue(country2, testId);
 
@@ -56,8 +56,8 @@ public class CountryTests
     public void TwoCountries_WithDifferentId_AreNotEqual()
     {
         // Arrange
-        var country1 = new Country("Test1", "001", "T1", "TS1");
-        var country2 = new Country("Test2", "002", "T2", "TS2");
+        var country1 = Country.Create("Test1", "001", "T1", "TS1");
+        var country2 = Country.Create("Test2", "002", "T2", "TS2");
 
         // Act & Assert
         Assert.IsFalse(country1.Equals(country2));

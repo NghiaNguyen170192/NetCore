@@ -1,8 +1,8 @@
-using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Application.Behaviors;
 using NetCore.Application.Messaging;
 using NetCore.Domain.Messaging;
+using System.Reflection;
 
 namespace NetCore.Application.Extensions;
 
@@ -50,7 +50,7 @@ public static class DispatcherServiceCollectionExtensions
                 Interfaces = t.GetInterfaces()
                     .Where(i => i.IsGenericType &&
                                 i.GetGenericTypeDefinition() == typeof(IRequestHandler<,>))
-                    .ToList()
+                    .ToList(),
             })
             .Where(x => x.Interfaces.Any())
             .ToList();

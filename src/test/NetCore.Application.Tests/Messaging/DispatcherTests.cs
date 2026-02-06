@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using NetCore.Application.Behaviors;
 using NetCore.Application.Messaging;
 using NetCore.Domain.Messaging;
@@ -43,7 +42,7 @@ public class DispatcherTests
         var result = await dispatcher.SendAsync(request);
 
         // Assert
-        Assert.IsTrue(result.Contains("Behavior"));
+        Assert.Contains("Behavior", result);
     }
 
     [TestMethod]

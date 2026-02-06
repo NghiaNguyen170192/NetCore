@@ -24,7 +24,7 @@ public class ApplicationDatabaseContextTests
         var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
 
         var context = new ApplicationDatabaseContext(options, dispatcher);
-        var country = new Country("Test", "001", "TS", "TST");
+        var country = Country.Create("Test", "001", "TS", "TST");
 
         // Act
         context.Countries.Add(country);
@@ -74,7 +74,7 @@ public class ApplicationDatabaseContextTests
             .Options;
 
         var context = new ApplicationDatabaseContext(options, null);
-        var country = new Country("Test", "001", "TS", "TST");
+        var country = Country.Create("Test", "001", "TS", "TST");
 
         // Act
         context.Countries.Add(country);

@@ -1,3 +1,5 @@
 ﻿namespace NetCore.Domain.SharedKernel;
 
-public interface IAggregateRoot { }
+public interface IAggregateRoot
+{
+}

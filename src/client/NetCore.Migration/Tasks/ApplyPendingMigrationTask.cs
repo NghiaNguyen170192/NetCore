@@ -7,15 +7,15 @@ namespace NetCore.Migration.Tasks;
 
 public class ApplyPendingMigrationTask : IMigrationTask
 {
-	private readonly ApplicationDatabaseContext _context;
-	private readonly ILogger _logger;
-	private readonly string _taskName;
+	private readonly ApplicationDatabaseContext context;
+	private readonly ILogger logger;
+	private readonly string taskName;
 
 	public ApplyPendingMigrationTask(ApplicationDatabaseContext applicationDatabaseContext, ILogger logger)
 	{
-		_logger = logger;
-		_context = applicationDatabaseContext;
-		_taskName = GetType().FullName ?? string.Empty;
+		this.logger = logger;
+		context = applicationDatabaseContext;
+		taskName = GetType().FullName ?? string.Empty;
 	}
 
 	public IEnumerable<Type> Dependencies => new List<Type>()
@@ -25,25 +25,25 @@ public class ApplyPendingMigrationTask : IMigrationTask
 
 	public async Task ExecuteAsync(string[] args)
 	{
-		_logger.Information($"Start: {_taskName}");
+		logger.Information($"Start: {taskName}");
 		if (!args.Contains("-m"))
 		{
-			_logger.Information($"No command for running {_taskName}");
-			_logger.Information($"End: {_taskName}]");
+			logger.Information($"No command for running {taskName}");
+			logger.Information($"End: {taskName}]");
 			return;
 		}
 
-		var pendingMigrations = await _context.Database.GetPendingMigrationsAsync();
+		var pendingMigrations = await context.Database.GetPendingMigrationsAsync();
 		if (!pendingMigrations.Any())
 		{
-			_logger.Information($"No command for running {_taskName}");
-			_logger.Information($"End: {_taskName}]");
+			logger.Information($"No command for running {taskName}");
+			logger.Information($"End: {taskName}]");
 			return;
 		}
 
-		_logger.Information("Applying Migration");
-		await _context.Database.MigrateAsync();
+		logger.Information("Applying Migration");
+		await context.Database.MigrateAsync();
 
-		_logger.Information($"End {_taskName}");
+		logger.Information($"End {taskName}");
 	}
 }
