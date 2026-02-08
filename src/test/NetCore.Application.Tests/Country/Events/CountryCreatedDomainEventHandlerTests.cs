@@ -18,7 +18,7 @@ public class CountryCreatedDomainEventHandlerTests
         var domainEvent = new CountryCreatedDomainEvent(countryId, "United States");
 
         // Act
-        var result = await handler.HandleAsync(domainEvent);
+        var result = await handler.HandleAsync(domainEvent, CancellationToken.None);
 
         // Assert
         Assert.AreEqual(Unit.Value, result);

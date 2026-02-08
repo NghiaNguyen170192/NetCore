@@ -22,23 +22,24 @@ var migrator = builder.AddProject<Projects.NetCore_Migration>("migration")
     .WithEnvironment("Database__MigrationsAssembly", "NetCore.Infrastructure.Database")
     .WithEnvironment("Database__ApplicationConnectionString", appDb)
     .WithEnvironment("Database__IdpConnectionString", idpDb)
-    .WithArgs("-d", "-m", "-s", "-t");
+    .WithArgs("-d", "-m", "-s", "-t")
+    .ExcludeFromManifest();
 
 var api = builder.AddProject<Projects.NetCore_Api>("api")
     .WithReference(appDb)
     .WithReference(redis)
-    .WithReference(migrator)
+    .WaitFor(migrator)
     .WithEnvironment("Database__Provider", "postgresql")
     .WithEnvironment("Database__MigrationsAssembly", "NetCore.Infrastructure.Database")
     .WithEnvironment("Database__ApplicationConnectionString", appDb)
     .WithEnvironment("Database__IdpConnectionString", idpDb)
-    .WithHttpEndpoint(port: 6000, targetPort: 80, name: "api-http")
-    .WithHttpsEndpoint(port: 6001, targetPort: 443, name: "api-https");
+    .WithHttpEndpoint(port: 6000, name: "api-http")
+    .WithHttpsEndpoint(port: 6001, name: "api-https");
 
 var ui = builder.AddProject<Projects.NetCore_UI>("ui")
     .WithReference(api)
     .WithEnvironment("ApiBaseAddress", () => api.GetEndpoint("api-http").Url)
-    .WithHttpEndpoint(port: 6010, targetPort: 80, name: "ui-http")
-    .WithHttpsEndpoint(port: 6011, targetPort: 443, name: "ui-https");
+    .WithHttpEndpoint(port: 6010, name: "ui-http")
+    .WithHttpsEndpoint(port: 6011, name: "ui-https");
 
 builder.Build().Run();

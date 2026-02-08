@@ -2,8 +2,7 @@ using NetCore.Domain.Messaging;
 
 namespace NetCore.Application.Country.Update;
 
-public sealed record UpdateCountriesCommand(IEnumerable<UpdateCountryCommand> Countries) 
-    : IRequest<bool>;
+public sealed record UpdateCountriesCommand(IEnumerable<UpdateCountryCommand> Countries) : IRequest<bool>;
 
 public static class UpdateCountryExtension
 {

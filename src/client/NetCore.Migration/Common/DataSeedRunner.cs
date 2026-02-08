@@ -7,13 +7,13 @@ namespace NetCore.Migration.Common;
 public class DataSeedRunner<T> : IDataSeedRunner
 		where T : IDataSeed
 {
-	private readonly IEnumerable<T> _sortedSeeds;
-	private readonly ILogger _logger;
+	private readonly IEnumerable<T> sortedSeeds;
+	private readonly ILogger logger;
 
 	public DataSeedRunner(IEnumerable<T> seeds, ILogger logger)
 	{
-		_sortedSeeds = seeds.TopologicalSort(x => x.Dependencies).ToList();
-		_logger = logger;
+		sortedSeeds = seeds.TopologicalSort(x => x.Dependencies).ToList();
+		this.logger = logger;
 	}
 
 	public async Task RunSeedsAsync()
@@ -22,7 +22,7 @@ public class DataSeedRunner<T> : IDataSeedRunner
 
 		try
 		{
-			foreach (var seed in _sortedSeeds)
+			foreach (var seed in sortedSeeds)
 			{
 				seedName = seed.GetType().Name;
 				await seed.SeedAsync();
@@ -30,9 +30,9 @@ public class DataSeedRunner<T> : IDataSeedRunner
 		}
 		catch (Exception ex)
 		{
-			_logger.Error(seedName);
-			_logger.Error(ex.Message);
-			_logger.Error(ex.StackTrace!);
+			logger.Error(seedName);
+			logger.Error(ex.Message);
+			logger.Error(ex.StackTrace!);
 			throw;
 		}
 	}

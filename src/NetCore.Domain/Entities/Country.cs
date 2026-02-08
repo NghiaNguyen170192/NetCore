@@ -1,5 +1,6 @@
 ﻿#nullable disable
 
+using NetCore.Domain.Events;
 using NetCore.Domain.SharedKernel;
 
 namespace NetCore.Domain.Entities;
@@ -16,7 +17,10 @@ public class Country : Entity, IAggregateRoot
 
     public static Country Create(string name, string countryCode, string alpha2, string alpha3)
     {
-        return new Country(name, countryCode, alpha2, alpha3);
+        var country = new Country(name, countryCode, alpha2, alpha3);
+
+        country.AddDomainEvent(new CountryCreatedDomainEvent(country.Id, name));
+        return country;
     }
 
     public void UpdateDetails(string name, string countryCode, string alpha2, string alpha3)

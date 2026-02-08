@@ -8,11 +8,11 @@ namespace NetCore.Application.Messaging;
 /// </summary>
 public sealed class Dispatcher : IDispatcher
 {
-    private readonly IServiceProvider _serviceProvider;
+    private readonly IServiceProvider serviceProvider;
 
     public Dispatcher(IServiceProvider serviceProvider)
     {
-        _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        this.serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
     }
 
     public async Task<TResponse> SendAsync<TResponse>(
@@ -28,11 +28,11 @@ public sealed class Dispatcher : IDispatcher
         var handlerType = typeof(IRequestHandler<,>).MakeGenericType(requestType, responseType);
 
         // Resolve the handler
-        var handler = _serviceProvider.GetRequiredService(handlerType);
+        var handler = serviceProvider.GetRequiredService(handlerType);
 
         // Get all pipeline behaviors for the specific request/response type
         var behaviorType = typeof(IPipelineBehavior<,>).MakeGenericType(requestType, responseType);
-        var behaviors = _serviceProvider.GetServices(behaviorType).Reverse().ToList();
+        var behaviors = serviceProvider.GetServices(behaviorType).Reverse().ToList();
 
         // Build the pipeline
         async Task<TResponse> Handler()
@@ -40,7 +40,7 @@ public sealed class Dispatcher : IDispatcher
             var handleMethod = handlerType.GetMethod(nameof(IRequestHandler<IRequest<TResponse>, TResponse>.HandleAsync))
                 ?? throw new InvalidOperationException($"Handler method not found for {handlerType.Name}");
 
-            var result = handleMethod.Invoke(handler, new object[] { request, cancellationToken });
+            var result = handleMethod.Invoke(handler, [request, cancellationToken]);
             if (result is Task<TResponse> task)
             {
                 return await task;
@@ -60,7 +60,7 @@ public sealed class Dispatcher : IDispatcher
                 var handleAsyncMethod = behaviorType.GetMethod(nameof(IPipelineBehavior<IRequest<TResponse>, TResponse>.HandleAsync))
                     ?? throw new InvalidOperationException($"HandleAsync method not found on {behaviorType.Name}");
 
-                var result = handleAsyncMethod.Invoke(currentBehavior, new object[] { request, next, cancellationToken });
+                var result = handleAsyncMethod.Invoke(currentBehavior, [request, next, cancellationToken]);
                 if (result is Task<TResponse> task)
                 {
                     return task;

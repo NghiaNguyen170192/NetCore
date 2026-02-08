@@ -1,4 +1,3 @@
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Application.Messaging;
 using NetCore.Domain.Entities;
@@ -31,8 +30,8 @@ public class ApplicationDatabaseContextTests
         await context.SaveChangesAsync(CancellationToken.None);
 
         // Assert
-        Assert.AreNotEqual(default(DateTime), country.CreatedDate);
-        Assert.AreNotEqual(default(DateTime), country.ModifiedDate);
+        Assert.AreNotEqual(default, country.CreatedDate);
+        Assert.AreNotEqual(default, country.ModifiedDate);
         Assert.AreEqual(DateTime.UtcNow.Date, country.CreatedDate.Date);
         Assert.AreEqual(DateTime.UtcNow.Date, country.ModifiedDate.Date);
     }
@@ -54,7 +53,7 @@ public class ApplicationDatabaseContextTests
         var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
 
         var context = new ApplicationDatabaseContext(options, dispatcher);
-        var country = new TestCountryWithEvent("Test", "001", "TS", "TST");
+        var country = CreateCountryWithDomainEvent("Test", "001", "TS", "TST");
 
         // Act
         context.Countries.Add(country);
@@ -118,28 +117,29 @@ public class ApplicationDatabaseContextTests
     // Test helpers
     private class TestEventHandler : IRequestHandler<CountryCreatedDomainEvent, Unit>
     {
-        private readonly Action _onHandle;
+        private readonly Action onHandle;
 
         public TestEventHandler(Action onHandle)
         {
-            _onHandle = onHandle;
+            this.onHandle = onHandle;
         }
 
         public Task<Unit> HandleAsync(CountryCreatedDomainEvent request, CancellationToken cancellationToken = default)
         {
-            _onHandle();
+            onHandle();
             return Task.FromResult(Unit.Value);
         }
     }
 
-    private class TestCountryWithEvent : Country
+    private static Country CreateCountryWithDomainEvent(string name, string countryCode, string alpha2, string alpha3)
     {
-        public TestCountryWithEvent(string name, string countryCode, string alpha2, string alpha3)
-            : base(name, countryCode, alpha2, alpha3)
-        {
-            var addMethod = typeof(Domain.SharedKernel.Entity).GetMethod("AddDomainEvent",
-                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-            addMethod?.Invoke(this, new object[] { new CountryCreatedDomainEvent(Id, name) });
-        }
+        var country = Country.Create(name, countryCode, alpha2, alpha3);
+
+        var addMethod = typeof(Domain.SharedKernel.Entity).GetMethod(
+            "AddDomainEvent",
+            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+        addMethod?.Invoke(country, [new CountryCreatedDomainEvent(country.Id, name)]);
+
+        return country;
     }
 }

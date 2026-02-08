@@ -4,8 +4,9 @@ namespace NetCore.Domain.SharedKernel;
 
 public abstract class Entity
 {
+    private readonly List<IDomainEvent> domainEvents = [];
+
     private int? requestedHashCode;
-    private readonly List<IDomainEvent> domainEvents = new();
 
     public IReadOnlyCollection<IDomainEvent> DomainEvents => domainEvents.AsReadOnly();
 
