@@ -1,4 +1,4 @@
-﻿using NetCore.Domain.Messaging;
+﻿using MediatR;
 
 namespace NetCore.Application.Country.Create;
 

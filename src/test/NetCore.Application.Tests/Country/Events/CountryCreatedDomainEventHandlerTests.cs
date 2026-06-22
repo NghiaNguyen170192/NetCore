@@ -18,10 +18,10 @@ public class CountryCreatedDomainEventHandlerTests
         var domainEvent = new CountryCreatedDomainEvent(countryId, "United States");
 
         // Act
-        var result = await handler.HandleAsync(domainEvent, CancellationToken.None);
+        await handler.Handle(domainEvent, CancellationToken.None);
 
-        // Assert
-        Assert.AreEqual(Unit.Value, result);
+        // Assert - domain events don't return a value, just verify no exception
+        Assert.IsNotNull(handler);
     }
 
     [TestMethod]

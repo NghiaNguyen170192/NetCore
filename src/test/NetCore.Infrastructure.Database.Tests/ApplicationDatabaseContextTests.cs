@@ -1,8 +1,7 @@
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
-using NetCore.Application.Messaging;
 using NetCore.Domain.Entities;
 using NetCore.Domain.Events;
-using NetCore.Domain.Messaging;
 
 namespace NetCore.Infrastructure.Database.Tests;
 
@@ -18,11 +17,11 @@ public class ApplicationDatabaseContextTests
             .Options;
 
         var services = new ServiceCollection();
-        services.AddScoped<IDispatcher, Dispatcher>();
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<ApplicationDatabaseContextTests>());
         var serviceProvider = services.BuildServiceProvider();
-        var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
+        var publisher = serviceProvider.GetRequiredService<IPublisher>();
 
-        var context = new ApplicationDatabaseContext(options, dispatcher);
+        var context = new ApplicationDatabaseContext(options, publisher);
         var country = Country.Create("Test", "001", "TS", "TST");
 
         // Act
@@ -46,13 +45,13 @@ public class ApplicationDatabaseContextTests
 
         var eventDispatched = false;
         var services = new ServiceCollection();
-        services.AddScoped<IDispatcher, Dispatcher>();
-        services.AddScoped<IRequestHandler<CountryCreatedDomainEvent, Unit>, TestEventHandler>(
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<ApplicationDatabaseContextTests>());
+        services.AddScoped<INotificationHandler<CountryCreatedDomainEvent>>(
             _ => new TestEventHandler(() => eventDispatched = true));
         var serviceProvider = services.BuildServiceProvider();
-        var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
+        var publisher = serviceProvider.GetRequiredService<IPublisher>();
 
-        var context = new ApplicationDatabaseContext(options, dispatcher);
+        var context = new ApplicationDatabaseContext(options, publisher);
         var country = CreateCountryWithDomainEvent("Test", "001", "TS", "TST");
 
         // Act
@@ -115,7 +114,7 @@ public class ApplicationDatabaseContextTests
     }
 
     // Test helpers
-    private class TestEventHandler : IRequestHandler<CountryCreatedDomainEvent, Unit>
+    private class TestEventHandler : INotificationHandler<CountryCreatedDomainEvent>
     {
         private readonly Action onHandle;
 
@@ -124,10 +123,10 @@ public class ApplicationDatabaseContextTests
             this.onHandle = onHandle;
         }
 
-        public Task<Unit> HandleAsync(CountryCreatedDomainEvent request, CancellationToken cancellationToken = default)
+        public Task Handle(CountryCreatedDomainEvent notification, CancellationToken cancellationToken)
         {
             onHandle();
-            return Task.FromResult(Unit.Value);
+            return Task.CompletedTask;
         }
     }
 

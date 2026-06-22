@@ -1,5 +1,5 @@
-﻿using NetCore.Domain.IRepositories;
-using NetCore.Domain.Messaging;
+﻿using MediatR;
+using NetCore.Domain.IRepositories;
 using NetCore.Domain.SharedKernel;
 
 namespace NetCore.Application.Country.Create;
@@ -11,7 +11,7 @@ public class CreateCountriesCommandHandler(
     : IRequestHandler<CreateCountriesCommand, IEnumerable<Guid>>,
       IRequestHandler<CreateCountryCommand, Guid>
 {
-    public async Task<IEnumerable<Guid>> HandleAsync(CreateCountriesCommand request, CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<Guid>> Handle(CreateCountriesCommand request, CancellationToken cancellationToken)
     {
         var countries = request.Countries.Select(ToDbEntity).ToList();
 
@@ -23,7 +23,7 @@ public class CreateCountriesCommandHandler(
         return countries.Select(x => x.Id);
     }
 
-    public async Task<Guid> HandleAsync(CreateCountryCommand request, CancellationToken cancellationToken = default)
+    public async Task<Guid> Handle(CreateCountryCommand request, CancellationToken cancellationToken)
     {
         var country = request.ToDbEntity();
         await countryRepository.AddAsync(country, cancellationToken);

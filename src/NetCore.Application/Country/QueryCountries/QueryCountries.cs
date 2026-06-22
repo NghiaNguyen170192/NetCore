@@ -1,3 +1,6 @@
-﻿namespace NetCore.Application.Country.QueryCountries;
+﻿using MediatR;
+using NetCore.Application.Country.DTOs;
 
-public sealed record QueryCountries;
+namespace NetCore.Application.Country.QueryCountries;
+
+public sealed record QueryCountries : IRequest<IQueryable<QueryCountryDto>>;

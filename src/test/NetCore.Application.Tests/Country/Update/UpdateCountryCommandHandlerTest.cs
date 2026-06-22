@@ -31,7 +31,7 @@ public class UpdateCountryCommandHandlerTest : BaseTest
         var handler = new UpdateCountriesCommandHandler(unitOfWork, countryRepository, cacheRepository);
 
         // Act
-        var result = await handler.HandleAsync(updateCommand, default);
+        var result = await handler.Handle(updateCommand, default);
 
         // Assert
         Assert.IsTrue(result);
@@ -55,7 +55,7 @@ public class UpdateCountryCommandHandlerTest : BaseTest
         var handler = new UpdateCountriesCommandHandler(unitOfWork, countryRepository, cacheRepository);
 
         // Act
-        var result = await handler.HandleAsync(updateCommand, default);
+        var result = await handler.Handle(updateCommand, default);
 
         // Assert
         Assert.IsFalse(result);
@@ -85,7 +85,7 @@ public class UpdateCountryCommandHandlerTest : BaseTest
         var handler = new UpdateCountriesCommandHandler(unitOfWork, countryRepository, cacheRepository);
 
         // Act
-        var result = await handler.HandleAsync(command, default);
+        var result = await handler.Handle(command, default);
 
         // Assert
         Assert.IsTrue(result);

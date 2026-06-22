@@ -1,3 +1,4 @@
+using MediatR;
 using Microsoft.Extensions.Logging;
 using NetCore.Domain.Events;
 using NetCore.Domain.Messaging;
@@ -7,7 +8,7 @@ namespace NetCore.Application.Country.Events;
 /// <summary>
 /// Example domain event handler for CountryCreatedDomainEvent.
 /// </summary>
-public class CountryCreatedDomainEventHandler : IDomainEventHandler<CountryCreatedDomainEvent>
+public class CountryCreatedDomainEventHandler : IDomainEventHandler<CountryCreatedDomainEvent>, INotificationHandler<CountryCreatedDomainEvent>
 {
     private readonly ILogger<CountryCreatedDomainEventHandler> logger;
 
@@ -16,11 +17,11 @@ public class CountryCreatedDomainEventHandler : IDomainEventHandler<CountryCreat
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public Task<Unit> HandleAsync(CountryCreatedDomainEvent request, CancellationToken cancellationToken = default)
+    public async Task Handle(CountryCreatedDomainEvent notification, CancellationToken cancellationToken)
     {
-        logger.LogInformation($"Domain Event: Country '{request.Name}' with ID '{request.CountryId}' was created");
+        logger.LogInformation($"Domain Event: Country '{notification.Name}' with ID '{notification.CountryId}' was created");
 
         // Add additional domain logic here (e.g., send notifications, update related aggregates, etc.)
-        return Task.FromResult(Unit.Value);
+        await Task.CompletedTask;
     }
 }

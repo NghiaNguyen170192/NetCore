@@ -1,8 +1,8 @@
 ﻿#nullable enable
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using NetCore.Domain.Entities;
-using NetCore.Domain.Messaging;
 using NetCore.Domain.SharedKernel;
 using NetCore.Infrastructure.Database.Extensions;
 
@@ -10,10 +10,10 @@ namespace NetCore.Infrastructure.Database;
 
 public class ApplicationDatabaseContext(
     DbContextOptions<ApplicationDatabaseContext> databaseContextOptions,
-    IDispatcher? dispatcher = null)
+    IPublisher? publisher = null)
     : DbContext(databaseContextOptions), IUnitOfWork
 {
-    private readonly IDispatcher? dispatcher = dispatcher;
+    private readonly IPublisher? publisher = publisher;
 
     public DbSet<Country> Countries { get; set; }
 
@@ -72,8 +72,8 @@ public class ApplicationDatabaseContext(
 
     private async Task DispatchDomainEventsAsync(CancellationToken cancellationToken)
     {
-        // Skip domain event dispatching if dispatcher is not available (e.g., during migrations)
-        if (dispatcher is null)
+        // Skip domain event dispatching if publisher is not available (e.g., during migrations)
+        if (publisher is null)
         {
             return;
         }
@@ -91,7 +91,7 @@ public class ApplicationDatabaseContext(
 
         foreach (var domainEvent in domainEvents)
         {
-            await dispatcher.SendAsync(domainEvent, cancellationToken);
+            await publisher.Publish(domainEvent, cancellationToken);
         }
     }
 }

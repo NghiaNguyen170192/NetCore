@@ -1,6 +1,6 @@
+using MediatR;
 using Microsoft.Extensions.Logging.Abstractions;
 using NetCore.Application.Behaviors;
-using NetCore.Domain.Messaging;
 
 namespace NetCore.Application.Tests.Behaviors;
 
@@ -15,14 +15,14 @@ public class LoggingBehaviorTests
         var behavior = new LoggingBehavior<TestRequest, string>(logger);
         var request = new TestRequest("Test");
         var nextCalled = false;
-        Func<Task<string>> next = () =>
+        RequestHandlerDelegate<string> next = () =>
         {
             nextCalled = true;
             return Task.FromResult("Test Response");
         };
 
         // Act
-        var result = await behavior.HandleAsync(request, next);
+        var result = await behavior.Handle(request, next, CancellationToken.None);
 
         // Assert
         Assert.IsTrue(nextCalled);
@@ -36,12 +36,12 @@ public class LoggingBehaviorTests
         var logger = new NullLogger<LoggingBehavior<TestRequest, string>>();
         var behavior = new LoggingBehavior<TestRequest, string>(logger);
         var request = new TestRequest("Test");
-        Func<Task<string>> next = () => throw new InvalidOperationException("Test Exception");
+        RequestHandlerDelegate<string> next = () => throw new InvalidOperationException("Test Exception");
 
-        Assert.ThrowsExactly<InvalidOperationException>(() =>
+        // Act & Assert
+        Assert.ThrowsAsync<InvalidOperationException>(async () =>
         {
-            // Act
-            _ = behavior.HandleAsync(request, next).GetAwaiter().GetResult();
+            await behavior.Handle(request, next, CancellationToken.None);
         });
     }
 

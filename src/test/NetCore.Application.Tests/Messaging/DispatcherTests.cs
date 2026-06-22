@@ -1,7 +1,6 @@
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Application.Behaviors;
-using NetCore.Application.Messaging;
-using NetCore.Domain.Messaging;
 
 namespace NetCore.Application.Tests.Messaging;
 
@@ -13,14 +12,13 @@ public class DispatcherTests
     {
         // Arrange
         var services = new ServiceCollection();
-        services.AddScoped<IRequestHandler<TestRequest, string>, TestRequestHandler>();
-        services.AddScoped<IDispatcher, Dispatcher>();
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<DispatcherTests>());
         var serviceProvider = services.BuildServiceProvider();
-        var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
+        var mediator = serviceProvider.GetRequiredService<IMediator>();
         var request = new TestRequest("Test");
 
         // Act
-        var result = await dispatcher.SendAsync(request);
+        var result = await mediator.Send(request);
 
         // Assert
         Assert.AreEqual("Test Response: Test", result);
@@ -31,18 +29,20 @@ public class DispatcherTests
     {
         // Arrange
         var services = new ServiceCollection();
-        services.AddScoped<IRequestHandler<TestRequest, string>, TestRequestHandler>();
-        services.AddScoped<IPipelineBehavior<TestRequest, string>, TestBehavior>();
-        services.AddScoped<IDispatcher, Dispatcher>();
+        services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssemblyContaining<DispatcherTests>();
+            cfg.AddOpenBehavior(typeof(TestBehavior));
+        });
         var serviceProvider = services.BuildServiceProvider();
-        var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
+        var mediator = serviceProvider.GetRequiredService<IMediator>();
         var request = new TestRequest("Test");
 
         // Act
-        var result = await dispatcher.SendAsync(request);
+        var result = await mediator.Send(request);
 
         // Assert
-        Assert.Contains("Behavior", result);
+        Assert.IsTrue(result.Contains("Behavior"));
     }
 
     [TestMethod]
@@ -51,15 +51,17 @@ public class DispatcherTests
         // Arrange
         var services = new ServiceCollection();
         services.AddLogging();
-        services.AddScoped<IRequestHandler<TestRequest, string>, TestRequestHandler>();
-        services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-        services.AddScoped<IDispatcher, Dispatcher>();
+        services.AddMediatR(cfg =>
+        {
+            cfg.RegisterServicesFromAssemblyContaining<DispatcherTests>();
+            cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
+        });
         var serviceProvider = services.BuildServiceProvider();
-        var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
+        var mediator = serviceProvider.GetRequiredService<IMediator>();
         var request = new TestRequest("Test");
 
         // Act
-        var result = await dispatcher.SendAsync(request);
+        var result = await mediator.Send(request);
 
         // Assert
         Assert.IsNotNull(result);
@@ -70,44 +72,43 @@ public class DispatcherTests
     {
         // Arrange
         var services = new ServiceCollection();
-        services.AddScoped<IRequestHandler<TestDomainEvent, Unit>, TestDomainEventHandler>();
-        services.AddScoped<IDispatcher, Dispatcher>();
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<DispatcherTests>());
         var serviceProvider = services.BuildServiceProvider();
-        var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
+        var mediator = serviceProvider.GetRequiredService<IMediator>();
         var domainEvent = new TestDomainEvent("TestEvent");
 
         // Act
-        var result = await dispatcher.SendAsync(domainEvent);
+        await mediator.Publish(domainEvent);
 
-        // Assert
-        Assert.AreEqual(Unit.Value, result);
+        // Assert - domain events don't return values, just verify no exception
+        Assert.IsTrue(true);
     }
 
     // Test implementations
     private record TestRequest(string Data) : IRequest<string>;
 
-    private record TestDomainEvent(string Data) : IDomainEvent;
+    private record TestDomainEvent(string Data) : INotification;
 
     private class TestRequestHandler : IRequestHandler<TestRequest, string>
     {
-        public Task<string> HandleAsync(TestRequest request, CancellationToken cancellationToken = default)
+        public Task<string> Handle(TestRequest request, CancellationToken cancellationToken)
         {
             return Task.FromResult($"Test Response: {request.Data}");
         }
     }
 
-    private class TestDomainEventHandler : IRequestHandler<TestDomainEvent, Unit>
+    private class TestDomainEventHandler : INotificationHandler<TestDomainEvent>
     {
-        public Task<Unit> HandleAsync(TestDomainEvent request, CancellationToken cancellationToken = default)
+        public Task Handle(TestDomainEvent notification, CancellationToken cancellationToken)
         {
             // Handle domain event
-            return Task.FromResult(Unit.Value);
+            return Task.CompletedTask;
         }
     }
 
     private class TestBehavior : IPipelineBehavior<TestRequest, string>
     {
-        public async Task<string> HandleAsync(TestRequest request, Func<Task<string>> next, CancellationToken cancellationToken = default)
+        public async Task<string> Handle(TestRequest request, RequestHandlerDelegate<string> next, CancellationToken cancellationToken)
         {
             var result = await next();
             return $"Behavior: {result}";

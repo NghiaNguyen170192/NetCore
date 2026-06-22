@@ -1,5 +1,5 @@
+using MediatR;
 using NetCore.Domain.IRepositories;
-using NetCore.Domain.Messaging;
 using NetCore.Domain.SharedKernel;
 
 namespace NetCore.Application.Country.Delete;
@@ -11,7 +11,7 @@ public class DeleteCountriesCommandHandler(
     : IRequestHandler<DeleteCountriesCommand, bool>,
       IRequestHandler<DeleteCountryCommand, bool>
 {
-    public async Task<bool> HandleAsync(DeleteCountriesCommand request, CancellationToken cancellationToken = default)
+    public async Task<bool> Handle(DeleteCountriesCommand request, CancellationToken cancellationToken)
     {
         var countries = new List<Domain.Entities.Country>();
 
@@ -31,7 +31,7 @@ public class DeleteCountriesCommandHandler(
         return true;
     }
 
-    public async Task<bool> HandleAsync(DeleteCountryCommand request, CancellationToken cancellationToken = default)
+    public async Task<bool> Handle(DeleteCountryCommand request, CancellationToken cancellationToken)
     {
         var country = await countryRepository.FindByIdAsync(request.Id);
         if (country is null)

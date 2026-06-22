@@ -31,7 +31,7 @@ public class DeleteCountryCommandHandlerTest : BaseTest
         var handler = new DeleteCountriesCommandHandler(unitOfWork, countryRepository, cacheRepository);
 
         // Act
-        var result = await handler.HandleAsync(deleteCommand, default);
+        var result = await handler.Handle(deleteCommand, default);
 
         // Assert
         Assert.IsTrue(result);
@@ -52,7 +52,7 @@ public class DeleteCountryCommandHandlerTest : BaseTest
         var handler = new DeleteCountriesCommandHandler(unitOfWork, countryRepository, cacheRepository);
 
         // Act
-        var result = await handler.HandleAsync(deleteCommand, default);
+        var result = await handler.Handle(deleteCommand, default);
 
         // Assert
         Assert.IsFalse(result);
@@ -76,7 +76,7 @@ public class DeleteCountryCommandHandlerTest : BaseTest
         var handler = new DeleteCountriesCommandHandler(unitOfWork, countryRepository, cacheRepository);
 
         // Act
-        var result = await handler.HandleAsync(command, default);
+        var result = await handler.Handle(command, default);
 
         // Assert
         Assert.IsTrue(result);

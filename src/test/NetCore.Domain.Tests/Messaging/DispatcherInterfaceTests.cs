@@ -1,3 +1,4 @@
+using MediatR;
 using NetCore.Domain.Messaging;
 
 namespace NetCore.Domain.Tests.Messaging;
@@ -12,7 +13,7 @@ public class DispatcherInterfaceTests
         var request = new TestRequest();
 
         // Assert
-        Assert.IsInstanceOfType(request, typeof(IRequest<string>));
+        Assert.IsInstanceOfType(request, typeof(MediatR.IRequest<string>));
     }
 
     [TestMethod]
@@ -22,7 +23,7 @@ public class DispatcherInterfaceTests
         var handler = new TestRequestHandler();
 
         // Assert
-        Assert.IsInstanceOfType(handler, typeof(IRequestHandler<TestRequest, string>));
+        Assert.IsInstanceOfType(handler, typeof(MediatR.IRequestHandler<TestRequest, string>));
     }
 
     [TestMethod]
@@ -33,15 +34,15 @@ public class DispatcherInterfaceTests
 
         // Assert
         Assert.IsInstanceOfType(domainEvent, typeof(IDomainEvent));
-        Assert.IsInstanceOfType(domainEvent, typeof(IRequest<Unit>));
+        Assert.IsInstanceOfType(domainEvent, typeof(INotification));
     }
 
     [TestMethod]
     public void Unit_HasValueInstance()
     {
         // Arrange & Act
-        var unit1 = Unit.Value;
-        var unit2 = Unit.Value;
+        var unit1 = MediatR.Unit.Value;
+        var unit2 = MediatR.Unit.Value;
 
         // Assert
         Assert.AreEqual(unit1, unit2);
@@ -56,25 +57,25 @@ public class DispatcherInterfaceTests
         var behavior = new TestPipelineBehavior();
 
         // Assert
-        Assert.IsInstanceOfType(behavior, typeof(IPipelineBehavior<TestRequest, string>));
+        Assert.IsInstanceOfType(behavior, typeof(MediatR.IPipelineBehavior<TestRequest, string>));
     }
 
     // Test implementations
-    private record TestRequest : IRequest<string>;
+    private record TestRequest : MediatR.IRequest<string>;
 
     private record TestDomainEvent(string Data) : IDomainEvent;
 
-    private class TestRequestHandler : IRequestHandler<TestRequest, string>
+    private class TestRequestHandler : MediatR.IRequestHandler<TestRequest, string>
     {
-        public Task<string> HandleAsync(TestRequest request, CancellationToken cancellationToken = default)
+        public Task<string> Handle(TestRequest request, CancellationToken cancellationToken)
         {
             return Task.FromResult("Test Response");
         }
     }
 
-    private class TestPipelineBehavior : IPipelineBehavior<TestRequest, string>
+    private class TestPipelineBehavior : MediatR.IPipelineBehavior<TestRequest, string>
     {
-        public Task<string> HandleAsync(TestRequest request, Func<Task<string>> next, CancellationToken cancellationToken = default)
+        public Task<string> Handle(TestRequest request, MediatR.RequestHandlerDelegate<string> next, CancellationToken cancellationToken)
         {
             return next();
         }

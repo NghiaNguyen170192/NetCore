@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using NetCore.Application.Messaging;
-using NetCore.Domain.Messaging;
 using NetCore.Infrastructure.Database;
 
 namespace NetCore.Application.Tests;
@@ -15,25 +14,25 @@ public class BaseTest
             .Options;
 
         var services = new ServiceCollection();
-        services.AddScoped<IDispatcher, Dispatcher>();
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<BaseTest>());
         var serviceProvider = services.BuildServiceProvider();
 
-        var dispatcher = serviceProvider.GetRequiredService<IDispatcher>();
-        var databaseContext = new ApplicationDatabaseContext(options, dispatcher);
+        var publisher = serviceProvider.GetRequiredService<IPublisher>();
+        var databaseContext = new ApplicationDatabaseContext(options, publisher);
         await databaseContext.Database.EnsureCreatedAsync();
 
         return databaseContext;
     }
 
-    protected static IDispatcher GetDispatcher(IServiceProvider? serviceProvider = null)
+    protected static IMediator GetMediator(IServiceProvider? serviceProvider = null)
     {
         if (serviceProvider != null)
         {
-            return serviceProvider.GetRequiredService<IDispatcher>();
+            return serviceProvider.GetRequiredService<IMediator>();
         }
 
         var services = new ServiceCollection();
-        services.AddScoped<IDispatcher, Dispatcher>();
-        return services.BuildServiceProvider().GetRequiredService<IDispatcher>();
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<BaseTest>());
+        return services.BuildServiceProvider().GetRequiredService<IMediator>();
     }
 }

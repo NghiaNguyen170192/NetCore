@@ -1,22 +1,22 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using NetCore.Application.Country.Create;
 using NetCore.Application.Country.DTOs;
-using NetCore.Domain.Messaging;
+using NetCore.Application.Country.QueryCountries;
 using System.Net;
 
 namespace NetCore.Api.Controllers;
 
 [Route("~/api/v1/countries")]
-public class CountryController : AuthorizedBaseController
+public class CountryController(IMediator mediator) : AuthorizedBaseController
 {
     [HttpPost]
     [ProducesResponseType((int)HttpStatusCode.Created)]
     public async Task<ActionResult> Create([FromBody] CreateCountriesCommand request)
     {
-        //var ids = await mediator.Send(request);
-        //return Ok(ids);
-        return Ok();
+        var ids = await mediator.Send(request);
+        return Ok(ids);
     }
 
     /// <summary>
@@ -28,8 +28,7 @@ public class CountryController : AuthorizedBaseController
 
     public async Task<ActionResult<IQueryable<QueryCountryDto>>> GetCountries()
     {
-        //var response = await mediator.Send(new QueryCountries());
-        //return Ok(response);
-        return Ok();
+        var response = await mediator.Send(new QueryCountries());
+        return Ok(response);
     }
 }

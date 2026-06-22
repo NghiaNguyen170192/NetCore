@@ -1,5 +1,5 @@
+using MediatR;
 using Microsoft.Extensions.Logging;
-using NetCore.Domain.Messaging;
 
 namespace NetCore.Application.Behaviors;
 
@@ -9,7 +9,7 @@ namespace NetCore.Application.Behaviors;
 /// <typeparam name="TRequest">The request type.</typeparam>
 /// <typeparam name="TResponse">The response type.</typeparam>
 public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
-    where TRequest : IRequest<TResponse>
+    where TRequest : notnull
 {
     private readonly ILogger<LoggingBehavior<TRequest, TResponse>> logger;
 
@@ -18,10 +18,10 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
         this.logger = logger ?? throw new ArgumentNullException(nameof(logger));
     }
 
-    public async Task<TResponse> HandleAsync(
+    public async Task<TResponse> Handle(
         TRequest request,
-        Func<Task<TResponse>> next,
-        CancellationToken cancellationToken = default)
+        RequestHandlerDelegate<TResponse> next,
+        CancellationToken cancellationToken)
     {
         var requestName = typeof(TRequest).Name;
 

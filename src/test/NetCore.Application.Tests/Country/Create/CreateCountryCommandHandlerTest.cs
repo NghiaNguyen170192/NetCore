@@ -41,7 +41,7 @@ public class CreateCountryCommandHandlerTest : BaseTest
         var handler = new CreateCountriesCommandHandler(unitOfWork, countryRepository, cacheRepository);
 
         // Act
-        var ids = await handler.HandleAsync(commands, default);
+        var ids = await handler.Handle(commands, default);
 
         // Assert
         Assert.IsNotNull(ids);
@@ -64,7 +64,7 @@ public class CreateCountryCommandHandlerTest : BaseTest
         var handler = new CreateCountriesCommandHandler(unitOfWork, countryRepository, cacheRepository);
 
         // Act
-        var id = await handler.HandleAsync(command, default);
+        var id = await handler.Handle(command, default);
 
         // Assert
         Assert.AreNotEqual(id, Guid.Empty);
