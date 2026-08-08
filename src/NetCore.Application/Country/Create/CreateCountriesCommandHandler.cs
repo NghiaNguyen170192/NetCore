@@ -1,17 +1,11 @@
-﻿using MediatR;
-using NetCore.Domain.IRepositories;
+﻿using NetCore.Domain.IRepositories;
 using NetCore.Domain.SharedKernel;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace NetCore.Application.Country.Create;
 
 public class CreateCountriesCommandHandler(
     IUnitOfWork unitOfWork,
-    ICountryRepository countryRepository,
-    ICacheRepository<Domain.Entities.Country> cacheRepository)
+    ICountryRepository countryRepository)
     : MediatR.IRequestHandler<CreateCountriesCommand, IEnumerable<Guid>>,
       MediatR.IRequestHandler<CreateCountryCommand, Guid>
 {
@@ -23,7 +17,8 @@ public class CreateCountriesCommandHandler(
         await countryRepository.AddAsync(countries, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        await cacheRepository.AddAsync(countries);
+        //TODO cache doesnt work
+        //await cacheRepository.AddAsync(countries);
 
         return countries.Select(x => x.Id);
     }
@@ -34,7 +29,8 @@ public class CreateCountriesCommandHandler(
         await countryRepository.AddAsync(country, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        await cacheRepository.AddAsync(country);
+        //TODO: Add to cache not using domain entity, but using a DTO or a cache model to avoid caching domain entities directly.
+        //await cacheRepository.AddAsync(country);
 
         return country.Id;
     }

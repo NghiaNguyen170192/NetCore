@@ -8,14 +8,12 @@ public class UpdateCountryCommandHandlerTest : BaseTest
 {
     private readonly ICountryRepository countryRepository;
     private readonly IUnitOfWork unitOfWork;
-    private readonly MockCacheRepository<Domain.Entities.Country> cacheRepository;
 
     public UpdateCountryCommandHandlerTest()
     {
         var context = GetContext().Result;
         unitOfWork = context;
         countryRepository = new CountryRepository(context);
-        cacheRepository = new MockCacheRepository<Domain.Entities.Country>();
     }
 
     [TestMethod]
@@ -28,7 +26,7 @@ public class UpdateCountryCommandHandlerTest : BaseTest
         await unitOfWork.SaveChangesAsync(default);
 
         var updateCommand = new UpdateCountryCommand(country.Id, "Updated Name", "002", "UP", "UPD");
-        var handler = new UpdateCountriesCommandHandler(unitOfWork, countryRepository, cacheRepository);
+        var handler = new UpdateCountriesCommandHandler(unitOfWork, countryRepository);
 
         // Act
         var result = await handler.Handle(updateCommand, default);
@@ -41,8 +39,6 @@ public class UpdateCountryCommandHandlerTest : BaseTest
         Assert.AreEqual("002", updatedCountry.CountryCode);
         Assert.AreEqual("UP", updatedCountry.Alpha2);
         Assert.AreEqual("UPD", updatedCountry.Alpha3);
-
-        Assert.AreEqual(1, cacheRepository.UpdateAsyncCallCount);
     }
 
     [TestMethod]
@@ -52,14 +48,13 @@ public class UpdateCountryCommandHandlerTest : BaseTest
         // Arrange
         var nonExistentId = Guid.NewGuid();
         var updateCommand = new UpdateCountryCommand(nonExistentId, "Test", "001", "TS", "TST");
-        var handler = new UpdateCountriesCommandHandler(unitOfWork, countryRepository, cacheRepository);
+        var handler = new UpdateCountriesCommandHandler(unitOfWork, countryRepository);
 
         // Act
         var result = await handler.Handle(updateCommand, default);
 
         // Assert
         Assert.IsFalse(result);
-        Assert.AreEqual(0, cacheRepository.UpdateAsyncCallCount);
     }
 
     [TestMethod]
@@ -78,11 +73,11 @@ public class UpdateCountryCommandHandlerTest : BaseTest
         {
             new UpdateCountryCommand(country1.Id, "Updated 1", "101", "U1", "UPD1"),
             new UpdateCountryCommand(country2.Id, "Updated 2", "102", "U2", "UPD2"),
-            new UpdateCountryCommand(country3.Id, "Updated 3", "103", "U3", "UPD3")
+            new UpdateCountryCommand(country3.Id, "Updated 3", "103", "U3", "UPD3"),
         };
 
         var command = new UpdateCountriesCommand(updateCommands);
-        var handler = new UpdateCountriesCommandHandler(unitOfWork, countryRepository, cacheRepository);
+        var handler = new UpdateCountriesCommandHandler(unitOfWork, countryRepository);
 
         // Act
         var result = await handler.Handle(command, default);
@@ -98,7 +93,5 @@ public class UpdateCountryCommandHandlerTest : BaseTest
 
         var updated3 = await countryRepository.FindByIdAsync(country3.Id);
         Assert.AreEqual("Updated 3", updated3.Name);
-
-        Assert.AreEqual(3, cacheRepository.UpdateAsyncCallCount);
     }
 }

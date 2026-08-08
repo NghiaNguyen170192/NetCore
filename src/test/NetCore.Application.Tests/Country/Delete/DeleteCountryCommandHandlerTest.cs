@@ -28,7 +28,7 @@ public class DeleteCountryCommandHandlerTest : BaseTest
         await unitOfWork.SaveChangesAsync(default);
 
         var deleteCommand = new DeleteCountryCommand(country.Id);
-        var handler = new DeleteCountriesCommandHandler(unitOfWork, countryRepository, cacheRepository);
+        var handler = new DeleteCountriesCommandHandler(unitOfWork, countryRepository);
 
         // Act
         var result = await handler.Handle(deleteCommand, default);
@@ -49,14 +49,13 @@ public class DeleteCountryCommandHandlerTest : BaseTest
         // Arrange
         var nonExistentId = Guid.NewGuid();
         var deleteCommand = new DeleteCountryCommand(nonExistentId);
-        var handler = new DeleteCountriesCommandHandler(unitOfWork, countryRepository, cacheRepository);
+        var handler = new DeleteCountriesCommandHandler(unitOfWork, countryRepository);
 
         // Act
         var result = await handler.Handle(deleteCommand, default);
 
         // Assert
         Assert.IsFalse(result);
-        Assert.AreEqual(0, cacheRepository.DeleteAsyncCallCount);
     }
 
     [TestMethod]
@@ -73,7 +72,7 @@ public class DeleteCountryCommandHandlerTest : BaseTest
 
         var deleteIds = new List<Guid> { country1.Id, country2.Id, country3.Id };
         var command = new DeleteCountriesCommand(deleteIds);
-        var handler = new DeleteCountriesCommandHandler(unitOfWork, countryRepository, cacheRepository);
+        var handler = new DeleteCountriesCommandHandler(unitOfWork, countryRepository);
 
         // Act
         var result = await handler.Handle(command, default);

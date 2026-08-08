@@ -25,7 +25,7 @@
   <!-- Dependencies (versions controlled centrally) -->
   <ItemGroup>
 	<PackageReference Include="Microsoft.AspNetCore.OData" />
-	<!-- Removed explicit Microsoft.OpenApi package to avoid runtime type conflicts with Swashbuckle.AspNetCore -->
+	<PackageReference Include="Microsoft.OpenApi" />
 	<PackageReference Include="Swashbuckle.AspNetCore" />
 	<PackageReference Include="Microsoft.Extensions.Http.Resilience" />
 	<PackageReference Include="Microsoft.Extensions.ServiceDiscovery" />

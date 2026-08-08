@@ -38,7 +38,7 @@ public class CreateCountryCommandHandlerTest : BaseTest
 
         var commands = new CreateCountriesCommand { Countries = list };
 
-        var handler = new CreateCountriesCommandHandler(unitOfWork, countryRepository, cacheRepository);
+        var handler = new CreateCountriesCommandHandler(unitOfWork, countryRepository);
 
         // Act
         var ids = await handler.Handle(commands, default);
@@ -61,7 +61,7 @@ public class CreateCountryCommandHandlerTest : BaseTest
     {
         // Arrange
         var command = new CreateCountryCommand("test country", "100", "tc", "tst");
-        var handler = new CreateCountriesCommandHandler(unitOfWork, countryRepository, cacheRepository);
+        var handler = new CreateCountriesCommandHandler(unitOfWork, countryRepository);
 
         // Act
         var id = await handler.Handle(command, default);

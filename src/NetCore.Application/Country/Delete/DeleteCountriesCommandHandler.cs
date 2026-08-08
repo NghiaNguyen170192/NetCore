@@ -6,8 +6,7 @@ namespace NetCore.Application.Country.Delete;
 
 public class DeleteCountriesCommandHandler(
     IUnitOfWork unitOfWork,
-    ICountryRepository countryRepository,
-    ICacheRepository<Domain.Entities.Country> cacheRepository)
+    ICountryRepository countryRepository)
     : IRequestHandler<DeleteCountriesCommand, bool>,
       IRequestHandler<DeleteCountryCommand, bool>
 {
@@ -21,7 +20,6 @@ public class DeleteCountriesCommandHandler(
             if (country is not null)
             {
                 countries.Add(country);
-                await cacheRepository.DeleteAsync(country);
             }
         }
 
@@ -41,9 +39,6 @@ public class DeleteCountriesCommandHandler(
 
         countryRepository.Delete(country);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        await cacheRepository.DeleteAsync(country);
-
         return true;
     }
 }

@@ -6,8 +6,7 @@ namespace NetCore.Application.Country.Update;
 
 public class UpdateCountriesCommandHandler(
     IUnitOfWork unitOfWork,
-    ICountryRepository countryRepository,
-    ICacheRepository<Domain.Entities.Country> cacheRepository)
+    ICountryRepository countryRepository)
     : IRequestHandler<UpdateCountriesCommand, bool>,
       IRequestHandler<UpdateCountryCommand, bool>
 {
@@ -19,7 +18,6 @@ public class UpdateCountriesCommandHandler(
             if (country is not null)
             {
                 countryCommand.UpdateEntity(country);
-                await cacheRepository.UpdateAsync(country);
             }
         }
 
@@ -37,10 +35,6 @@ public class UpdateCountriesCommandHandler(
 
         request.UpdateEntity(country);
         await unitOfWork.SaveChangesAsync(cancellationToken);
-
-        // Update cache
-        await cacheRepository.UpdateAsync(country);
-
         return true;
     }
 }
