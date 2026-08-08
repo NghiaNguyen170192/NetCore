@@ -16,8 +16,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\NetCore.Api\NetCore.Api.csproj" />
-		<ProjectReference Include="..\NetCore\NetCore.ServiceDefaults\NetCore.ServiceDefaults.csproj" />
+	<ProjectReference Include="..\NetCore.Api\NetCore.Api.csproj" />
+	<!-- Reference centralized service defaults at solution root to avoid duplicate copies -->
+	<ProjectReference Include="..\..\NetCore.ServiceDefaults\NetCore.ServiceDefaults.csproj" />
 	</ItemGroup>
 
 </Project>

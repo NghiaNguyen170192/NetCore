@@ -1,14 +1,14 @@
 ﻿using CsvHelper;
 using CsvHelper.Configuration;
+using MediatR;
 using NetCore.Application.Country.Create;
 using NetCore.Application.Country.CsvMap;
-using NetCore.Domain.Messaging;
 using NetCore.Migration.Common.Interface;
 using System.Globalization;
 
 namespace NetCore.Migration.Seeds.Base;
 
-public class CountrySeed(IDispatcher dispatcher) : IDataSeed
+public class CountrySeed(ISender dispatcher) : IDataSeed
 {
     private readonly string basePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "Seeds");
 
@@ -32,7 +32,7 @@ public class CountrySeed(IDispatcher dispatcher) : IDataSeed
 
         while (await csv.ReadAsync())
         {
-            await dispatcher.SendAsync(GetCommand(csv));
+            await dispatcher.Send(GetCommand(csv));
         }
     }
 

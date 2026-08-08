@@ -27,12 +27,12 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 
         logger.LogInformation("Handling {RequestName}", requestName);
 
-        try
-        {
-            var response = await next();
-            logger.LogInformation("Handled {RequestName} successfully", requestName);
-            return response;
-        }
+            try
+            {
+                var response = await next(cancellationToken);
+                logger.LogInformation("Handled {RequestName} successfully", requestName);
+                return response;
+            }
         catch (Exception ex)
         {
             logger.LogError(ex, "Error handling {RequestName}", requestName);

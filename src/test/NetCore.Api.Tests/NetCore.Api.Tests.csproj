@@ -23,6 +23,8 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\client\NetCore.Api\NetCore.Api.csproj" />
+		<ProjectReference Include="..\..\NetCore.ServiceDefaults\NetCore.ServiceDefaults.csproj" />
+		<ProjectReference Include="..\..\NetCore.ServiceDefaults\NetCore.ServiceDefaults.csproj" />
 	</ItemGroup>
 
 </Project>

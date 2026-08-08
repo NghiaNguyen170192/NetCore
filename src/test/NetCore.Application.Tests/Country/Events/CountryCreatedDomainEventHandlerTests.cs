@@ -1,5 +1,5 @@
 using NetCore.Domain.Events;
-using NetCore.Domain.Messaging;
+// removed dependency on NetCore.Domain.Messaging interfaces; tests now assert MediatR behavior
 using Microsoft.Extensions.Logging.Abstractions;
 using NetCore.Application.Country.Events;
 
@@ -25,7 +25,7 @@ public class CountryCreatedDomainEventHandlerTests
     }
 
     [TestMethod]
-    public void Handler_ImplementsIDomainEventHandler()
+    public void Handler_ImplementsINotificationHandler()
     {
         // Arrange
         var logger = new NullLogger<CountryCreatedDomainEventHandler>();
@@ -34,6 +34,6 @@ public class CountryCreatedDomainEventHandlerTests
         var handler = new CountryCreatedDomainEventHandler(logger);
 
         // Assert
-        Assert.IsInstanceOfType(handler, typeof(IDomainEventHandler<CountryCreatedDomainEvent>));
+        Assert.IsInstanceOfType(handler, typeof(INotificationHandler<CountryCreatedDomainEvent>));
     }
 }

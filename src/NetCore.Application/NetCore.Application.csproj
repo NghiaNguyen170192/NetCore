@@ -4,6 +4,9 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 	</PropertyGroup>
+	<ItemGroup>
+	  <Compile Remove="Messaging\Dispatcher.cs" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<AdditionalFiles Include="..\..\stylecop.json" Link="stylecop.json" />
@@ -16,5 +19,8 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\NetCore.Domain\NetCore.Domain.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Messaging\" />
 	</ItemGroup>
 </Project>

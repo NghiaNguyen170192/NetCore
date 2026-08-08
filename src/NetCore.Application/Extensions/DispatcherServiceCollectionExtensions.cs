@@ -1,7 +1,6 @@
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Application.Behaviors;
-using NetCore.Application.Messaging;
-using NetCore.Domain.Messaging;
 using System.Reflection;
 
 namespace NetCore.Application.Extensions;
@@ -26,42 +25,11 @@ public static class DispatcherServiceCollectionExtensions
             assemblies = new[] { Assembly.GetCallingAssembly() };
         }
 
-        // Register the dispatcher
-        services.AddScoped<IDispatcher, Dispatcher>();
-
-        // Register all request handlers
-        RegisterHandlers(services, assemblies);
-
-        // Register pipeline behaviors
+        // Register MediatR IMediator and handlers/behaviors
+        services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(assemblies));
         services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
         return services;
-    }
-
-    private static void RegisterHandlers(IServiceCollection services, Assembly[] assemblies)
-    {
-        // Find all types that implement IRequestHandler<,>
-        var handlerTypes = assemblies
-            .SelectMany(a => a.GetTypes())
-            .Where(t => t.IsClass && !t.IsAbstract && !t.IsGenericTypeDefinition)
-            .Select(t => new
-            {
-                Type = t,
-                Interfaces = t.GetInterfaces()
-                    .Where(i => i.IsGenericType &&
-                                i.GetGenericTypeDefinition() == typeof(IRequestHandler<,>))
-                    .ToList(),
-            })
-            .Where(x => x.Interfaces.Any())
-            .ToList();
-
-        foreach (var handlerInfo in handlerTypes)
-        {
-            foreach (var handlerInterface in handlerInfo.Interfaces)
-            {
-                services.AddScoped(handlerInterface, handlerInfo.Type);
-            }
-        }
     }
 
     /// <summary>

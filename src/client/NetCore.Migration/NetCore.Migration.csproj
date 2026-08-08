@@ -36,7 +36,7 @@
 		<ProjectReference Include="..\..\NetCore.Application\NetCore.Application.csproj" />
 		<ProjectReference Include="..\..\NetCore.Domain\NetCore.Domain.csproj" />
 		<ProjectReference Include="..\..\NetCore.Infrastructure.Database\NetCore.Infrastructure.Database.csproj" />
-		<ProjectReference Include="..\NetCore\NetCore.ServiceDefaults\NetCore.ServiceDefaults.csproj">
+		<ProjectReference Include="..\..\NetCore.ServiceDefaults\NetCore.ServiceDefaults.csproj">
 			<!-- Prevent ServiceDefaults content files from being copied -->
 			<PrivateAssets>contentfiles</PrivateAssets>
 		</ProjectReference>

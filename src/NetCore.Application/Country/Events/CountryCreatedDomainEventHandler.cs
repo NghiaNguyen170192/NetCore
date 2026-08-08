@@ -1,14 +1,13 @@
 using MediatR;
 using Microsoft.Extensions.Logging;
 using NetCore.Domain.Events;
-using NetCore.Domain.Messaging;
 
 namespace NetCore.Application.Country.Events;
 
 /// <summary>
 /// Example domain event handler for CountryCreatedDomainEvent.
 /// </summary>
-public class CountryCreatedDomainEventHandler : IDomainEventHandler<CountryCreatedDomainEvent>, INotificationHandler<CountryCreatedDomainEvent>
+public class CountryCreatedDomainEventHandler : INotificationHandler<CountryCreatedDomainEvent>
 {
     private readonly ILogger<CountryCreatedDomainEventHandler> logger;
 

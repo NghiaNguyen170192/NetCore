@@ -10,26 +10,24 @@
     <File Path="stylecop.json" />
   </Folder>
   <Folder Name="/client/">
-    <Project Path="client\NetCore.Api\NetCore.Api.csproj" Type="C#" />
-    <Project Path="client\NetCore.Migration\NetCore.Migration.csproj" Type="C#" />
-    <Project Path="client\NetCore.UI\NetCore.UI.csproj" Type="C#" />
-    <Project Path="client\NetCore.AppHost\NetCore.AppHost.csproj" Type="C#" />
+    <Project Path="client\NetCore.Api\NetCore.Api.csproj" />
+    <Project Path="client\NetCore.Migration\NetCore.Migration.csproj" />
+    <Project Path="client\NetCore.UI\NetCore.UI.csproj" />
+    <Project Path="client\NetCore.AppHost\NetCore.AppHost.csproj" />
     <Folder Name="/NetCore/">
       <Project Path="client\NetCore\NetCore.ServiceDefaults\NetCore.ServiceDefaults.csproj" Type="C#" />
     </Folder>
   </Folder>
   <Folder Name="/src/">
-    <Project Path="NetCore.Application\NetCore.Application.csproj" Type="C#" />
-    <Project Path="NetCore.Domain\NetCore.Domain.csproj" Type="C#" />
-    <Project Path="NetCore.Infrastructure.Database\NetCore.Infrastructure.Database.csproj" Type="C#" />
+    <Project Path="NetCore.Application\NetCore.Application.csproj" />
+    <Project Path="NetCore.Domain\NetCore.Domain.csproj" />
+    <Project Path="NetCore.Infrastructure.Database\NetCore.Infrastructure.Database.csproj" />
+    <Project Path="NetCore.ServiceDefaults/NetCore.ServiceDefaults.csproj" />
   </Folder>
   <Folder Name="/test/">
-    <Project Path="test\NetCore.Application.Tests\NetCore.Application.Tests.csproj" Type="C#" />
-    <Project Path="test\NetCore.Infrastructure.Database.Tests\NetCore.Infrastructure.Database.Tests.csproj" Type="C#" />
-    <Project Path="test\NetCore.Api.Tests\NetCore.Api.Tests.csproj" Type="C#" />
-    <Project Path="test\NetCore.Domain.Tests\NetCore.Domain.Tests.csproj" Type="C#" />
+    <Project Path="test\NetCore.Application.Tests\NetCore.Application.Tests.csproj" />
+    <Project Path="test\NetCore.Infrastructure.Database.Tests\NetCore.Infrastructure.Database.Tests.csproj" />
+    <Project Path="test\NetCore.Api.Tests\NetCore.Api.Tests.csproj" />
+    <Project Path="test\NetCore.Domain.Tests\NetCore.Domain.Tests.csproj" />
   </Folder>
-  <Properties>
-    <SolutionGuid>{84C310A6-A8D7-4AA3-82EA-8D5FDE8C8000}</SolutionGuid>
-  </Properties>
 </Solution>

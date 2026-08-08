@@ -1,5 +1,5 @@
 using MediatR;
-using NetCore.Domain.Messaging;
+// Removed dependency on NetCore.Domain.Messaging interfaces; use MediatR types directly in tests
 
 namespace NetCore.Domain.Tests.Messaging;
 
@@ -33,7 +33,6 @@ public class DispatcherInterfaceTests
         var domainEvent = new TestDomainEvent("TestData");
 
         // Assert
-        Assert.IsInstanceOfType(domainEvent, typeof(IDomainEvent));
         Assert.IsInstanceOfType(domainEvent, typeof(INotification));
     }
 
@@ -63,7 +62,7 @@ public class DispatcherInterfaceTests
     // Test implementations
     private record TestRequest : MediatR.IRequest<string>;
 
-    private record TestDomainEvent(string Data) : IDomainEvent;
+    private record TestDomainEvent(string Data) : INotification;
 
     private class TestRequestHandler : MediatR.IRequestHandler<TestRequest, string>
     {

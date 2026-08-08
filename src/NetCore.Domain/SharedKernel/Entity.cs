@@ -1,14 +1,14 @@
-﻿using NetCore.Domain.Messaging;
+﻿using MediatR;
 
 namespace NetCore.Domain.SharedKernel;
 
 public abstract class Entity
 {
-    private readonly List<IDomainEvent> domainEvents = [];
+    private readonly List<INotification> domainEvents = new();
 
     private int? requestedHashCode;
 
-    public IReadOnlyCollection<IDomainEvent> DomainEvents => domainEvents.AsReadOnly();
+    public IReadOnlyCollection<INotification> DomainEvents => domainEvents.AsReadOnly();
 
     public virtual Guid Id { get; set; }
 
@@ -20,12 +20,12 @@ public abstract class Entity
 
     public Guid ModifiedBy { get; set; }
 
-    protected void AddDomainEvent(IDomainEvent eventItem)
+    protected void AddDomainEvent(INotification eventItem)
     {
         domainEvents.Add(eventItem);
     }
 
-    protected void RemoveDomainEvent(IDomainEvent eventItem)
+    protected void RemoveDomainEvent(INotification eventItem)
     {
         domainEvents?.Remove(eventItem);
     }

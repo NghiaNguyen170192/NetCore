@@ -18,7 +18,8 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\NetCore.Application\NetCore.Application.csproj" />
 		<ProjectReference Include="..\..\NetCore.Infrastructure.Database\NetCore.Infrastructure.Database.csproj" />
-		<ProjectReference Include="..\NetCore\NetCore.ServiceDefaults\NetCore.ServiceDefaults.csproj" />
+		<!-- Reference the centralized service defaults at solution root -->
+		<ProjectReference Include="..\..\NetCore.ServiceDefaults\NetCore.ServiceDefaults.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>

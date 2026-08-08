@@ -1,4 +1,3 @@
-using NetCore.Domain.Messaging;
 using NetCore.Domain.SharedKernel;
 
 namespace NetCore.Domain.Tests.SharedKernel;
@@ -98,5 +97,5 @@ public class EntityTests
         Assert.AreEqual(hashCode1, hashCode2);
     }
 
-    private record TestDomainEvent : IDomainEvent;
+    private record TestDomainEvent : MediatR.INotification;
 }
