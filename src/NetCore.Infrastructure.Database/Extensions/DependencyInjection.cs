@@ -34,9 +34,18 @@ public static class DependencyInjection
 		services.Configure<CacheConfiguration>(configuration.GetSection("CacheConfiguration"));
 
 		// Distributed caching with Redis
-		// Uncomment to enable caching
-		services.AddSingleton(new RedisConnectionProvider(databaseConfiguration.RedisConnectionString));
-		services.AddScoped(typeof(ICacheRepository<>), typeof(DistributedCacheRepository<>));
+		// Attempt to register Redis provider; fallback to in-memory cache if Redis types are not available
+		try
+		{
+			services.AddSingleton(new RedisConnectionProvider(databaseConfiguration.RedisConnectionString));
+			services.AddScoped(typeof(ICacheRepository<>), typeof(DistributedCacheRepository<>));
+		}
+		catch
+		{
+			// If Redis.OM can't be initialized (e.g., missing DocumentAttribute on entities),
+			// use in-memory cache implementation as a safe fallback for local development.
+			services.AddScoped(typeof(ICacheRepository<>), typeof(InMemoryCacheRepository<>));
+		}
 
 		return services;
 	}

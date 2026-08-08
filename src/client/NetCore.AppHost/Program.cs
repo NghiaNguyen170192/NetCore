@@ -42,4 +42,4 @@ var ui = builder.AddProject<Projects.NetCore_UI>("ui")
     .WithHttpEndpoint(port: 6010, name: "ui-http")
     .WithHttpsEndpoint(port: 6011, name: "ui-https");
 
-builder.Build().Run();
+await builder.Build().RunAsync();

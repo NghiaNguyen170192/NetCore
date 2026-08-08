@@ -27,7 +27,19 @@ public class DistributedCacheRepository<T> : ICacheRepository<T>
     /// <param name="cacheOptions">The cache configuration options.</param>
     public DistributedCacheRepository(RedisConnectionProvider provider, IOptions<CacheConfiguration> cacheOptions)
     {
-        collection = (RedisCollection<T>)provider.RedisCollection<T>();
+        // Redis.OM requires entity root types to be decorated with [Document] attribute. If the
+        // entity type T is not decorated, RedisCollection construction will fail with an
+        // ArgumentException. We catch that and rethrow with a clearer message so the DI fallback
+        // can handle it.
+        try
+        {
+            collection = (RedisCollection<T>)provider.RedisCollection<T>();
+        }
+        catch (ArgumentException ex)
+        {
+            throw new InvalidOperationException($"Redis collection for type '{typeof(T).FullName}' cannot be created. Ensure the entity root type is decorated with [Document] attribute or disable Redis caching.", ex);
+        }
+
         cacheConfig = cacheOptions.Value;
         entityName = typeof(T).Name.ToLowerInvariant();
         defaultTtl = TimeSpan.FromMinutes(cacheConfig.DefaultTtlMinutes);
