@@ -17,6 +17,8 @@ public class ApplicationDatabaseContext(
 
     public DbSet<Country> Countries { get; set; }
 
+    public DbSet<IdempotencyLog> IdempotencyLogs { get; set; }
+
     protected override void OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder modelBuilder)
     {
         modelBuilder.SetDefaultValueTableName();

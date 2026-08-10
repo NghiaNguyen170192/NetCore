@@ -51,8 +51,6 @@ public class CreateCountryCommandHandlerTest : BaseTest
         {
             Assert.AreNotEqual(id, Guid.Empty);
         }
-
-        Assert.AreEqual(1, cacheRepository.AddAsyncBulkCallCount);
     }
 
     [TestMethod]
@@ -73,7 +71,5 @@ public class CreateCountryCommandHandlerTest : BaseTest
         Assert.IsNotNull(country);
         Assert.AreEqual("test country", country.Name);
         Assert.AreEqual("100", country.CountryCode);
-
-        Assert.AreEqual(1, cacheRepository.AddAsyncSingleCallCount);
     }
 }

@@ -11,6 +11,8 @@ public static class DependencyInjection
 		services.AddMediatR(cfg =>
 		{
 			cfg.RegisterServicesFromAssembly(typeof(AssemblyReference).Assembly);
+			// Add idempotency behavior before logging to catch duplicates early
+			cfg.AddOpenBehavior(typeof(IdempotencyBehavior<,>));
 			cfg.AddOpenBehavior(typeof(LoggingBehavior<,>));
 		});
 

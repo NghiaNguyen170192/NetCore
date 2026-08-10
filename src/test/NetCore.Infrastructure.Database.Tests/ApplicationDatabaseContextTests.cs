@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NetCore.Domain.Entities;
 using NetCore.Domain.Events;
 
@@ -17,6 +18,7 @@ public class ApplicationDatabaseContextTests
             .Options;
 
         var services = new ServiceCollection();
+        services.AddLogging();
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<ApplicationDatabaseContextTests>());
         var serviceProvider = services.BuildServiceProvider();
         var publisher = serviceProvider.GetRequiredService<IPublisher>();
@@ -44,10 +46,12 @@ public class ApplicationDatabaseContextTests
             .Options;
 
         var eventDispatched = false;
+        TestEventHandler.SetHandler(() => eventDispatched = true);
+
         var services = new ServiceCollection();
+        services.AddLogging();
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<ApplicationDatabaseContextTests>());
-        services.AddScoped<INotificationHandler<CountryCreatedDomainEvent>>(
-            _ => new TestEventHandler(() => eventDispatched = true));
+        services.AddScoped<INotificationHandler<CountryCreatedDomainEvent>, TestEventHandler>();
         var serviceProvider = services.BuildServiceProvider();
         var publisher = serviceProvider.GetRequiredService<IPublisher>();
 
@@ -116,16 +120,20 @@ public class ApplicationDatabaseContextTests
     // Test helpers
     private class TestEventHandler : INotificationHandler<CountryCreatedDomainEvent>
     {
-        private readonly Action onHandle;
+        private static Action? _onHandle;
 
-        public TestEventHandler(Action onHandle)
+        public TestEventHandler()
         {
-            this.onHandle = onHandle;
+        }
+
+        public static void SetHandler(Action onHandle)
+        {
+            _onHandle = onHandle;
         }
 
         public Task Handle(CountryCreatedDomainEvent notification, CancellationToken cancellationToken)
         {
-            onHandle();
+            _onHandle?.Invoke();
             return Task.CompletedTask;
         }
     }

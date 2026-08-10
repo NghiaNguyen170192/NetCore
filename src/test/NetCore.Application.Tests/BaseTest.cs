@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NetCore.Infrastructure.Database;
 
 namespace NetCore.Application.Tests;
@@ -14,6 +15,7 @@ public class BaseTest
             .Options;
 
         var services = new ServiceCollection();
+        services.AddLogging();
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<BaseTest>());
         var serviceProvider = services.BuildServiceProvider();
 
@@ -32,6 +34,7 @@ public class BaseTest
         }
 
         var services = new ServiceCollection();
+        services.AddLogging();
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<BaseTest>());
         return services.BuildServiceProvider().GetRequiredService<IMediator>();
     }

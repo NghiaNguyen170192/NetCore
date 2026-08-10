@@ -1,5 +1,8 @@
 ﻿using NetCore.Application.Extensions;
+using NetCore.Domain.SharedKernel;
 using NetCore.Infrastructure.Database.Extensions;
+using NetCore.Infrastructure.Database.Services;
+using NetCore.Infrastructure.Database.Middleware;
 using NetCore.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +18,10 @@ builder.AddDefaultOpenApi();
 
 builder.Services.AddProblemDetails();
 
+// Add correlation ID support
+builder.Services.AddScoped<ICorrelationIdAccessor>(sp => 
+    new CorrelationIdAccessor(sp.GetRequiredService<IHttpContextAccessor>()));
+
 // Dependency Injections
 builder.Services
     .AddApplication()
@@ -25,6 +32,10 @@ builder.Host.AddLogger("netcore-api");
 var app = builder.Build();
 
 app.UseDefaultOpenApi();
+
+// Use correlation ID middleware early in pipeline
+app.UseCorrelationId();
+
 app.MapDefaultEndpoints();
 
 await app.RunAsync();

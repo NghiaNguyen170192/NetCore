@@ -28,6 +28,7 @@ public static class DependencyInjection
 		});
 
 		services.AddScoped<ICountryRepository, CountryRepository>();
+		services.AddScoped<IIdempotencyRepository, IdempotencyRepository>();
 		services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDatabaseContext>());
 
 		// Cache configuration

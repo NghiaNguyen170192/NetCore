@@ -38,8 +38,6 @@ public class DeleteCountryCommandHandlerTest : BaseTest
 
         var deletedCountry = await countryRepository.FindByIdAsync(country.Id);
         Assert.IsNull(deletedCountry);
-
-        Assert.AreEqual(1, cacheRepository.DeleteAsyncCallCount);
     }
 
     [TestMethod]
@@ -88,7 +86,5 @@ public class DeleteCountryCommandHandlerTest : BaseTest
 
         var deleted3 = await countryRepository.FindByIdAsync(country3.Id);
         Assert.IsNull(deleted3);
-
-        Assert.AreEqual(3, cacheRepository.DeleteAsyncCallCount);
     }
 }

@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using NetCore.Application.Behaviors;
 
 namespace NetCore.Application.Tests.Messaging;
@@ -12,6 +13,7 @@ public class DispatcherTests
     {
         // Arrange
         var services = new ServiceCollection();
+        services.AddLogging();
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<DispatcherTests>());
         var serviceProvider = services.BuildServiceProvider();
         var mediator = serviceProvider.GetRequiredService<IMediator>();
@@ -29,10 +31,11 @@ public class DispatcherTests
     {
         // Arrange
         var services = new ServiceCollection();
+        services.AddLogging();
         services.AddMediatR(cfg =>
         {
             cfg.RegisterServicesFromAssemblyContaining<DispatcherTests>();
-            cfg.AddOpenBehavior(typeof(TestBehavior));
+            cfg.AddOpenBehavior(typeof(GenericTestBehavior<,>));
         });
         var serviceProvider = services.BuildServiceProvider();
         var mediator = serviceProvider.GetRequiredService<IMediator>();
@@ -72,6 +75,7 @@ public class DispatcherTests
     {
         // Arrange
         var services = new ServiceCollection();
+        services.AddLogging();
         services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<DispatcherTests>());
         var serviceProvider = services.BuildServiceProvider();
         var mediator = serviceProvider.GetRequiredService<IMediator>();
@@ -112,6 +116,22 @@ public class DispatcherTests
         {
             var result = await next();
             return $"Behavior: {result}";
+        }
+    }
+
+    private class GenericTestBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse> where TRequest : IRequest<TResponse>
+    {
+        public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
+        {
+            var result = await next();
+
+            // If TResponse is string, prepend "Behavior: "
+            if (result is string stringResult)
+            {
+                return (TResponse)(object)$"Behavior: {stringResult}";
+            }
+
+            return result;
         }
     }
 }
