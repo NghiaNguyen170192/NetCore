@@ -6,6 +6,7 @@ using NetCore.Donation.Application.Contact.DTOs;
 using NetCore.Donation.Application.Contact.GetContact;
 using NetCore.Donation.Application.Contact.QueryContacts;
 using NetCore.Donation.Application.Contact.SetActive;
+using NetCore.Donation.Application.Contact.SetPreferences;
 using NetCore.Donation.Application.Contact.Update;
 using System.Net;
 
@@ -78,6 +79,27 @@ public class ContactController(IMediator mediator) : AuthorizedBaseController
     [ProducesResponseType((int)HttpStatusCode.BadRequest)]
     [ProducesResponseType((int)HttpStatusCode.NotFound)]
     public async Task<ActionResult> SetActive(Guid id, [FromBody] SetContactActiveCommand request)
+    {
+        if (id != request.Id)
+        {
+            return BadRequest("The identifier in the route does not match the identifier in the payload.");
+        }
+
+        var updated = await mediator.Send(request);
+
+        if (!updated)
+        {
+            return NotFound();
+        }
+
+        return NoContent();
+    }
+
+    [HttpPatch("{id:guid}/preferences")]
+    [ProducesResponseType((int)HttpStatusCode.NoContent)]
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    [ProducesResponseType((int)HttpStatusCode.NotFound)]
+    public async Task<ActionResult> SetPreferences(Guid id, [FromBody] SetContactPreferencesCommand request)
     {
         if (id != request.Id)
         {

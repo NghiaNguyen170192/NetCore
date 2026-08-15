@@ -46,6 +46,24 @@ public class DonationEntityTests
     }
 
     [TestMethod]
+    public void ContactSetCommunicationPreferences_UpdatesFlags()
+    {
+        var contact = Contact.Create(
+            "Ada",
+            "Lovelace",
+            new DateOnly(1815, 12, 10),
+            "1 Computing Lane",
+            "ada@example.com",
+            "+61 400 000 000",
+            Guid.NewGuid());
+
+        contact.SetCommunicationPreferences(true, false);
+
+        Assert.IsTrue(contact.DoNotEmail);
+        Assert.IsFalse(contact.DoNotSms);
+    }
+
+    [TestMethod]
     public void JournalCreate_AllocatesAggregate()
     {
         var journal = Journal.Create();
