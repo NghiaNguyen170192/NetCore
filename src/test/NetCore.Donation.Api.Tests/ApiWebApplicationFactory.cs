@@ -1,42 +1,39 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using NetCore.Donation.Domain.Storage;
 using NetCore.Donation.Infrastructure.Database;
+using NetCore.Donation.Infrastructure.Storage;
 
 namespace NetCore.Donation.Api.Tests;
 
 public class ApiWebApplicationFactory : WebApplicationFactory<Program>
 {
+    private readonly string databaseName = $"InMemoryDbForTesting-{Guid.NewGuid()}";
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        builder.ConfigureServices(services =>
+        builder.ConfigureTestServices(services =>
         {
-            // Remove the existing DbContext registration
-            var descriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<ApplicationDatabaseContext>));
+            services.RemoveAll<DbContextOptions<ApplicationDatabaseContext>>();
+            services.RemoveAll<DbContextOptions>();
+            services.RemoveAll<IDbContextOptionsConfiguration<ApplicationDatabaseContext>>();
+            services.RemoveAll<ApplicationDatabaseContext>();
 
-            if (descriptor != null)
-            {
-                services.Remove(descriptor);
-            }
-
-            // Add DbContext using in-memory database for testing
             services.AddDbContext<ApplicationDatabaseContext>(options =>
             {
-                options.UseInMemoryDatabase("InMemoryDbForTesting");
+                options.UseInMemoryDatabase(databaseName);
             });
 
-            // Build the service provider
-            var sp = services.BuildServiceProvider();
-
-            // Create a scope to obtain a reference to the database context
-            using var scope = sp.CreateScope();
-            var scopedServices = scope.ServiceProvider;
-            var db = scopedServices.GetRequiredService<ApplicationDatabaseContext>();
-
-            // Ensure the database is created
-            db.Database.EnsureCreated();
+            services.RemoveAll<IReceiptDocumentStorage>();
+            services.RemoveAll<IReceiptDocumentGenerator>();
+            services.RemoveAll<Amazon.S3.IAmazonS3>();
+            services.AddSingleton<IReceiptDocumentStorage, InMemoryReceiptDocumentStorage>();
+            services.AddSingleton<IReceiptDocumentGenerator, BlankReceiptDocumentGenerator>();
         });
     }
 }

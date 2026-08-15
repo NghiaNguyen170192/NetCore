@@ -1,6 +1,7 @@
 using MediatR;
 using NetCore.Donation.Domain.IRepositories;
 using NetCore.Donation.Domain.SharedKernel;
+using NetCore.Donation.Domain.Storage;
 
 namespace NetCore.Donation.Application.Receipt.Create;
 
@@ -8,7 +9,9 @@ public class CreateReceiptCommandHandler(
     IUnitOfWork unitOfWork,
     IReceiptRepository receiptRepository,
     IContactRepository contactRepository,
-    ITransactionRepository transactionRepository)
+    ITransactionRepository transactionRepository,
+    IReceiptDocumentGenerator documentGenerator,
+    IReceiptDocumentStorage documentStorage)
     : IRequestHandler<CreateReceiptCommand, Guid>
 {
     public async Task<Guid> Handle(CreateReceiptCommand request, CancellationToken cancellationToken)
@@ -33,9 +36,27 @@ public class CreateReceiptCommandHandler(
         }
 
         var receipt = request.ToDbEntity();
+        await ReceiptDocumentService.AssignGeneratedDocumentAsync(
+            receipt,
+            documentGenerator,
+            documentStorage,
+            cancellationToken);
 
         await receiptRepository.AddAsync(receipt, cancellationToken);
-        await unitOfWork.SaveChangesAsync(cancellationToken);
+
+        try
+        {
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+        catch
+        {
+            if (!string.IsNullOrWhiteSpace(receipt.DocumentObjectKey))
+            {
+                await documentStorage.DeleteAsync(receipt.DocumentObjectKey, cancellationToken);
+            }
+
+            throw;
+        }
 
         return receipt.Id;
     }

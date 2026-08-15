@@ -6,12 +6,13 @@
 NetCore.Donation is a .NET 10 donation-management API based on the NetCore Clean Architecture template.
 
 The current local-first scaffold includes:
-- Country and contact management
+- Country and contact management (including `DoNotEmail` / `DoNotSms` preferences)
 - Payment methods and recurring payment schedules
-- Donation transactions and receipts
+- Donation transactions, journals, and receipts
+- Receipt PDF generation stored in MinIO (local) / AWS S3 (cloud-ready)
 - PostgreSQL persistence with EF Core migrations
 - MediatR CQRS, OData queries, Problem Details errors, health checks, and OpenTelemetry
-- .NET Aspire orchestration for PostgreSQL, Redis, migration/seeding, API, and the template UI
+- .NET Aspire orchestration for PostgreSQL, Redis, MinIO, migration/seeding, API, and the template UI
 
 Architecture:
 - Domain Driven Design
@@ -19,6 +20,7 @@ Architecture:
 - .NET Aspire
 - Docker
 - MediatR CQRS
+- S3-compatible object storage
 
 <br />
 
@@ -41,15 +43,20 @@ The Aspire AppHost creates the required local containers, applies EF Core migrat
    - **Aspire Dashboard**: use the URL printed by AppHost
    - **API**: http://localhost:6000 or https://localhost:6001
    - **UI**: http://localhost:6010 or https://localhost:6011
+   - **MinIO API / Console**: ports `9000` / `9001` (credentials `minioadmin` / `minioadmin`)
    - **API Swagger**: https://localhost:6001/swagger/index.html
 
 The Aspire AppHost will automatically:
-- Start PostgreSQL and Redis
+- Start PostgreSQL, Redis, and MinIO
 - Apply database migrations
-- Seed countries and a sample donation workflow
+- Seed countries, a journal, and a sample donation workflow (including a blank receipt PDF in MinIO)
 - Start the API service
 - Start the UI service
 - Provide live telemetry and logs
+
+Local Postgres password is configured in `src/client/NetCore.Donation.AppHost/appsettings.Development.json` under `Parameters:postgres-password` (development-only). MinIO uses `minioadmin` / `minioadmin`.
+
+If migration/API stay in **Waiting** after a restart: stop the previous AppHost, free ports `6000`/`6001`/`6010`/`6011`/`9000`/`9001`, and if Postgres was previously started with a different password, delete Docker volume `netcore.donation.apphost-*-postgres-data` once before starting again.
 
 ### API routes
 
@@ -58,8 +65,16 @@ The Aspire AppHost will automatically:
 - `/api/v1/payment-methods`
 - `/api/v1/payment-schedules`
 - `/api/v1/transactions`
+- `/api/v1/journals`
 - `/api/v1/receipts`
 - `/health`
+
+### Receipt content negotiation
+
+`GET /api/v1/receipts/{id}` returns JSON metadata by default (`Accept: application/json` or `*/*`).  
+Send `Accept: application/pdf` on the same URI to download the stored receipt PDF. Unsupported media types return `406`.
+
+`POST /api/v1/receipts` creates the receipt record, generates a blank PDF, uploads it to object storage, and persists document metadata.
 
 <br />
 

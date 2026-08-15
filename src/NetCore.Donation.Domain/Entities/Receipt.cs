@@ -14,6 +14,16 @@ public class Receipt : Entity, IAggregateRoot
 
     public Transaction Transaction { get; private set; }
 
+    public string DocumentObjectKey { get; private set; }
+
+    public string DocumentFileName { get; private set; }
+
+    public string DocumentContentType { get; private set; }
+
+    public DateTime? DocumentGeneratedAtUtc { get; private set; }
+
+    public long? DocumentSizeBytes { get; private set; }
+
     public static Receipt Create(Guid contactId, Guid? transactionId = null)
     {
         Validate(contactId, transactionId);
@@ -35,6 +45,40 @@ public class Receipt : Entity, IAggregateRoot
     }
 
     public void ClearTransaction() => TransactionId = null;
+
+    public void AssignDocument(
+        string objectKey,
+        string fileName,
+        string contentType,
+        long sizeBytes,
+        DateTime generatedAtUtc)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(objectKey);
+        ArgumentException.ThrowIfNullOrWhiteSpace(fileName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(contentType);
+
+        if (sizeBytes < 0)
+        {
+            throw new ArgumentOutOfRangeException(nameof(sizeBytes), "Document size cannot be negative.");
+        }
+
+        DocumentObjectKey = objectKey.Trim();
+        DocumentFileName = fileName.Trim();
+        DocumentContentType = contentType.Trim();
+        DocumentSizeBytes = sizeBytes;
+        DocumentGeneratedAtUtc = generatedAtUtc;
+    }
+
+    public void ClearDocument()
+    {
+        DocumentObjectKey = null;
+        DocumentFileName = null;
+        DocumentContentType = null;
+        DocumentSizeBytes = null;
+        DocumentGeneratedAtUtc = null;
+    }
+
+    public bool HasDocument => !string.IsNullOrWhiteSpace(DocumentObjectKey);
 
     private static void Validate(Guid contactId, Guid? transactionId)
     {

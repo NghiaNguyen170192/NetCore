@@ -16,6 +16,19 @@ public static class DependencyInjection
 		var databaseConfiguration = new DatabaseConfiguration();
 		configuration.GetSection("Database").Bind(databaseConfiguration);
 
+		// Aspire WithReference injects ConnectionStrings__{resourceName}. Prefer those over local appsettings.
+		var aspireApplicationConnectionString = configuration.GetConnectionString("netcore-donation-db");
+		if (!string.IsNullOrWhiteSpace(aspireApplicationConnectionString))
+		{
+			databaseConfiguration.ApplicationConnectionString = aspireApplicationConnectionString;
+		}
+
+		var aspireRedisConnectionString = configuration.GetConnectionString("redis");
+		if (!string.IsNullOrWhiteSpace(aspireRedisConnectionString))
+		{
+			databaseConfiguration.RedisConnectionString = aspireRedisConnectionString;
+		}
+
 		services.AddDbContext<ApplicationDatabaseContext>(builder =>
 		{
 			builder.UseNpgsql(
@@ -33,6 +46,7 @@ public static class DependencyInjection
 		services.AddScoped<IPaymentScheduleRepository, PaymentScheduleRepository>();
 		services.AddScoped<ITransactionRepository, TransactionRepository>();
 		services.AddScoped<IReceiptRepository, ReceiptRepository>();
+		services.AddScoped<IJournalRepository, JournalRepository>();
 		services.AddScoped<IIdempotencyRepository, IdempotencyRepository>();
 		services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDatabaseContext>());
 

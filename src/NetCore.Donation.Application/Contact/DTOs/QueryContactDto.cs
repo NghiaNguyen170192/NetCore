@@ -28,6 +28,12 @@ public sealed record QueryContactDto
     [JsonPropertyName("is-active")]
     public bool IsActive { get; set; }
 
+    [JsonPropertyName("do-not-email")]
+    public bool DoNotEmail { get; set; }
+
+    [JsonPropertyName("do-not-sms")]
+    public bool DoNotSms { get; set; }
+
     [JsonPropertyName("country-id")]
     public Guid CountryId { get; set; }
 

@@ -10,4 +10,6 @@ public sealed record UpdateContactCommand(
     string AddressLine,
     string Email,
     string PhoneNumber,
-    Guid CountryId) : IRequest<bool>;
+    Guid CountryId,
+    bool DoNotEmail,
+    bool DoNotSms) : IRequest<bool>;

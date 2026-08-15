@@ -18,6 +18,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\..\NetCore.Donation.Application\NetCore.Donation.Application.csproj" />
 		<ProjectReference Include="..\..\NetCore.Donation.Infrastructure.Database\NetCore.Donation.Infrastructure.Database.csproj" />
+		<ProjectReference Include="..\..\NetCore.Donation.Infrastructure.Storage\NetCore.Donation.Infrastructure.Storage.csproj" />
 		<!-- Reference the centralized service defaults at solution root -->
 		<ProjectReference Include="..\..\NetCore.Donation.ServiceDefaults\NetCore.Donation.ServiceDefaults.csproj" />
 	</ItemGroup>

@@ -48,7 +48,9 @@ public class UpdateContactCommandHandlerTest : BaseTest
             "2 Analytical Engine Way",
             "augusta@example.com",
             "999888",
-            country.Id);
+            country.Id,
+            true,
+            false);
 
         var handler = new UpdateContactCommandHandler(unitOfWork, contactRepository, countryRepository);
 
@@ -62,6 +64,8 @@ public class UpdateContactCommandHandlerTest : BaseTest
         Assert.IsNotNull(updated);
         Assert.AreEqual("Augusta", updated.FirstName);
         Assert.AreEqual("augusta@example.com", updated.Email);
+        Assert.IsTrue(updated.DoNotEmail);
+        Assert.IsFalse(updated.DoNotSms);
     }
 
     [TestMethod]
@@ -76,7 +80,9 @@ public class UpdateContactCommandHandlerTest : BaseTest
             "2 Analytical Engine Way",
             "augusta@example.com",
             "999888",
-            Guid.NewGuid());
+            Guid.NewGuid(),
+            false,
+            true);
 
         var handler = new UpdateContactCommandHandler(unitOfWork, contactRepository, countryRepository);
 

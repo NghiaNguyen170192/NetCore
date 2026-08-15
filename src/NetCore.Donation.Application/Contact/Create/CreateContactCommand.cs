@@ -9,4 +9,6 @@ public sealed record CreateContactCommand(
     string AddressLine,
     string Email,
     string PhoneNumber,
-    Guid CountryId) : IRequest<Guid>;
+    Guid CountryId,
+    bool DoNotEmail = false,
+    bool DoNotSms = false) : IRequest<Guid>;

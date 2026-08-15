@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using NetCore.Donation.Application.Extensions;
 using NetCore.Donation.Infrastructure.Database.AppSettingConfigurations;
 using NetCore.Donation.Infrastructure.Database.Extensions;
+using NetCore.Donation.Infrastructure.Storage;
 using NetCore.Donation.Migration;
 using NetCore.Donation.Migration.Extensions;
 
@@ -14,9 +15,22 @@ var host = Host
 	.AddSharedConfiguration()
 	.ConfigureServices((context, services) =>
 	{
+		var applicationConnectionString = context.Configuration.GetConnectionString("netcore-donation-db");
+		if (!string.IsNullOrWhiteSpace(applicationConnectionString))
+		{
+			context.Configuration["Database:ApplicationConnectionString"] = applicationConnectionString;
+		}
+
+		var redisConnectionString = context.Configuration.GetConnectionString("redis");
+		if (!string.IsNullOrWhiteSpace(redisConnectionString))
+		{
+			context.Configuration["Database:RedisConnectionString"] = redisConnectionString;
+		}
+
 		var databaseConfiguration = context.Configuration.GetSection("Database").Get<DatabaseConfiguration>() ?? new();
 		services.AddApplication();
 		services.AddInfrastructure(context.Configuration);
+		services.AddObjectStorage(context.Configuration);
 		services.AddMigrationService();
 	})
 	.AddLogger("netcore-migration-logs")

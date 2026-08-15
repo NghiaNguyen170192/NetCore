@@ -13,6 +13,8 @@ public class ContactConfiguration : EntityTypeConfiguration<Contact>
         builder.Property(contact => contact.AddressLine).IsRequired().HasMaxLength(500);
         builder.Property(contact => contact.Email).IsRequired().HasMaxLength(320);
         builder.Property(contact => contact.PhoneNumber).IsRequired().HasMaxLength(32);
+        builder.Property(contact => contact.DoNotEmail).IsRequired().HasDefaultValue(false);
+        builder.Property(contact => contact.DoNotSms).IsRequired().HasDefaultValue(false);
         builder.HasIndex(contact => contact.Email);
         builder.HasIndex(contact => contact.CountryId);
 

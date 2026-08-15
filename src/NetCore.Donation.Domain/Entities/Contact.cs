@@ -20,6 +20,10 @@ public class Contact : Entity, IAggregateRoot
 
     public bool IsActive { get; private set; }
 
+    public bool DoNotEmail { get; private set; }
+
+    public bool DoNotSms { get; private set; }
+
     public Guid CountryId { get; private set; }
 
     public Country Country { get; private set; }
@@ -31,7 +35,9 @@ public class Contact : Entity, IAggregateRoot
         string addressLine,
         string email,
         string phoneNumber,
-        Guid countryId)
+        Guid countryId,
+        bool doNotEmail = false,
+        bool doNotSms = false)
     {
         Validate(firstName, lastName, dateOfBirth, addressLine, email, phoneNumber, countryId);
         return new Contact
@@ -43,6 +49,8 @@ public class Contact : Entity, IAggregateRoot
             Email = email.Trim(),
             PhoneNumber = phoneNumber.Trim(),
             IsActive = true,
+            DoNotEmail = doNotEmail,
+            DoNotSms = doNotSms,
             CountryId = countryId,
         };
     }
@@ -54,7 +62,9 @@ public class Contact : Entity, IAggregateRoot
         string addressLine,
         string email,
         string phoneNumber,
-        Guid countryId)
+        Guid countryId,
+        bool doNotEmail,
+        bool doNotSms)
     {
         Validate(firstName, lastName, dateOfBirth, addressLine, email, phoneNumber, countryId);
         FirstName = firstName.Trim();
@@ -64,11 +74,19 @@ public class Contact : Entity, IAggregateRoot
         Email = email.Trim();
         PhoneNumber = phoneNumber.Trim();
         CountryId = countryId;
+        DoNotEmail = doNotEmail;
+        DoNotSms = doNotSms;
     }
 
     public void Activate() => IsActive = true;
 
     public void Deactivate() => IsActive = false;
+
+    public void SetCommunicationPreferences(bool doNotEmail, bool doNotSms)
+    {
+        DoNotEmail = doNotEmail;
+        DoNotSms = doNotSms;
+    }
 
     private static void Validate(
         string firstName,

@@ -11,6 +11,8 @@ public static class UpdateContactExtension
             request.AddressLine,
             request.Email,
             request.PhoneNumber,
-            request.CountryId);
+            request.CountryId,
+            request.DoNotEmail,
+            request.DoNotSms);
     }
 }

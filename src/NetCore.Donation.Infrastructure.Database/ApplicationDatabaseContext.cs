@@ -27,6 +27,8 @@ public class ApplicationDatabaseContext(
 
     public DbSet<Receipt> Receipts { get; set; }
 
+    public DbSet<Journal> Journals { get; set; }
+
     public DbSet<IdempotencyLog> IdempotencyLogs { get; set; }
 
     protected override void OnModelCreating(Microsoft.EntityFrameworkCore.ModelBuilder modelBuilder)

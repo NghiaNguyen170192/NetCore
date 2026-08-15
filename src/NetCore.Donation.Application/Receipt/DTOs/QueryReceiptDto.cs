@@ -12,4 +12,22 @@ public sealed record QueryReceiptDto
 
     [JsonPropertyName("transaction-id")]
     public Guid? TransactionId { get; set; }
+
+    [JsonPropertyName("document-object-key")]
+    public string? DocumentObjectKey { get; set; }
+
+    [JsonPropertyName("document-file-name")]
+    public string? DocumentFileName { get; set; }
+
+    [JsonPropertyName("document-content-type")]
+    public string? DocumentContentType { get; set; }
+
+    [JsonPropertyName("document-generated-at-utc")]
+    public DateTime? DocumentGeneratedAtUtc { get; set; }
+
+    [JsonPropertyName("document-size-bytes")]
+    public long? DocumentSizeBytes { get; set; }
+
+    [JsonPropertyName("has-document")]
+    public bool HasDocument { get; set; }
 }

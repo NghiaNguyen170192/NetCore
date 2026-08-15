@@ -14,6 +14,8 @@ public static class QueryContactDtoExtension
             Email = contact.Email,
             PhoneNumber = contact.PhoneNumber,
             IsActive = contact.IsActive,
+            DoNotEmail = contact.DoNotEmail,
+            DoNotSms = contact.DoNotSms,
             CountryId = contact.CountryId,
             CountryName = contact.Country.Name,
         });

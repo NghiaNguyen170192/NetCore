@@ -10,6 +10,11 @@ public class ReceiptConfiguration : EntityTypeConfiguration<Receipt>
     {
         builder.HasIndex(receipt => receipt.ContactId);
         builder.HasIndex(receipt => receipt.TransactionId);
+        builder.HasIndex(receipt => receipt.DocumentObjectKey);
+
+        builder.Property(receipt => receipt.DocumentObjectKey).HasMaxLength(512);
+        builder.Property(receipt => receipt.DocumentFileName).HasMaxLength(256);
+        builder.Property(receipt => receipt.DocumentContentType).HasMaxLength(128);
 
         builder
             .HasOne(receipt => receipt.Contact)

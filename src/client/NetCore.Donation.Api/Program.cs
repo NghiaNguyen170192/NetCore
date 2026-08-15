@@ -4,6 +4,7 @@ using NetCore.Donation.Domain.SharedKernel;
 using NetCore.Donation.Infrastructure.Database.Extensions;
 using NetCore.Donation.Infrastructure.Database.Services;
 using NetCore.Donation.Infrastructure.Database.Middleware;
+using NetCore.Donation.Infrastructure.Storage;
 using NetCore.Donation.ServiceDefaults;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,17 +18,31 @@ if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ASPNETCORE_URLS")))
 builder.AddServiceDefaults();
 builder.AddDefaultOpenApi();
 
+// Prefer Aspire-injected connection strings over local appsettings defaults.
+var applicationConnectionString = builder.Configuration.GetConnectionString("netcore-donation-db");
+if (!string.IsNullOrWhiteSpace(applicationConnectionString))
+{
+    builder.Configuration["Database:ApplicationConnectionString"] = applicationConnectionString;
+}
+
+var redisConnectionString = builder.Configuration.GetConnectionString("redis");
+if (!string.IsNullOrWhiteSpace(redisConnectionString))
+{
+    builder.Configuration["Database:RedisConnectionString"] = redisConnectionString;
+}
+
 builder.Services.AddProblemDetails();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 // Add correlation ID support
-builder.Services.AddScoped<ICorrelationIdAccessor>(sp => 
+builder.Services.AddScoped<ICorrelationIdAccessor>(sp =>
     new CorrelationIdAccessor(sp.GetRequiredService<IHttpContextAccessor>()));
 
 // Dependency Injections
 builder.Services
     .AddApplication()
-    .AddInfrastructure(builder.Configuration);
+    .AddInfrastructure(builder.Configuration)
+    .AddObjectStorage(builder.Configuration);
 
 builder.Host.AddLogger("netcore-api");
 

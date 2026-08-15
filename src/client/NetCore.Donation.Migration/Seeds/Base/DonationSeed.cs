@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using NetCore.Donation.Application.Contact.Create;
+using NetCore.Donation.Application.Journal.Create;
 using NetCore.Donation.Application.PaymentMethod.Create;
 using NetCore.Donation.Application.PaymentSchedule.Create;
 using NetCore.Donation.Application.Receipt.Create;
@@ -27,6 +28,8 @@ public sealed class DonationSeed(
 
         var country = await countryRepository.GetAll().OrderBy(item => item.Name).FirstAsync();
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
+
+        await dispatcher.Send(new CreateJournalCommand());
 
         var contactId = await dispatcher.Send(new CreateContactCommand(
             "Sample",

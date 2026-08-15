@@ -9,6 +9,12 @@ public static class QueryReceiptDtoExtension
             Id = receipt.Id,
             ContactId = receipt.ContactId,
             TransactionId = receipt.TransactionId,
+            DocumentObjectKey = receipt.DocumentObjectKey,
+            DocumentFileName = receipt.DocumentFileName,
+            DocumentContentType = receipt.DocumentContentType,
+            DocumentGeneratedAtUtc = receipt.DocumentGeneratedAtUtc,
+            DocumentSizeBytes = receipt.DocumentSizeBytes,
+            HasDocument = receipt.DocumentObjectKey != null && receipt.DocumentObjectKey != string.Empty,
         });
     }
 }

@@ -25,6 +25,7 @@
 		<ProjectReference Include="..\..\NetCore.Donation.Domain\NetCore.Donation.Domain.csproj" />
 		<ProjectReference Include="..\..\NetCore.Donation.Application\NetCore.Donation.Application.csproj" />
 		<ProjectReference Include="..\..\NetCore.Donation.Infrastructure.Database\NetCore.Donation.Infrastructure.Database.csproj" />
+		<ProjectReference Include="..\..\NetCore.Donation.Infrastructure.Storage\NetCore.Donation.Infrastructure.Storage.csproj" />
 	</ItemGroup>
 
 </Project>
