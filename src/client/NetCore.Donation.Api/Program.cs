@@ -1,0 +1,44 @@
+using NetCore.Donation.Application.Extensions;
+using NetCore.Donation.Api;
+using NetCore.Donation.Domain.SharedKernel;
+using NetCore.Donation.Infrastructure.Database.Extensions;
+using NetCore.Donation.Infrastructure.Database.Services;
+using NetCore.Donation.Infrastructure.Database.Middleware;
+using NetCore.Donation.ServiceDefaults;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Override URLs if not set by Aspire
+if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ASPNETCORE_URLS")))
+{
+    builder.WebHost.UseUrls("http://localhost:6000", "https://localhost:6001");
+}
+
+builder.AddServiceDefaults();
+builder.AddDefaultOpenApi();
+
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
+// Add correlation ID support
+builder.Services.AddScoped<ICorrelationIdAccessor>(sp => 
+    new CorrelationIdAccessor(sp.GetRequiredService<IHttpContextAccessor>()));
+
+// Dependency Injections
+builder.Services
+    .AddApplication()
+    .AddInfrastructure(builder.Configuration);
+
+builder.Host.AddLogger("netcore-api");
+
+var app = builder.Build();
+
+app.UseExceptionHandler();
+app.UseDefaultOpenApi();
+
+// Use correlation ID middleware early in pipeline
+app.UseCorrelationId();
+
+app.MapDefaultEndpoints();
+
+await app.RunAsync();
