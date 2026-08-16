@@ -122,6 +122,13 @@ public sealed class PaymentScheduleDto
     public bool IsRecurring { get; set; }
 }
 
+public enum TransactionStatus
+{
+    Pending = 0,
+    Succeeded = 1,
+    Failed = 2,
+}
+
 public sealed class TransactionDto
 {
     [JsonPropertyName("id")]
@@ -141,6 +148,9 @@ public sealed class TransactionDto
 
     [JsonPropertyName("payment-type")]
     public PaymentType PaymentType { get; set; }
+
+    [JsonPropertyName("status")]
+    public TransactionStatus Status { get; set; }
 
     [JsonPropertyName("book-date")]
     public DateOnly BookDate { get; set; }
@@ -180,4 +190,94 @@ public sealed class ReceiptDto
 
     [JsonPropertyName("has-document")]
     public bool HasDocument { get; set; }
+}
+
+public sealed class OutboxMessageDto
+{
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
+
+    [JsonPropertyName("message-type")]
+    public string MessageType { get; set; } = string.Empty;
+
+    [JsonPropertyName("payload")]
+    public string Payload { get; set; } = string.Empty;
+
+    [JsonPropertyName("correlation-id")]
+    public string CorrelationId { get; set; } = string.Empty;
+
+    [JsonPropertyName("idempotency-key")]
+    public string IdempotencyKey { get; set; } = string.Empty;
+
+    [JsonPropertyName("occurred-at-utc")]
+    public DateTime OccurredAtUtc { get; set; }
+
+    [JsonPropertyName("processed-at-utc")]
+    public DateTime? ProcessedAtUtc { get; set; }
+
+    [JsonPropertyName("attempt-count")]
+    public int AttemptCount { get; set; }
+
+    [JsonPropertyName("last-error")]
+    public string? LastError { get; set; }
+}
+
+public sealed class DonationFlowStepDto
+{
+    [JsonPropertyName("event-name")]
+    public string EventName { get; set; } = string.Empty;
+
+    [JsonPropertyName("occurred-at-utc")]
+    public DateTime OccurredAtUtc { get; set; }
+
+    [JsonPropertyName("processed-at-utc")]
+    public DateTime? ProcessedAtUtc { get; set; }
+
+    [JsonPropertyName("summary")]
+    public string Summary { get; set; } = string.Empty;
+
+    [JsonPropertyName("correlation-id")]
+    public string CorrelationId { get; set; } = string.Empty;
+}
+
+public sealed class DonationFlowDto
+{
+    [JsonPropertyName("id")]
+    public Guid Id { get; set; }
+
+    [JsonPropertyName("payment-schedule-id")]
+    public Guid? PaymentScheduleId { get; set; }
+
+    [JsonPropertyName("contact-id")]
+    public Guid? ContactId { get; set; }
+
+    [JsonPropertyName("payment-method-id")]
+    public Guid? PaymentMethodId { get; set; }
+
+    [JsonPropertyName("transaction-id")]
+    public Guid? TransactionId { get; set; }
+
+    [JsonPropertyName("journal-id")]
+    public Guid? JournalId { get; set; }
+
+    [JsonPropertyName("receipt-id")]
+    public Guid? ReceiptId { get; set; }
+
+    [JsonPropertyName("amount")]
+    public decimal? Amount { get; set; }
+
+    [JsonPropertyName("status")]
+    public string Status { get; set; } = string.Empty;
+
+    [JsonPropertyName("money-path")]
+    public string MoneyPath { get; set; } = string.Empty;
+
+    [JsonPropertyName("started-at-utc")]
+    public DateTime StartedAtUtc { get; set; }
+
+    [JsonPropertyName("last-event-at-utc")]
+    public DateTime LastEventAtUtc { get; set; }
+
+    [JsonPropertyName("steps")]
+    public List<DonationFlowStepDto> Steps { get; set; } = [];
 }

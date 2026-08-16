@@ -2,6 +2,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.Net.Http.Headers;
+using NetCore.Donation.Api.OData;
 using NetCore.Donation.Application.Receipt.Create;
 using NetCore.Donation.Application.Receipt.Delete;
 using NetCore.Donation.Application.Receipt.DTOs;
@@ -26,17 +27,14 @@ public class ReceiptController(IMediator mediator) : AuthorizedBaseController
         return CreatedAtAction(nameof(GetReceipt), new { id }, new { id });
     }
 
-    /// <summary>
-    /// Return OData query from client
-    /// </summary>
-    /// <returns></returns>
     [HttpGet]
-    [EnableQuery(AllowedFunctions = AllowedFunctions.AllFunctions)]
-    public async Task<ActionResult<IQueryable<QueryReceiptDto>>> GetReceipts([FromQuery] Guid? contactId)
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    public async Task<IActionResult> GetReceipts(
+        [FromQuery] Guid? contactId,
+        ODataQueryOptions<QueryReceiptDto> options)
     {
         var response = await mediator.Send(new QueryReceipts(contactId));
-
-        return Ok(response);
+        return ODataPageResult.Create(response, options);
     }
 
     [HttpGet("{id:guid}")]

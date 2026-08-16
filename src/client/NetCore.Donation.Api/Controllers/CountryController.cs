@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using NetCore.Donation.Api.OData;
 using NetCore.Donation.Application.Country.Create;
 using NetCore.Donation.Application.Country.DTOs;
 using NetCore.Donation.Application.Country.QueryCountries;
@@ -19,16 +20,11 @@ public class CountryController(IMediator mediator) : AuthorizedBaseController
         return Ok(ids);
     }
 
-    /// <summary>
-    /// Return OData query from client
-    /// </summary>
-    /// <returns></returns>
     [HttpGet]
-    [EnableQuery(AllowedFunctions = AllowedFunctions.AllFunctions)]
-
-    public async Task<ActionResult<IQueryable<QueryCountryDto>>> GetCountries()
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    public async Task<IActionResult> GetCountries(ODataQueryOptions<QueryCountryDto> options)
     {
         var response = await mediator.Send(new QueryCountries());
-        return Ok(response);
+        return ODataPageResult.Create(response, options);
     }
 }

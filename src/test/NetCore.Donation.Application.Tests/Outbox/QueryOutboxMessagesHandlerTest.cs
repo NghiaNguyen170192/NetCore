@@ -33,7 +33,7 @@ public class QueryOutboxMessagesHandlerTest : BaseTest
             await context.SaveChangesAsync(CancellationToken.None);
 
             var handler = new QueryOutboxMessagesHandler(new OutboxMessageRepository(context));
-            var result = await handler.Handle(new QueryOutboxMessages(correlationId), CancellationToken.None);
+            var result = (await handler.Handle(new QueryOutboxMessages(correlationId), CancellationToken.None)).ToList();
 
             Assert.HasCount(2, result);
             Assert.IsTrue(result.All(message => message.CorrelationId == correlationId));
@@ -59,9 +59,9 @@ public class QueryOutboxMessagesHandlerTest : BaseTest
             await context.SaveChangesAsync(CancellationToken.None);
 
             var handler = new QueryOutboxMessagesHandler(new OutboxMessageRepository(context));
-            var result = await handler.Handle(
+            var result = (await handler.Handle(
                 new QueryOutboxMessages(IdempotencyKey: "idem-lookup"),
-                CancellationToken.None);
+                CancellationToken.None)).ToList();
 
             Assert.HasCount(1, result);
             Assert.AreEqual("idem-lookup", result[0].IdempotencyKey);

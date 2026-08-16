@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using NetCore.Donation.Api.OData;
 using NetCore.Donation.Application.Contact.Create;
 using NetCore.Donation.Application.Contact.DTOs;
 using NetCore.Donation.Application.Contact.GetContact;
@@ -25,17 +26,12 @@ public class ContactController(IMediator mediator) : AuthorizedBaseController
         return CreatedAtAction(nameof(GetContact), new { id }, new { id });
     }
 
-    /// <summary>
-    /// Return OData query from client
-    /// </summary>
-    /// <returns></returns>
     [HttpGet]
-    [EnableQuery(AllowedFunctions = AllowedFunctions.AllFunctions)]
-    public async Task<ActionResult<IQueryable<QueryContactDto>>> GetContacts()
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    public async Task<IActionResult> GetContacts(ODataQueryOptions<QueryContactDto> options)
     {
         var response = await mediator.Send(new QueryContacts());
-
-        return Ok(response);
+        return ODataPageResult.Create(response, options);
     }
 
     [HttpGet("{id:guid}")]

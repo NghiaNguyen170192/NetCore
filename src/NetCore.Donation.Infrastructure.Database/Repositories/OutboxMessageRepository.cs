@@ -39,6 +39,14 @@ public class OutboxMessageRepository(ApplicationDatabaseContext applicationDatab
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<OutboxMessage>> ListAsync(CancellationToken cancellationToken)
+    {
+        return await applicationDatabaseContext.OutboxMessages
+            .AsNoTracking()
+            .OrderBy(message => message.OccurredAtUtc)
+            .ToListAsync(cancellationToken);
+    }
+
     public IQueryable<OutboxMessage> GetAll()
     {
         return applicationDatabaseContext.OutboxMessages.AsNoTracking();

@@ -8,6 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Radzen.Blazor" />
 		<ProjectReference Include="..\NetCore.Donation.WebClient\NetCore.Donation.WebClient.csproj" />
 		<ProjectReference Include="..\..\NetCore.Donation.ServiceDefaults\NetCore.Donation.ServiceDefaults.csproj" />
 	</ItemGroup>

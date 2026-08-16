@@ -4,49 +4,74 @@
 <PageTitle>Journals — Donation admin</PageTitle>
 
 <h1>Journals</h1>
+<p class="text-muted">Ledger lines for posted gifts. Filter with OData <code>$select</code>, <code>$filter</code>, and <code>$top</code>.</p>
 
 @if (!string.IsNullOrWhiteSpace(error))
 {
     <div class="alert alert-danger">@error</div>
 }
-else
-{
-    <div class="table-wrap">
-        <table class="table mb-0">
-            <thead>
-                <tr>
-                    <th>Created (UTC)</th>
-                    <th>Journal</th>
-                    <th>Transaction</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var journal in journals.OrderByDescending(item => item.CreatedDate))
-                {
-                    <tr>
-                        <td>@journal.CreatedDate.ToString("u")</td>
-                        <td><code>@journal.Id</code></td>
-                        <td><code>@journal.TransactionId</code></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}
+
+<RadzenStack Gap="1rem">
+    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" class="rz-p-3 rz-border-radius-1" Style="border: var(--rz-grid-cell-border);">
+        <RadzenCheckBox @bind-Value="@auto" Name="auto" />
+        <RadzenLabel Text="Auto filter" Component="auto" class="rz-me-6" />
+        <RadzenButton Text="Apply Filter" Click="@ApplyFilter" Disabled="@auto" Size="ButtonSize.Small" />
+    </RadzenStack>
+
+    <RadzenDataFilter @ref="dataFilter" Auto="@auto" TItem="JournalDto" ViewChanged="@(_ => grid.Reload())">
+        <Properties>
+            <RadzenDataFilterProperty Property="@nameof(JournalDto.CreatedDate)" Title="Created (UTC)" />
+            <RadzenDataFilterProperty Property="@nameof(JournalDto.TransactionId)" Title="Transaction ID" />
+            <RadzenDataFilterProperty Property="@nameof(JournalDto.Id)" Title="Journal ID" />
+        </Properties>
+    </RadzenDataFilter>
+
+    <RadzenDataGrid @ref="grid" TItem="JournalDto" Data="@items" Count="@count" LoadData="@LoadData"
+                    IsLoading="@loading" AllowPaging="true" AllowSorting="true" PageSize="20"
+                    PagerHorizontalAlign="HorizontalAlign.Left" Style="height: 520px">
+        <Columns>
+            <RadzenDataGridColumn Property="@nameof(JournalDto.CreatedDate)" Title="Created (UTC)" FormatString="{0:u}" />
+            <RadzenDataGridColumn Title="Journal">
+                <Template Context="journal"><code>@journal.Id</code></Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Title="Transaction">
+                <Template Context="journal"><code>@journal.TransactionId</code></Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+</RadzenStack>
 
 @code {
-    private IReadOnlyList<JournalDto> journals = [];
+    private const string Select = "Id,TransactionId,CreatedDate";
+    private bool auto = true;
+    private bool loading;
     private string? error;
+    private int count;
+    private IEnumerable<JournalDto> items = [];
+    private RadzenDataFilter<JournalDto> dataFilter = default!;
+    private RadzenDataGrid<JournalDto> grid = default!;
 
-    protected override async Task OnInitializedAsync()
+    private async Task ApplyFilter() => await dataFilter.Filter();
+
+    private async Task LoadData(LoadDataArgs args)
     {
+        loading = true;
         try
         {
-            journals = await Api.GetJournalsAsync();
+            var result = await Api.QueryJournalsAsync(RadzenODataQuery.From(args, dataFilter, Select));
+            items = result.Value;
+            count = result.Count;
+            error = null;
         }
         catch (Exception exception)
         {
             error = exception.Message;
+            items = [];
+            count = 0;
+        }
+        finally
+        {
+            loading = false;
         }
     }
 }

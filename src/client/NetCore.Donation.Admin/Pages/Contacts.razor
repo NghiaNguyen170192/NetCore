@@ -4,59 +4,81 @@
 <PageTitle>Contacts — Donation admin</PageTitle>
 
 <h1>Contacts</h1>
+<p class="text-muted">Filter and page contacts with Radzen DataFilter over OData <code>$select</code>, <code>$filter</code>, and <code>$top</code>.</p>
 
 @if (!string.IsNullOrWhiteSpace(error))
 {
     <div class="alert alert-danger">@error</div>
 }
-else
-{
-    <div class="table-wrap">
-        <table class="table mb-0">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>Country</th>
-                    <th>Active</th>
-                    <th>Prefs</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var contact in contacts)
-                {
-                    <tr>
-                        <td>@contact.FirstName @contact.LastName</td>
-                        <td>@contact.Email</td>
-                        <td>@contact.PhoneNumber</td>
-                        <td>@contact.CountryName</td>
-                        <td>@(contact.IsActive ? "Yes" : "No")</td>
-                        <td>
-                            @(contact.DoNotEmail ? "no email" : "email ok")
-                            /
-                            @(contact.DoNotSms ? "no SMS" : "SMS ok")
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}
+
+<RadzenStack Gap="1rem">
+    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" class="rz-p-3 rz-border-radius-1" Style="border: var(--rz-grid-cell-border);">
+        <RadzenCheckBox @bind-Value="@auto" Name="auto" />
+        <RadzenLabel Text="Auto filter" Component="auto" class="rz-me-6" />
+        <RadzenButton Text="Apply Filter" Click="@ApplyFilter" Disabled="@auto" Size="ButtonSize.Small" />
+    </RadzenStack>
+
+    <RadzenDataFilter @ref="dataFilter" Auto="@auto" TItem="ContactDto" ViewChanged="@(_ => grid.Reload())">
+        <Properties>
+            <RadzenDataFilterProperty Property="@nameof(ContactDto.FirstName)" Title="First name" />
+            <RadzenDataFilterProperty Property="@nameof(ContactDto.LastName)" Title="Last name" />
+            <RadzenDataFilterProperty Property="@nameof(ContactDto.Email)" Title="Email" />
+            <RadzenDataFilterProperty Property="@nameof(ContactDto.PhoneNumber)" Title="Phone" />
+            <RadzenDataFilterProperty Property="@nameof(ContactDto.CountryName)" Title="Country" />
+            <RadzenDataFilterProperty Property="@nameof(ContactDto.IsActive)" Title="Active" />
+        </Properties>
+    </RadzenDataFilter>
+
+    <RadzenDataGrid @ref="grid" TItem="ContactDto" Data="@items" Count="@count" LoadData="@LoadData"
+                    IsLoading="@loading" AllowPaging="true" AllowSorting="true" PageSize="20"
+                    PagerHorizontalAlign="HorizontalAlign.Left" Style="height: 520px">
+        <Columns>
+            <RadzenDataGridColumn Property="@nameof(ContactDto.FirstName)" Title="First name" />
+            <RadzenDataGridColumn Property="@nameof(ContactDto.LastName)" Title="Last name" />
+            <RadzenDataGridColumn Property="@nameof(ContactDto.Email)" Title="Email" />
+            <RadzenDataGridColumn Property="@nameof(ContactDto.PhoneNumber)" Title="Phone" />
+            <RadzenDataGridColumn Property="@nameof(ContactDto.CountryName)" Title="Country" />
+            <RadzenDataGridColumn Property="@nameof(ContactDto.IsActive)" Title="Active" />
+            <RadzenDataGridColumn Title="Prefs">
+                <Template Context="contact">
+                    @(contact.DoNotEmail ? "no email" : "email ok") / @(contact.DoNotSms ? "no SMS" : "SMS ok")
+                </Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+</RadzenStack>
 
 @code {
-    private IReadOnlyList<ContactDto> contacts = [];
+    private const string Select = "Id,FirstName,LastName,Email,PhoneNumber,CountryName,IsActive,DoNotEmail,DoNotSms";
+    private bool auto = true;
+    private bool loading;
     private string? error;
+    private int count;
+    private IEnumerable<ContactDto> items = [];
+    private RadzenDataFilter<ContactDto> dataFilter = default!;
+    private RadzenDataGrid<ContactDto> grid = default!;
 
-    protected override async Task OnInitializedAsync()
+    private async Task ApplyFilter() => await dataFilter.Filter();
+
+    private async Task LoadData(LoadDataArgs args)
     {
+        loading = true;
         try
         {
-            contacts = await Api.GetContactsAsync();
+            var result = await Api.QueryContactsAsync(RadzenODataQuery.From(args, dataFilter, Select));
+            items = result.Value;
+            count = result.Count;
+            error = null;
         }
         catch (Exception exception)
         {
             error = exception.Message;
+            items = [];
+            count = 0;
+        }
+        finally
+        {
+            loading = false;
         }
     }
 }

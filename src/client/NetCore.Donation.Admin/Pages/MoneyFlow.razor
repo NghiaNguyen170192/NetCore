@@ -1,0 +1,102 @@
+@page "/money-flow"
+@inject DonationApiClient Api
+
+<PageTitle>Money flow — Donation admin</PageTitle>
+
+<h1>Money flow</h1>
+<p class="text-muted">
+    Domain-event history from the outbox. Expand a row to see where the money went:
+    donor → payment schedule → transaction → journal + receipt.
+</p>
+
+@if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<RadzenStack Gap="1rem">
+    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" class="rz-p-3 rz-border-radius-1" Style="border: var(--rz-grid-cell-border);">
+        <RadzenCheckBox @bind-Value="@auto" Name="auto" />
+        <RadzenLabel Text="Auto filter" Component="auto" class="rz-me-6" />
+        <RadzenButton Text="Apply Filter" Click="@ApplyFilter" Disabled="@auto" Size="ButtonSize.Small" />
+    </RadzenStack>
+
+    <RadzenDataFilter @ref="dataFilter" Auto="@auto" TItem="DonationFlowDto" ViewChanged="@(_ => grid.Reload())">
+        <Properties>
+            <RadzenDataFilterProperty Property="@nameof(DonationFlowDto.Status)" Title="Status" />
+            <RadzenDataFilterProperty Property="@nameof(DonationFlowDto.Amount)" Title="Amount" />
+            <RadzenDataFilterProperty Property="@nameof(DonationFlowDto.MoneyPath)" Title="Money path" />
+            <RadzenDataFilterProperty Property="@nameof(DonationFlowDto.ContactId)" Title="Contact ID" />
+            <RadzenDataFilterProperty Property="@nameof(DonationFlowDto.PaymentScheduleId)" Title="Schedule ID" />
+        </Properties>
+    </RadzenDataFilter>
+
+    <RadzenDataGrid @ref="grid" TItem="DonationFlowDto" Data="@items" Count="@count" LoadData="@LoadData"
+                    IsLoading="@loading" AllowPaging="true" AllowSorting="true" PageSize="20"
+                    PagerHorizontalAlign="HorizontalAlign.Left" Style="height: 560px">
+        <Template Context="flow">
+            <ol class="flow-steps mb-0">
+                @foreach (var step in flow.Steps)
+                {
+                    <li>
+                        <strong>@step.EventName</strong>
+                        <span> — @step.Summary</span>
+                        <div class="text-muted small">
+                            @step.OccurredAtUtc.ToString("u")
+                            @if (step.ProcessedAtUtc is { } processed)
+                            {
+                                <span> · processed @processed.ToString("u")</span>
+                            }
+                        </div>
+                    </li>
+                }
+            </ol>
+        </Template>
+        <Columns>
+            <RadzenDataGridColumn Property="@nameof(DonationFlowDto.LastEventAtUtc)" Title="Last event" FormatString="{0:u}" Width="180px" />
+            <RadzenDataGridColumn Property="@nameof(DonationFlowDto.Amount)" Title="Amount" FormatString="{0:C}" Width="120px" />
+            <RadzenDataGridColumn Property="@nameof(DonationFlowDto.Status)" Title="Status" Width="110px" />
+            <RadzenDataGridColumn Property="@nameof(DonationFlowDto.MoneyPath)" Title="Money path" />
+            <RadzenDataGridColumn Title="Schedule" Width="110px">
+                <Template Context="flow">@RadzenODataQuery.ShortId(flow.PaymentScheduleId)</Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Title="Transaction" Width="110px">
+                <Template Context="flow">@RadzenODataQuery.ShortId(flow.TransactionId)</Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+</RadzenStack>
+
+@code {
+    private bool auto = true;
+    private bool loading;
+    private string? error;
+    private int count;
+    private IEnumerable<DonationFlowDto> items = [];
+    private RadzenDataFilter<DonationFlowDto> dataFilter = default!;
+    private RadzenDataGrid<DonationFlowDto> grid = default!;
+
+    private async Task ApplyFilter() => await dataFilter.Filter();
+
+    private async Task LoadData(LoadDataArgs args)
+    {
+        loading = true;
+        try
+        {
+            var result = await Api.QueryDonationFlowsAsync(RadzenODataQuery.From(args, dataFilter, string.Empty));
+            items = result.Value;
+            count = result.Count;
+            error = null;
+        }
+        catch (Exception exception)
+        {
+            error = exception.Message;
+            items = [];
+            count = 0;
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+}

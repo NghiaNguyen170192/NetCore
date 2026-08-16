@@ -5,30 +5,23 @@ using NetCore.Donation.Domain.IRepositories;
 namespace NetCore.Donation.Application.Outbox.QueryOutboxMessages;
 
 public class QueryOutboxMessagesHandler(IOutboxMessageRepository outboxMessageRepository)
-    : IRequestHandler<QueryOutboxMessages, IReadOnlyList<QueryOutboxMessageDto>>
+    : IRequestHandler<QueryOutboxMessages, IQueryable<QueryOutboxMessageDto>>
 {
-    public async Task<IReadOnlyList<QueryOutboxMessageDto>> Handle(
+    public Task<IQueryable<QueryOutboxMessageDto>> Handle(
         QueryOutboxMessages request,
         CancellationToken cancellationToken)
     {
-        var messages = await outboxMessageRepository.FindByTraceAsync(
-            request.CorrelationId,
-            request.IdempotencyKey,
-            cancellationToken);
+        var query = outboxMessageRepository.GetAll().ToQueryDto();
+        if (!string.IsNullOrWhiteSpace(request.CorrelationId))
+        {
+            query = query.Where(message => message.CorrelationId == request.CorrelationId);
+        }
 
-        return messages
-            .Select(message => new QueryOutboxMessageDto
-            {
-                Id = message.Id,
-                MessageType = message.MessageType,
-                Payload = message.Payload,
-                CorrelationId = message.CorrelationId,
-                IdempotencyKey = message.IdempotencyKey,
-                OccurredAtUtc = message.OccurredAtUtc,
-                ProcessedAtUtc = message.ProcessedAtUtc,
-                AttemptCount = message.AttemptCount,
-                LastError = message.LastError,
-            })
-            .ToList();
+        if (!string.IsNullOrWhiteSpace(request.IdempotencyKey))
+        {
+            query = query.Where(message => message.IdempotencyKey == request.IdempotencyKey);
+        }
+
+        return Task.FromResult(query);
     }
 }

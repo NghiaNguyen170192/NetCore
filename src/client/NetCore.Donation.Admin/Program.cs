@@ -1,5 +1,6 @@
 using NetCore.Donation.ServiceDefaults;
 using NetCore.Donation.WebClient;
+using Radzen;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,7 @@ builder.Services.AddHttpClient<DonationApiClient>(client =>
 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddRadzenComponents();
 
 var app = builder.Build();
 

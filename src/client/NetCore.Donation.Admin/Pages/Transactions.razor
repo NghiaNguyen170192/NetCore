@@ -4,55 +4,83 @@
 <PageTitle>Transactions — Donation admin</PageTitle>
 
 <h1>Transactions</h1>
+<p class="text-muted">Posted and pending gifts. Filter with OData <code>$select</code>, <code>$filter</code>, and <code>$top</code>.</p>
 
 @if (!string.IsNullOrWhiteSpace(error))
 {
     <div class="alert alert-danger">@error</div>
 }
-else
-{
-    <div class="table-wrap">
-        <table class="table mb-0">
-            <thead>
-                <tr>
-                    <th>Book date</th>
-                    <th>Amount</th>
-                    <th>Type</th>
-                    <th>Contact</th>
-                    <th>Schedule</th>
-                    <th>Id</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var transaction in transactions.OrderByDescending(item => item.BookDate))
-                {
-                    <tr>
-                        <td>@transaction.BookDate</td>
-                        <td>@transaction.Amount.ToString("C")</td>
-                        <td>@transaction.PaymentType</td>
-                        <td><code>@transaction.ContactId.ToString("N")[..8]</code></td>
-                        <td><code>@transaction.PaymentScheduleId.ToString("N")[..8]</code></td>
-                        <td><code>@transaction.Id.ToString("N")[..8]</code></td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-}
+
+<RadzenStack Gap="1rem">
+    <RadzenStack Orientation="Orientation.Horizontal" Gap="0.5rem" AlignItems="AlignItems.Center" class="rz-p-3 rz-border-radius-1" Style="border: var(--rz-grid-cell-border);">
+        <RadzenCheckBox @bind-Value="@auto" Name="auto" />
+        <RadzenLabel Text="Auto filter" Component="auto" class="rz-me-6" />
+        <RadzenButton Text="Apply Filter" Click="@ApplyFilter" Disabled="@auto" Size="ButtonSize.Small" />
+    </RadzenStack>
+
+    <RadzenDataFilter @ref="dataFilter" Auto="@auto" TItem="TransactionDto" ViewChanged="@(_ => grid.Reload())">
+        <Properties>
+            <RadzenDataFilterProperty Property="@nameof(TransactionDto.Amount)" Title="Amount" />
+            <RadzenDataFilterProperty Property="@nameof(TransactionDto.BookDate)" Title="Book date" />
+            <RadzenDataFilterProperty Property="@nameof(TransactionDto.PaymentType)" Title="Type" />
+            <RadzenDataFilterProperty Property="@nameof(TransactionDto.Status)" Title="Status" />
+            <RadzenDataFilterProperty Property="@nameof(TransactionDto.ContactId)" Title="Contact ID" />
+            <RadzenDataFilterProperty Property="@nameof(TransactionDto.PaymentScheduleId)" Title="Schedule ID" />
+        </Properties>
+    </RadzenDataFilter>
+
+    <RadzenDataGrid @ref="grid" TItem="TransactionDto" Data="@items" Count="@count" LoadData="@LoadData"
+                    IsLoading="@loading" AllowPaging="true" AllowSorting="true" PageSize="20"
+                    PagerHorizontalAlign="HorizontalAlign.Left" Style="height: 520px">
+        <Columns>
+            <RadzenDataGridColumn Property="@nameof(TransactionDto.BookDate)" Title="Book date" />
+            <RadzenDataGridColumn Property="@nameof(TransactionDto.Amount)" Title="Amount" FormatString="{0:C}" />
+            <RadzenDataGridColumn Property="@nameof(TransactionDto.PaymentType)" Title="Type" />
+            <RadzenDataGridColumn Property="@nameof(TransactionDto.Status)" Title="Status" />
+            <RadzenDataGridColumn Title="Contact">
+                <Template Context="transaction">@RadzenODataQuery.ShortId(transaction.ContactId)</Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Title="Schedule">
+                <Template Context="transaction">@RadzenODataQuery.ShortId(transaction.PaymentScheduleId)</Template>
+            </RadzenDataGridColumn>
+            <RadzenDataGridColumn Title="Id">
+                <Template Context="transaction">@RadzenODataQuery.ShortId(transaction.Id)</Template>
+            </RadzenDataGridColumn>
+        </Columns>
+    </RadzenDataGrid>
+</RadzenStack>
 
 @code {
-    private IReadOnlyList<TransactionDto> transactions = [];
+    private const string Select = "Id,Amount,PaymentScheduleId,ContactId,PaymentType,Status,BookDate,ReceivedDate";
+    private bool auto = true;
+    private bool loading;
     private string? error;
+    private int count;
+    private IEnumerable<TransactionDto> items = [];
+    private RadzenDataFilter<TransactionDto> dataFilter = default!;
+    private RadzenDataGrid<TransactionDto> grid = default!;
 
-    protected override async Task OnInitializedAsync()
+    private async Task ApplyFilter() => await dataFilter.Filter();
+
+    private async Task LoadData(LoadDataArgs args)
     {
+        loading = true;
         try
         {
-            transactions = await Api.GetTransactionsAsync();
+            var result = await Api.QueryTransactionsAsync(RadzenODataQuery.From(args, dataFilter, Select));
+            items = result.Value;
+            count = result.Count;
+            error = null;
         }
         catch (Exception exception)
         {
             error = exception.Message;
+            items = [];
+            count = 0;
+        }
+        finally
+        {
+            loading = false;
         }
     }
 }

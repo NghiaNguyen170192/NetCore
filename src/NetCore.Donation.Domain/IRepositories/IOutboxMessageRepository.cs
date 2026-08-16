@@ -11,5 +11,7 @@ public interface IOutboxMessageRepository
         string? idempotencyKey,
         CancellationToken cancellationToken);
 
+    Task<IReadOnlyList<OutboxMessage>> ListAsync(CancellationToken cancellationToken);
+
     IQueryable<OutboxMessage> GetAll();
 }

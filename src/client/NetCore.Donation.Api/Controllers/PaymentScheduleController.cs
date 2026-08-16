@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using NetCore.Donation.Api.OData;
 using NetCore.Donation.Application.PaymentSchedule.Create;
 using NetCore.Donation.Application.PaymentSchedule.Delete;
 using NetCore.Donation.Application.PaymentSchedule.DTOs;
@@ -24,18 +25,14 @@ public class PaymentScheduleController(IMediator mediator) : AuthorizedBaseContr
         return CreatedAtAction(nameof(GetPaymentSchedule), new { id }, new { id });
     }
 
-    /// <summary>
-    /// Return OData query from client
-    /// </summary>
-    /// <returns></returns>
     [HttpGet]
-    [EnableQuery(AllowedFunctions = AllowedFunctions.AllFunctions)]
-    public async Task<ActionResult<IQueryable<QueryPaymentScheduleDto>>> GetPaymentSchedules(
-        [FromQuery] Guid? contactId)
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    public async Task<IActionResult> GetPaymentSchedules(
+        [FromQuery] Guid? contactId,
+        ODataQueryOptions<QueryPaymentScheduleDto> options)
     {
         var response = await mediator.Send(new QueryPaymentSchedules(contactId));
-
-        return Ok(response);
+        return ODataPageResult.Create(response, options);
     }
 
     [HttpGet("{id:guid}")]

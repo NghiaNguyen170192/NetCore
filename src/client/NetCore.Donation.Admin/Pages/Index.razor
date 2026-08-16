@@ -4,7 +4,7 @@
 <PageTitle>Overview — Donation admin</PageTitle>
 
 <h1>Overview</h1>
-<p class="text-muted">Live totals from the donation API. Auth is not enabled.</p>
+<p class="text-muted">Live totals from the donation API using OData <code>$count</code> / <code>$select</code> / <code>$top</code>. Auth is not enabled.</p>
 
 @if (!string.IsNullOrWhiteSpace(error))
 {
@@ -20,25 +20,25 @@ else
         <div class="col-md-3">
             <div class="stat-card">
                 <div class="text-muted">Contacts</div>
-                <div class="value">@contacts.Count</div>
+                <div class="value">@contactCount</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="text-muted">Payment schedules</div>
+                <div class="value">@scheduleCount</div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="stat-card">
                 <div class="text-muted">Transactions</div>
-                <div class="value">@transactions.Count</div>
+                <div class="value">@transactionCount</div>
             </div>
         </div>
         <div class="col-md-3">
             <div class="stat-card">
                 <div class="text-muted">Total gifted</div>
-                <div class="value">@transactions.Sum(item => item.Amount).ToString("C")</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="text-muted">Receipts</div>
-                <div class="value">@receipts.Count</div>
+                <div class="value">@gifted.ToString("C")</div>
             </div>
         </div>
     </div>
@@ -51,17 +51,19 @@ else
                     <th>Date</th>
                     <th>Amount</th>
                     <th>Type</th>
+                    <th>Status</th>
                     <th>Contact</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach (var transaction in transactions.OrderByDescending(item => item.BookDate).Take(10))
+                @foreach (var transaction in recent)
                 {
                     <tr>
                         <td>@transaction.BookDate</td>
                         <td>@transaction.Amount.ToString("C")</td>
                         <td>@transaction.PaymentType</td>
-                        <td>@NameFor(transaction.ContactId)</td>
+                        <td>@transaction.Status</td>
+                        <td>@RadzenODataQuery.ShortId(transaction.ContactId)</td>
                     </tr>
                 }
             </tbody>
@@ -72,17 +74,33 @@ else
 @code {
     private bool loading = true;
     private string? error;
-    private IReadOnlyList<ContactDto> contacts = [];
-    private IReadOnlyList<TransactionDto> transactions = [];
-    private IReadOnlyList<ReceiptDto> receipts = [];
+    private int contactCount;
+    private int scheduleCount;
+    private int transactionCount;
+    private decimal gifted;
+    private IReadOnlyList<TransactionDto> recent = [];
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            contacts = await Api.GetContactsAsync();
-            transactions = await Api.GetTransactionsAsync();
-            receipts = await Api.GetReceiptsAsync();
+            var contacts = await Api.QueryContactsAsync(new ODataListRequest { Select = "Id", Top = 1, Count = true });
+            var schedules = await Api.QueryPaymentSchedulesAsync(new ODataListRequest { Select = "Id", Top = 1, Count = true });
+            var transactions = await Api.QueryTransactionsAsync(new ODataListRequest
+            {
+                Select = "Id,Amount,PaymentType,Status,BookDate,ContactId",
+                OrderBy = "BookDate desc",
+                Top = 1000,
+                Count = true,
+            });
+
+            contactCount = contacts.Count;
+            scheduleCount = schedules.Count;
+            transactionCount = transactions.Count;
+            gifted = transactions.Value
+                .Where(item => item.Status == TransactionStatus.Succeeded)
+                .Sum(item => item.Amount);
+            recent = transactions.Value.Take(10).ToList();
         }
         catch (Exception exception)
         {
@@ -92,11 +110,5 @@ else
         {
             loading = false;
         }
-    }
-
-    private string NameFor(Guid contactId)
-    {
-        var contact = contacts.FirstOrDefault(item => item.Id == contactId);
-        return contact is null ? contactId.ToString("N")[..8] : $"{contact.FirstName} {contact.LastName}";
     }
 }

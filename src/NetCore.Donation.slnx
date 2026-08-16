@@ -10,6 +10,8 @@
     <File Path="stylecop.json" />
   </Folder>
   <Folder Name="/client/">
+    <Project Path="client/NetCore.Donation.Admin/NetCore.Donation.Admin.csproj" />
+    <Project Path="client/NetCore.Donation.WebClient/NetCore.Donation.WebClient.csproj" />
     <Project Path="client\NetCore.Donation.Api\NetCore.Donation.Api.csproj" />
     <Project Path="client\NetCore.Donation.Migration\NetCore.Donation.Migration.csproj" />
     <Project Path="client\NetCore.Donation.UI\NetCore.Donation.UI.csproj" />

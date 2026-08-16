@@ -5,10 +5,12 @@ namespace NetCore.Donation.ServiceDefaults;
 
 public static partial class Extensions
 {
-    public static IHostApplicationBuilder AddDefaultOpenApi(this IHostApplicationBuilder builder)
+    public static IHostApplicationBuilder AddDefaultOpenApi(
+        this IHostApplicationBuilder builder,
+        Action<ODataConventionModelBuilder>? configureODataModel = null)
     {
-        var services = builder.Services;
         var modelBuilder = new ODataConventionModelBuilder();
+        configureODataModel?.Invoke(modelBuilder);
 
         // Use default OpenAPI/Swagger configuration. No JWT security defined by default.
         builder.Services
@@ -19,7 +21,7 @@ public static partial class Extensions
             .AddOData(options =>
             {
                 options.Filter().Expand()
-                    .Select().OrderBy().SetMaxTop(100).SkipToken()
+                    .Select().OrderBy().Count().SetMaxTop(1000).SkipToken()
                     .AddRouteComponents("odata", modelBuilder.GetEdmModel());
                 options.EnableNoDollarQueryOptions = true;
             });

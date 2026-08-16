@@ -1,5 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Query;
+using NetCore.Donation.Api.OData;
 using NetCore.Donation.Application.Outbox.DTOs;
 using NetCore.Donation.Application.Outbox.QueryOutboxMessages;
 using System.Net;
@@ -11,11 +13,12 @@ public class OutboxMessageController(IMediator mediator) : AuthorizedBaseControl
 {
     [HttpGet]
     [ProducesResponseType((int)HttpStatusCode.OK)]
-    public async Task<ActionResult<IReadOnlyList<QueryOutboxMessageDto>>> GetOutboxMessages(
+    public async Task<IActionResult> GetOutboxMessages(
         [FromQuery] string? correlationId,
-        [FromQuery] string? idempotencyKey)
+        [FromQuery] string? idempotencyKey,
+        ODataQueryOptions<QueryOutboxMessageDto> options)
     {
         var response = await mediator.Send(new QueryOutboxMessages(correlationId, idempotencyKey));
-        return Ok(response);
+        return ODataPageResult.Create(response, options);
     }
 }

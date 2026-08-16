@@ -1,4 +1,13 @@
+using NetCore.Donation.Application.Contact.DTOs;
+using NetCore.Donation.Application.Country.DTOs;
+using NetCore.Donation.Application.Donation.DTOs;
 using NetCore.Donation.Application.Extensions;
+using NetCore.Donation.Application.Journal.DTOs;
+using NetCore.Donation.Application.Outbox.DTOs;
+using NetCore.Donation.Application.PaymentMethod.DTOs;
+using NetCore.Donation.Application.PaymentSchedule.DTOs;
+using NetCore.Donation.Application.Receipt.DTOs;
+using NetCore.Donation.Application.Transaction.DTOs;
 using NetCore.Donation.Api;
 using NetCore.Donation.Domain.SharedKernel;
 using NetCore.Donation.Infrastructure.Database.Extensions;
@@ -16,7 +25,18 @@ if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ASPNETCORE_URLS")))
 }
 
 builder.AddServiceDefaults();
-builder.AddDefaultOpenApi();
+builder.AddDefaultOpenApi(model =>
+{
+    model.EntitySet<QueryCountryDto>("Countries");
+    model.EntitySet<QueryContactDto>("Contacts");
+    model.EntitySet<QueryPaymentMethodDto>("PaymentMethods");
+    model.EntitySet<QueryPaymentScheduleDto>("PaymentSchedules");
+    model.EntitySet<QueryTransactionDto>("Transactions");
+    model.EntitySet<QueryJournalDto>("Journals");
+    model.EntitySet<QueryReceiptDto>("Receipts");
+    model.EntitySet<QueryOutboxMessageDto>("OutboxMessages");
+    model.EntitySet<QueryDonationFlowDto>("DonationFlows");
+});
 
 // Prefer Aspire-injected connection strings over local appsettings defaults.
 var applicationConnectionString = builder.Configuration.GetConnectionString("netcore-donation-db");

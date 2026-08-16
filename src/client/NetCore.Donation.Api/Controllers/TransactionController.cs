@@ -1,6 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
+using NetCore.Donation.Api.OData;
 using NetCore.Donation.Application.Transaction.Create;
 using NetCore.Donation.Application.Transaction.Delete;
 using NetCore.Donation.Application.Transaction.DTOs;
@@ -24,19 +25,15 @@ public class TransactionController(IMediator mediator) : AuthorizedBaseControlle
         return CreatedAtAction(nameof(GetTransaction), new { id }, new { id });
     }
 
-    /// <summary>
-    /// Return OData query from client
-    /// </summary>
-    /// <returns></returns>
     [HttpGet]
-    [EnableQuery(AllowedFunctions = AllowedFunctions.AllFunctions)]
-    public async Task<ActionResult<IQueryable<QueryTransactionDto>>> GetTransactions(
+    [ProducesResponseType((int)HttpStatusCode.OK)]
+    public async Task<IActionResult> GetTransactions(
         [FromQuery] Guid? contactId,
-        [FromQuery] Guid? paymentScheduleId)
+        [FromQuery] Guid? paymentScheduleId,
+        ODataQueryOptions<QueryTransactionDto> options)
     {
         var response = await mediator.Send(new QueryTransactions(contactId, paymentScheduleId));
-
-        return Ok(response);
+        return ODataPageResult.Create(response, options);
     }
 
     [HttpGet("{id:guid}")]
