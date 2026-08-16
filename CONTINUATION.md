@@ -1,6 +1,6 @@
 # NetCore.Donation — Continuation Context
 
-Last updated: 2026-08-15  
+Last updated: 2026-08-16  
 Purpose: archive of goals, progress, and conventions so work can resume later without re-deriving context from chat history.
 
 Related chat: [Journal receipt storage](a49fabf7-2f24-461e-9b31-b677793ceab0)  
@@ -13,16 +13,17 @@ Plan (do not edit unless continuing that plan): `~/.cursor/plans/journal_receipt
 | Item | Status |
 |---|---|
 | Pass 1 (scaffold + donation CQRS) | Done; committed as `8cad2ea` |
-| Pass 2 (Journal + preferences + receipt PDF/MinIO) | **Done in working tree; not committed** |
-| Tests | **94 passed** (Domain 23, Infra DB 30, Application 37, Api 4) |
-| Live Aspire smoke (POST journal/receipt → JSON/PDF GET) | Not completed — AppHost was left Waiting / later aborted; port + Postgres volume issues |
-| Commit request | User has **not** asked to commit Pass 2 yet |
+| Pass 2 (Journal + preferences + receipt PDF/MinIO) | Committed as `aa28858` (*update*) |
+| PATCH contact preferences | **Done in working tree; not committed** — `PATCH /api/v1/contacts/{id}/preferences` |
+| Tests | **100 passed** (Domain 24, Infra DB 30, Application 41, Api 5). Auth DB 3 extra. |
+| Live Aspire smoke | Deferred — local Docker/WSL is broken; unit tests are enough until that is fixed |
+| Commit request | Pass 2 is committed; leftovers (PATCH + extra tests + this file) are uncommitted |
 
 **Immediate resume actions:**
 
-1. Commit Pass 2 if desired (large uncommitted set; keep `Dispatcher.cs` deleted).
-2. Clean Aspire restart: stop leftover AppHost/UI, free ports `6000`/`6001`/`6010`/`6011`/`9000`/`9001`, delete Docker volume `netcore.donation.apphost-*-postgres-data` once if Postgres stays Waiting, then `dotnet run --project src/client/NetCore.Donation.AppHost`.
-3. Smoke: `POST /api/v1/journals`, `POST /api/v1/receipts`, `GET` with JSON vs `Accept: application/pdf`.
+1. Commit leftovers if requested (PATCH preferences, extra tests, `CONTINUATION.md`; keep `Dispatcher.cs` deleted).
+2. Skip Aspire until Docker Desktop / WSL works. Then smoke: `POST /api/v1/journals`, `POST /api/v1/receipts`, `GET` JSON vs `Accept: application/pdf`, `PATCH /api/v1/contacts/{id}/preferences`.
+3. Next product work: Journal FKs / real PDF merge / JSON string enums.
 
 ---
 
@@ -56,8 +57,8 @@ Cloud-based donation management for non-profits (RMIT COSC29800 Assignment 3).
 | Repo path | `C:\Nghia\source\RMIT\NetCoreDonation` |
 | Remote | `https://github.com/NghiaNguyen170192/NetCore.git` |
 | Branch | `donation-implementation` (tracks `origin/donation-implementation`) |
-| Last commit on branch | `8cad2ea` — *Scaffold NetCore.Donation with donation CQRS APIs and Aspire local stack.* |
-| Pass 2 | Uncommitted (modified + many untracked files; `CONTINUATION.md` itself untracked) |
+| Last commit on branch | `aa28858` — *update* (Pass 2: Journal, preferences, receipt PDF/MinIO). Prior: `8cad2ea` scaffold. |
+| Uncommitted | PATCH preferences, extra Pass 2 tests, seed flags, `CONTINUATION.md` |
 | Keep deleted | `src/NetCore.Donation.Application/Messaging/Dispatcher.cs` — MediatR is the dispatcher |
 | Sibling checkout | `personal/NetCore` is separate; do not mix worktrees casually |
 
@@ -73,11 +74,12 @@ Cloud-based donation management for non-profits (RMIT COSC29800 Assignment 3).
 - [x] Aspire Postgres/Redis, EF migrations, seeds, tests
 - [x] User rejected “slice” / grouped files — stick to Country folder layout
 
-### Pass 2 — journal, preferences, receipt PDF (code done, uncommitted)
+### Pass 2 — journal, preferences, receipt PDF (committed `aa28858`)
 
 **Contact preferences**
 
 - [x] `DoNotEmail` / `DoNotSms` (default `false`) on entity, create/update, EF, DTOs, seeds/tests
+- [x] `PATCH /api/v1/contacts/{id}/preferences` → `SetCommunicationPreferences` (working tree; not in `aa28858`)
 
 **Journal**
 
@@ -109,8 +111,8 @@ Cloud-based donation management for non-profits (RMIT COSC29800 Assignment 3).
 
 **Verification**
 
-- [x] Unit/integration tests green (**94**)
-- [ ] Live Aspire smoke still outstanding (see Snapshot)
+- [x] Unit/integration tests green (**100**: Domain 24, Infra DB 30, Application 41, Api 5)
+- [ ] Live Aspire smoke deferred until Docker/WSL is fixed
 
 ---
 
@@ -118,7 +120,7 @@ Cloud-based donation management for non-profits (RMIT COSC29800 Assignment 3).
 
 | Area | Path |
 |---|---|
-| Contact prefs | `Domain/Entities/Contact.cs` |
+| Contact prefs | `Domain/Entities/Contact.cs`, `Application/Contact/SetPreferences/` |
 | Journal entity | `Domain/Entities/Journal.cs` |
 | Receipt metadata | `Domain/Entities/Receipt.cs` |
 | Storage ports | `Domain/Storage/` |
@@ -126,10 +128,10 @@ Cloud-based donation management for non-profits (RMIT COSC29800 Assignment 3).
 | Receipt doc flow | `Application/Receipt/` (+ `ReceiptDocumentService`, `GetReceiptDocument/`) |
 | Storage impl | `Infrastructure.Storage/` |
 | EF + migration | `Infrastructure.Database/` (Journal repo, `*AddJournalPreferencesAndReceiptDocuments*`) |
-| API | `Controllers/JournalController.cs`, `ReceiptController.cs` |
+| API | `Controllers/JournalController.cs`, `ReceiptController.cs`, `ContactController.cs` (`PATCH .../preferences`) |
 | Aspire | `client/NetCore.Donation.AppHost/Program.cs` |
 | Seed | `Migration/Seeds/Base/DonationSeed.cs` |
-| API tests | `test/.../ReceiptAndJournalApiTests.cs` |
+| API tests | `test/.../ReceiptAndJournalApiTests.cs`, `ContactPreferencesApiTests.cs` |
 
 Object key format: `receipts/{receiptId:N}.pdf`.
 
@@ -149,7 +151,8 @@ dotnet run --project src/client/NetCore.Donation.AppHost
 | MinIO API / Console | `9000` / `9001` (`minioadmin` / `minioadmin`) |
 | Swagger | `https://localhost:6001/swagger` |
 
-Routes: `/api/v1/countries|contacts|payment-methods|payment-schedules|transactions|journals|receipts`
+Routes: `/api/v1/countries|contacts|payment-methods|payment-schedules|transactions|journals|receipts`  
+Consent: `PATCH /api/v1/contacts/{id}/preferences` body `{ id, doNotEmail, doNotSms }` (camelCase write; GET returns `do-not-email` / `do-not-sms`).
 
 ---
 
@@ -173,8 +176,8 @@ Routes: `/api/v1/countries|contacts|payment-methods|payment-schedules|transactio
 
 ### Near-term
 
-- [ ] Commit Pass 2 (when asked)
-- [ ] Complete live Aspire smoke after clean restart
+- [ ] Commit leftovers (PATCH preferences + tests + this file) when asked
+- [ ] Complete live Aspire smoke after Docker/WSL is fixed
 - [ ] Expand PaymentMethod fields
 - [ ] Replace blank PDF with real document-merge template
 - [ ] Link Journal to Transaction / Contact once properties are decided
@@ -219,8 +222,8 @@ Routes: `/api/v1/countries|contacts|payment-methods|payment-schedules|transactio
 
 ## Suggested next session order
 
-1. Commit Pass 2 (if requested) — include Journal, Storage project, migration, docs; do not revive `Dispatcher.cs`.
-2. Clean Aspire restart + smoke journal/receipt JSON+PDF.
+1. Commit leftovers if requested — PATCH preferences, extra tests, docs; do not revive `Dispatcher.cs`.
+2. After Docker/WSL works: Aspire restart + smoke journal/receipt JSON+PDF + contact preferences PATCH.
 3. Decide Journal business properties / FKs.
 4. Upgrade blank PDF to a real merge template.
 5. Begin AWS Lambda packaging on the existing MediatR API surface.

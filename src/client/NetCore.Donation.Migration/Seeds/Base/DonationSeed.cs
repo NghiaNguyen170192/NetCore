@@ -38,7 +38,9 @@ public sealed class DonationSeed(
             "1 Donation Street",
             "sample.donor@example.com",
             "+61 400 000 000",
-            country.Id));
+            country.Id,
+            DoNotEmail: false,
+            DoNotSms: false));
 
         var paymentMethodId = await dispatcher.Send(
             new CreatePaymentMethodCommand(contactId, "Demo bank account"));
