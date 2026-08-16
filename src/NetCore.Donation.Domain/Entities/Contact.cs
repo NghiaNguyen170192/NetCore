@@ -1,5 +1,6 @@
 #nullable disable
 
+using NetCore.Donation.Domain.Events;
 using NetCore.Donation.Domain.SharedKernel;
 
 namespace NetCore.Donation.Domain.Entities;
@@ -40,8 +41,9 @@ public class Contact : Entity, IAggregateRoot
         bool doNotSms = false)
     {
         Validate(firstName, lastName, dateOfBirth, addressLine, email, phoneNumber, countryId);
-        return new Contact
+        var contact = new Contact
         {
+            Id = Guid.NewGuid(),
             FirstName = firstName.Trim(),
             LastName = lastName.Trim(),
             DateOfBirth = dateOfBirth,
@@ -53,6 +55,9 @@ public class Contact : Entity, IAggregateRoot
             DoNotSms = doNotSms,
             CountryId = countryId,
         };
+
+        contact.AddDomainEvent(new ContactCreatedDomainEvent(contact.Id, contact.Email));
+        return contact;
     }
 
     public void UpdateDetails(

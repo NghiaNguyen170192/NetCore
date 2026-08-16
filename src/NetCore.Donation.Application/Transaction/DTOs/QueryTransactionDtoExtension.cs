@@ -12,6 +12,7 @@ public static class QueryTransactionDtoExtension
             ContactId = transaction.ContactId,
             PaymentMethodId = transaction.PaymentMethodId,
             PaymentType = transaction.PaymentType,
+            Status = transaction.Status,
             BookDate = transaction.BookDate,
             ReceivedDate = transaction.ReceivedDate,
         });

@@ -10,6 +10,8 @@ public interface ITransactionRepository
 
     Task<Transaction?> FindByIdAsync(Guid id, CancellationToken cancellationToken);
 
+    Task<Transaction?> FindByPaymentScheduleIdAsync(Guid paymentScheduleId, CancellationToken cancellationToken);
+
     void Delete(Transaction transaction);
 
     IQueryable<Transaction> GetAll();

@@ -1,6 +1,7 @@
 #nullable enable
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
+using NetCore.Donation.Infrastructure.Database.Services;
 using Serilog.Context;
 
 namespace NetCore.Donation.Infrastructure.Database.Middleware;
@@ -28,11 +29,18 @@ public class CorrelationIdMiddleware
 
         // Store in HttpContext.Items for access throughout the request
         context.Items[CorrelationIdItemKey] = correlationId;
-
-        // Add to response headers for client-side tracing
         context.Response.Headers[CorrelationIdHeaderName] = correlationId;
 
-        // Push to Serilog LogContext for all downstream logging
+        if (context.Request.Headers.TryGetValue(IdempotencyKeyAccessor.HeaderName, out var idempotencyHeader))
+        {
+            var idempotencyKey = idempotencyHeader.ToString();
+            if (!string.IsNullOrWhiteSpace(idempotencyKey))
+            {
+                context.Items[IdempotencyKeyAccessor.ItemKey] = idempotencyKey;
+                context.Response.Headers[IdempotencyKeyAccessor.HeaderName] = idempotencyKey;
+            }
+        }
+
         using (LogContext.PushProperty("CorrelationId", correlationId))
         {
             // Continue with pipeline

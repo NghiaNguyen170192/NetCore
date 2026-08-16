@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Hosting;
 using NetCore.Donation.Domain.Storage;
 using NetCore.Donation.Infrastructure.Database;
 using NetCore.Donation.Infrastructure.Storage;
@@ -34,6 +35,7 @@ public class ApiWebApplicationFactory : WebApplicationFactory<Program>
             services.RemoveAll<Amazon.S3.IAmazonS3>();
             services.AddSingleton<IReceiptDocumentStorage, InMemoryReceiptDocumentStorage>();
             services.AddSingleton<IReceiptDocumentGenerator, BlankReceiptDocumentGenerator>();
+            services.RemoveAll<IHostedService>();
         });
     }
 }

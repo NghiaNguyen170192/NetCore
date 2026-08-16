@@ -10,6 +10,8 @@ public interface IContactRepository
 
     Task<Contact?> FindByIdAsync(Guid id, CancellationToken cancellationToken);
 
+    Task<Contact?> FindByEmailAsync(string email, CancellationToken cancellationToken);
+
     void Delete(Contact contact);
 
     IQueryable<Contact> GetAll();

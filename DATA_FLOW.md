@@ -4,6 +4,8 @@ Local architecture for the COSC29800 donation system. Auth is not enabled. Email
 
 Use the mermaid blocks below in the report (GitHub, VS Code, Word via a mermaid add-in, or export from [mermaid.live](https://mermaid.live)).
 
+Code types keep the Country-style `*DomainEvent` suffix (`DonationCreatedDomainEvent`). Diagrams use the short names (`DonationCreated`).
+
 ## 1. Website → C# API → database
 
 Browser talks to Blazor Server. The **server** calls the API over HTTP (`DonationApiClient`). Donation rows go to PostgreSQL. Receipt PDF bytes go to MinIO; receipt metadata stays in `Receipts`. Redis is beside the write path (cache / idempotency), not the system of record.
@@ -25,7 +27,7 @@ flowchart LR
     Pdf["Blank PDF generator"]
   end
 
-  Postgres[("PostgreSQL<br/>Contacts, PaymentMethods,<br/>PaymentSchedules, Transactions,<br/>Journals, Receipts")]
+  Postgres[("PostgreSQL<br/>Contacts, PaymentMethods,<br/>PaymentSchedules, Transactions,<br/>Journals, Receipts, OutboxMessages")]
   MinIO[("MinIO / S3<br/>receipt PDFs")]
   Redis[("Redis<br/>cache / idempotency")]
 
@@ -39,47 +41,252 @@ flowchart LR
   Repos -.-> Redis
 ```
 
-## 2. Donate click — one gift, six writes
+## 2. Donate click — one command, then outbox
 
-The public site does not have a single “donate” API. One form submit issues the spine in order: contact (create or reuse by email) → payment method → schedule → transaction → journal → receipt.
+The public donate form posts **one** command: `POST /api/v1/donations` → `UserMakesDonationCommand`. That write creates Contact (or reuses by email), PaymentMethod, and PaymentSchedule, and raises domain events into the **transactional outbox** in the same `SaveChanges`. A hosted poller (`OutboxProcessor`, every 5s) publishes pending outbox rows, then MediatR handlers send the **next command**.
+
+One-time and recurring gifts use the **same command**. Recurring only stores `IsRecurring` + `RecurringInterval` on the schedule. Generating later recurring transactions is out of scope: both paths create one schedule and one transaction now.
+
+The six REST writes (`POST /contacts`, `/payment-methods`, `/payment-schedules`, `/transactions`, `/journals`, `/receipts`) still exist for admin / stepwise APIs. The donor UI no longer uses them for a gift.
 
 ```mermaid
 sequenceDiagram
   actor Donor
-  participant UI as Donation.UI
-  participant API as Donation.Api
+  participant UI as Donation.UI :6010
+  participant API as Donation.Api :6000
   participant DB as PostgreSQL
+  participant Outbox as OutboxProcessor
   participant Store as MinIO
 
-  Donor->>UI: Submit donate form
-  UI->>API: GET /contacts
-  API->>DB: read Contacts
-  alt new email
-    UI->>API: POST /contacts
-    API->>DB: insert Contact
-  else known email
-    UI->>API: PATCH /contacts/{id}/preferences
-    API->>DB: update DoNotEmail / DoNotSms
+  Donor->>UI: Submit donate form<br/>(one-time or recurring)
+  UI->>API: POST /api/v1/donations
+  API->>DB: Contact + PaymentMethod + PaymentSchedule<br/>+ OutboxMessages (same transaction)
+  API-->>UI: 201 ContactId, PaymentMethodId, PaymentScheduleId, IsRecurring
+  UI-->>Donor: Thank you (schedule id)
+
+  loop every 5s
+    Outbox->>API: ProcessOutboxMessagesCommand
+    API->>DB: claim pending OutboxMessages
+    Note over API,DB: DonationCreated → ProcessDonationTransaction<br/>TransactionPending → CompleteDonationTransaction<br/>Succeeded → receipt + journal in parallel
+    opt payment succeeded
+      API->>Store: upload receipt PDF
+      API->>DB: Receipt + Journal
+    end
   end
-  UI->>API: POST /payment-methods
-  API->>DB: insert PaymentMethod
-  UI->>API: POST /payment-schedules
-  API->>DB: insert PaymentSchedule
-  UI->>API: POST /transactions
-  API->>DB: insert Transaction
-  UI->>API: POST /journals  { transactionId }
-  API->>DB: insert Journal
-  UI->>API: POST /receipts  { contactId, transactionId }
-  API->>Store: upload blank PDF
-  API->>DB: insert Receipt + object key
-  UI-->>Donor: Thank you + PDF download
 ```
 
-Admin **reads** the same tables (`GET /contacts`, `/transactions`, `/journals`, `/receipts`) and downloads PDFs with `Accept: application/pdf`.
+Admin **reads** the same tables (`GET /contacts`, `/transactions`, `/journals`, `/receipts`) and downloads PDFs with `Accept: application/pdf`. Trace outbox rows with `GET /api/v1/outbox-messages?correlationId=` or `?idempotencyKey=`.
 
-## 3. Inside one API request
+## 3. Donation CQRS pipeline (POC)
 
-Every create/update/delete follows Country-style CQRS: controller → MediatR command → handler → domain entity → EF repository → PostgreSQL. Query DTOs are kebab-case (`transaction-id`, `do-not-email`); write bodies are camelCase.
+There is no `Donation` entity. **PaymentSchedule** is the donation intent. Journal stays in the same PostgreSQL database (not a separate ledger DB).
+
+```mermaid
+flowchart TD
+
+    UI["Blazor Server<br/>Hope &amp; Help :6010"]
+    API["ASP.NET Core 10 API :6000"]
+
+    C1["UserMakesDonationCommand<br/>FirstName, LastName, DateOfBirth, AddressLine,<br/>Email, PhoneNumber, CountryId,<br/>Amount, PaymentMethodName, PaymentType,<br/>IsRecurring, RecurringInterval,<br/>DoNotEmail, DoNotSms"]
+
+    H1["UserMakesDonationCommandHandler"]
+
+    D1["Contact + PaymentMethod + PaymentSchedule<br/>(donation intent; no Donation aggregate)"]
+
+    E1["DonationCreated"]
+    E2["ContactCreated"]
+    E3["DonationPaymentMethodCreated"]
+
+    DB[("PostgreSQL<br/>Donation DB")]
+
+    O["Outbox / Domain Event Dispatcher"]
+
+    C2["ProcessDonationTransactionCommand"]
+    H2["ProcessDonationTransactionCommandHandler"]
+
+    E4["TransactionPending"]
+
+    C3["CompleteDonationTransactionCommand"]
+    H3["CompleteDonationTransactionCommandHandler"]
+
+    E5["TransactionSucceeded"]
+    E6["TransactionFailed"]
+
+    C4["GenerateDonationReceiptCommand"]
+    H4["GenerateDonationReceiptCommandHandler"]
+    E7["DonationReceiptGenerated"]
+
+    C5["CreateJournalEntryCommand"]
+    H5["CreateJournalEntryCommandHandler"]
+    E8["JournalEntryCreated"]
+
+    UI --> API
+    API --> C1
+    C1 --> H1
+
+    H1 --> D1
+
+    D1 -->|"raises"| E1
+    D1 -->|"raises"| E2
+    D1 -->|"raises"| E3
+
+    E1 --> O
+    E2 --> O
+    E3 --> O
+
+    H1 --> DB
+
+    O --> C2
+    C2 --> H2
+    H2 --> E4
+
+    E4 --> DB
+    E4 --> C3
+
+    C3 --> H3
+
+    H3 -->|"random success/failure"| E5
+    H3 -->|"random success/failure"| E6
+
+    E5 --> DB
+    E6 --> DB
+
+    E5 --> C4
+    E5 --> C5
+
+    C4 --> H4
+    H4 --> E7
+    E7 --> DB
+
+    C5 --> H5
+    H5 --> E8
+    H5 --> DB
+```
+
+### Command flow
+
+```text
+UserMakesDonationCommand
+        │
+        ▼
+UserMakesDonationCommandHandler
+        │
+        ▼
+Contact + PaymentMethod + PaymentSchedule
+        │
+        ├── DonationCreated          (IsRecurring, RecurringInterval)
+        ├── ContactCreated           (new contacts only)
+        └── DonationPaymentMethodCreated
+                │
+                ▼
+        PostgreSQL + OutboxMessages
+                │
+                ▼
+ProcessDonationTransactionCommand
+                │
+                ▼
+ProcessDonationTransactionCommandHandler
+                │
+                ▼
+       TransactionPending
+                │
+                ▼
+CompleteDonationTransactionCommand
+                │
+                ▼
+CompleteDonationTransactionCommandHandler
+                │
+          ┌─────┴─────┐
+          │            │
+          ▼            ▼
+TransactionSucceeded  TransactionFailed
+          │
+     ┌────┴─────┐
+     │          │
+     ▼          ▼
+Generate       Create
+Donation       JournalEntry
+Receipt        Command
+Command
+     │          │
+     ▼          ▼
+Receipt       Journal
+Generated     EntryCreated
+```
+
+One-time vs recurring is a flag on the **same** command and `DonationCreated` event. Recurring does not spawn extra transactions in this POC.
+
+### Minimal commands
+
+```text
+UserMakesDonationCommand
+ProcessDonationTransactionCommand
+CompleteDonationTransactionCommand
+GenerateDonationReceiptCommand
+CreateJournalEntryCommand
+```
+
+### Minimal domain events
+
+```text
+DonationCreated
+ContactCreated
+DonationPaymentMethodCreated
+TransactionPending
+TransactionSucceeded
+TransactionFailed
+DonationReceiptGenerated
+JournalEntryCreated
+```
+
+### Aggregate / state (as implemented)
+
+```text
+PaymentSchedule          ← donation intent (OneOff or recurring interval)
+ ├── Contact
+ ├── PaymentMethod
+ └── Transaction         ← one row now, even if IsRecurring
+       │
+       ├── Pending
+       ├── Succeeded
+       └── Failed
+```
+
+Direct `Transaction.Create` (the six-call REST path) still defaults status to **Succeeded** so admin/stepwise APIs are not stuck pending.
+
+### POC CQRS distinction
+
+```text
+COMMAND
+   │
+   ▼
+Handler
+   │
+   ▼
+Domain / aggregate
+   │
+   ▼
+DOMAIN EVENT  →  Outbox  →  MediatR
+   │
+   ▼
+Next COMMAND
+```
+
+`TransactionSucceeded` triggers **two independent application commands in parallel** (separate DI scopes, so they do not share a DbContext):
+
+```text
+TransactionSucceeded
+       │
+       ├──────────────► GenerateDonationReceiptCommand
+       │
+       └──────────────► CreateJournalEntryCommand
+```
+
+That is CQRS + MediatR + DDD domain events without a payment-provider webhook. Completion uses `IDonationTransactionOutcome` (50/50 random in the API). Failure stops: no receipt, no journal.
+
+## 4. Inside one API request (stepwise REST still)
+
+Every create/update/delete on the existing six resources still follows Country-style CQRS: controller → MediatR command → handler → domain entity → EF repository → PostgreSQL. Query DTOs are kebab-case (`transaction-id`, `do-not-email`); write bodies are camelCase.
 
 ```mermaid
 flowchart TB
@@ -96,13 +303,18 @@ flowchart TB
   HTTP --> Ctrl --> Cmd --> H --> V --> E --> R --> EF --> DB
 ```
 
+Donate is different: `POST /api/v1/donations` only writes the first aggregates + outbox; later writes happen on later poller cycles.
+
 ## Report notes
 
 | In these diagrams | Not in this path yet |
 |---|---|
-| Two websites → one API → Postgres | JWT / Identity |
+| Two Blazor sites → one API → Postgres | JWT / Identity |
+| One donate command + transactional outbox | Payment processor / webhooks |
 | Receipt bytes in MinIO, metadata in `Receipts` | SES / SNS notify |
-| Journal requires `TransactionId` | Payment processor |
+| Journal in the **same** Postgres as donations | Separate ledger database |
+| Recurring = flag + interval on the schedule | Generating later recurring transactions |
 | Redis only beside the write path | Browser talking to the API directly |
+| Random success/failure for POC | Real gateway result |
 
-Later cloud swap (same CQRS and tables): API Gateway + Lambda instead of Kestrel, RDS instead of local Postgres, S3 instead of MinIO.
+Later cloud swap (same CQRS and tables): API Gateway + Lambda instead of Kestrel, RDS instead of local Postgres, S3 instead of MinIO, SNS/SQS or EventBridge instead of the in-process outbox poller.

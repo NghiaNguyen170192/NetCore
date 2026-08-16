@@ -27,6 +27,13 @@ public class ContactRepository(ApplicationDatabaseContext applicationDatabaseCon
         return await applicationDatabaseContext.Contacts.FindAsync([id], cancellationToken);
     }
 
+    public async Task<Contact?> FindByEmailAsync(string email, CancellationToken cancellationToken)
+    {
+        var normalized = email.Trim().ToLowerInvariant();
+        return await applicationDatabaseContext.Contacts
+            .FirstOrDefaultAsync(contact => contact.Email.ToLower() == normalized, cancellationToken);
+    }
+
     public void Delete(Contact contact)
     {
         applicationDatabaseContext.Contacts.Remove(contact);

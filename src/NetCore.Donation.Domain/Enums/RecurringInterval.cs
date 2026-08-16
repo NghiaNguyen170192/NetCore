@@ -8,4 +8,5 @@ public enum RecurringInterval
     Monthly,
     Quarterly,
     Yearly,
+    OneOff,
 }

@@ -89,8 +89,71 @@ public sealed class DonationApiClient(HttpClient http)
 
     public Task<IReadOnlyList<TransactionDto>> GetTransactionsAsync(
         Guid? contactId = null,
-        CancellationToken cancellationToken = default) =>
-        GetListAsync<TransactionDto>(WithContact("api/v1/transactions", contactId), cancellationToken);
+        Guid? paymentScheduleId = null,
+        CancellationToken cancellationToken = default)
+    {
+        var path = "api/v1/transactions";
+        if (contactId is { } contact)
+        {
+            path = WithContact(path, contact);
+        }
+
+        if (paymentScheduleId is { } schedule)
+        {
+            path += path.Contains('?', StringComparison.Ordinal) ? "&" : "?";
+            path += $"paymentScheduleId={schedule}";
+        }
+
+        return GetListAsync<TransactionDto>(path, cancellationToken);
+    }
+
+    public async Task<UserMakesDonationResponse> MakeDonationAsync(
+        string firstName,
+        string lastName,
+        DateOnly dateOfBirth,
+        string addressLine,
+        string email,
+        string phoneNumber,
+        Guid countryId,
+        decimal amount,
+        string paymentMethodName,
+        PaymentType paymentType,
+        bool isRecurring,
+        RecurringInterval recurringInterval,
+        bool doNotEmail,
+        bool doNotSms,
+        CancellationToken cancellationToken = default)
+    {
+        using var response = await http.PostAsJsonAsync(
+            "api/v1/donations",
+            new
+            {
+                firstName,
+                lastName,
+                dateOfBirth,
+                addressLine,
+                email,
+                phoneNumber,
+                countryId,
+                amount,
+                paymentMethodName,
+                paymentType,
+                isRecurring,
+                recurringInterval,
+                doNotEmail,
+                doNotSms,
+            },
+            JsonOptions,
+            cancellationToken);
+        await EnsureSuccessAsync(response);
+        var created = await response.Content.ReadFromJsonAsync<UserMakesDonationResponse>(JsonOptions, cancellationToken);
+        if (created is null || created.PaymentScheduleId == Guid.Empty)
+        {
+            throw new HttpRequestException("The API did not return a donation result.");
+        }
+
+        return created;
+    }
 
     public Task<Guid> CreateTransactionAsync(
         decimal amount,

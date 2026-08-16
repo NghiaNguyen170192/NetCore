@@ -1,5 +1,6 @@
 #nullable disable
 
+using NetCore.Donation.Domain.Events;
 using NetCore.Donation.Domain.SharedKernel;
 
 namespace NetCore.Donation.Domain.Entities;
@@ -82,6 +83,16 @@ public class Receipt : Entity, IAggregateRoot
         DocumentContentType = contentType.Trim();
         DocumentSizeBytes = sizeBytes;
         DocumentGeneratedAtUtc = generatedAtUtc;
+    }
+
+    public void MarkGenerated()
+    {
+        if (Id == Guid.Empty)
+        {
+            Id = Guid.NewGuid();
+        }
+
+        AddDomainEvent(new DonationReceiptGeneratedDomainEvent(Id, ContactId, TransactionId));
     }
 
     public void ClearDocument()

@@ -19,6 +19,18 @@ public enum RecurringInterval
     Monthly = 3,
     Quarterly = 4,
     Yearly = 5,
+    OneOff = 6,
+}
+
+public sealed class UserMakesDonationResponse
+{
+    public Guid ContactId { get; set; }
+
+    public Guid PaymentMethodId { get; set; }
+
+    public Guid PaymentScheduleId { get; set; }
+
+    public bool IsRecurring { get; set; }
 }
 
 public sealed class IdResponse
@@ -105,6 +117,9 @@ public sealed class PaymentScheduleDto
 
     [JsonPropertyName("recurring-interval")]
     public RecurringInterval RecurringInterval { get; set; }
+
+    [JsonPropertyName("is-recurring")]
+    public bool IsRecurring { get; set; }
 }
 
 public sealed class TransactionDto

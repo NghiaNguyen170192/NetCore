@@ -1,6 +1,7 @@
 #nullable disable
 
 using NetCore.Donation.Domain.Enums;
+using NetCore.Donation.Domain.Events;
 using NetCore.Donation.Domain.SharedKernel;
 
 namespace NetCore.Donation.Domain.Entities;
@@ -31,12 +32,35 @@ public class PaymentSchedule : Entity, IAggregateRoot
         Validate(contactId, paymentMethodId, amount, recurringInterval);
         return new PaymentSchedule
         {
+            Id = Guid.NewGuid(),
             ContactId = contactId,
             PaymentMethodId = paymentMethodId,
             Amount = amount,
             BookDate = bookDate,
             RecurringInterval = recurringInterval,
         };
+    }
+
+    public void RaiseDonationCreated(PaymentType paymentType)
+    {
+        if (!Enum.IsDefined(paymentType))
+        {
+            throw new ArgumentOutOfRangeException(nameof(paymentType));
+        }
+
+        if (Id == Guid.Empty)
+        {
+            Id = Guid.NewGuid();
+        }
+
+        AddDomainEvent(new DonationCreatedDomainEvent(
+            Id,
+            ContactId,
+            PaymentMethodId,
+            Amount,
+            paymentType,
+            RecurringInterval != RecurringInterval.OneOff,
+            RecurringInterval));
     }
 
     public void UpdateSchedule(

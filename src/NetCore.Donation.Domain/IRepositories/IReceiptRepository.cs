@@ -10,6 +10,8 @@ public interface IReceiptRepository
 
     Task<Receipt?> FindByIdAsync(Guid id, CancellationToken cancellationToken);
 
+    Task<Receipt?> FindByTransactionIdAsync(Guid transactionId, CancellationToken cancellationToken);
+
     void Delete(Receipt receipt);
 
     IQueryable<Receipt> GetAll();

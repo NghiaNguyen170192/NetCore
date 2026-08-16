@@ -37,6 +37,9 @@ builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 // Add correlation ID support
 builder.Services.AddScoped<ICorrelationIdAccessor>(sp =>
     new CorrelationIdAccessor(sp.GetRequiredService<IHttpContextAccessor>()));
+builder.Services.AddScoped<IIdempotencyKeyAccessor>(sp =>
+    new IdempotencyKeyAccessor(sp.GetRequiredService<IHttpContextAccessor>()));
+builder.Services.AddHostedService<OutboxProcessor>();
 
 // Dependency Injections
 builder.Services

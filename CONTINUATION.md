@@ -3,8 +3,14 @@
 Last updated: 2026-08-16  
 Purpose: archive of goals, progress, and conventions so work can resume later without re-deriving context from chat history.
 
-Related chat: [Journal receipt storage](a49fabf7-2f24-461e-9b31-b677793ceab0)  
-Plan (do not edit unless continuing that plan): `~/.cursor/plans/journal_receipt_storage_3c79af37.plan.md`
+Diagrams for the report: [`DATA_FLOW.md`](DATA_FLOW.md)
+
+Related chats:
+
+- [Journal receipt storage](a49fabf7-2f24-461e-9b31-b677793ceab0)
+- [Transactional outbox + donation CQRS](b0fac9fa-8e7f-4607-a936-036b2d227149)
+
+Do not revive `src/NetCore.Donation.Application/Messaging/Dispatcher.cs`. MediatR is the dispatcher.
 
 ---
 
@@ -12,18 +18,92 @@ Plan (do not edit unless continuing that plan): `~/.cursor/plans/journal_receipt
 
 | Item | Status |
 |---|---|
-| Pass 1 (scaffold + donation CQRS) | Done; committed as `8cad2ea` |
-| Pass 2 (Journal + preferences + receipt PDF/MinIO) | Committed as `aa28858` (*update*) |
-| PATCH contact preferences | **Done in working tree; not committed** — `PATCH /api/v1/contacts/{id}/preferences` |
-| Tests | **100 passed** (Domain 24, Infra DB 30, Application 41, Api 5). Auth DB 3 extra. |
-| Live Aspire smoke | Deferred — local Docker/WSL is broken; unit tests are enough until that is fixed |
-| Commit request | Pass 2 is committed; leftovers (PATCH + extra tests + this file) are uncommitted |
+| Pass 1 (scaffold + donation CQRS spine) | Done (older commit on `donation-implementation`) |
+| Pass 2 (Journal + preferences + receipt PDF/MinIO) | Done |
+| PATCH contact preferences | Done |
+| Transactional outbox | **Done in working tree** — capture in `SaveChanges`, `ProcessOutboxMessagesCommand`, hosted poller |
+| Donate CQRS pipeline | **Done in working tree** — command → event → next command |
+| One-time vs recurring on same command | **Done in working tree** — `IsRecurring` + `RecurringInterval.OneOff` |
+| Donor UI uses `POST /api/v1/donations` | **Done in working tree** |
+| Recurring *future* transactions | **Out of scope** — one schedule + one transaction now |
+| Separate Journal/Ledger DB | **Out of scope** — same PostgreSQL |
+| Tests last green | Domain 30, Application 49, Infra DB 37, Api 5 |
+| Live Aspire smoke | Still deferred if Docker/WSL is broken |
+| Commit | User will update/commit later today — **do not commit unless asked** |
 
 **Immediate resume actions:**
 
-1. Commit leftovers if requested (PATCH preferences, extra tests, `CONTINUATION.md`; keep `Dispatcher.cs` deleted).
-2. Skip Aspire until Docker Desktop / WSL works. Then smoke: `POST /api/v1/journals`, `POST /api/v1/receipts`, `GET` JSON vs `Accept: application/pdf`, `PATCH /api/v1/contacts/{id}/preferences`.
-3. Next product work: Journal FKs / real PDF merge / JSON string enums.
+1. Apply pending EF migrations if the local DB is behind: `AddOutboxMessages`, `AddTransactionStatus` (`OneOff` is a string enum value — no extra migration).
+2. Aspire smoke: donate form (one-time and recurring) → `POST /api/v1/donations` → wait for outbox poller (5s) → transaction + optional receipt/journal → My gifts / admin.
+3. Commit when asked. Keep `Dispatcher.cs` deleted.
+
+---
+
+## What was implemented this session (handoff)
+
+### Transactional outbox
+
+- `SaveChanges` / `SaveChangesAsync` **does not** MediatR-publish before commit.
+- Pending `Entity.DomainEvents` become `OutboxMessages` in the same transaction, then events are cleared.
+- Stamps `CorrelationId` (`X-Correlation-ID`) and `IdempotencyKey` (`X-Idempotency-Key`). If no idempotency header, correlation is copied into both columns.
+- Dedupe: skip insert when `IdempotencyKey + MessageType` already exists.
+- Deleted/detached entities: clear domain events, do **not** enqueue outbox rows.
+- Table: `OutboxMessages` (migration `20260816092518_AddOutboxMessages`).
+- Processor: `ProcessOutboxMessagesCommand` — stub `IIntegrationEventPublisher` (`RecordingIntegrationEventPublisher`), then deserialize `AssemblyQualifiedName` + MediatR `IPublisher.Publish`.
+- API hosted `OutboxProcessor` polls every 5s. **API tests must `services.RemoveAll<IHostedService>()`** or the poller hangs WebApplicationFactory tests.
+
+### Donate pipeline (CQRS POC)
+
+```text
+COMMAND → Handler → Domain → DOMAIN EVENT → Outbox → MediatR → Next COMMAND
+```
+
+| Design name | Actual |
+|---|---|
+| React / Vue / Astro | Blazor Server `NetCore.Donation.UI` `:6010` |
+| Donation aggregate | **No entity.** `PaymentSchedule` is the donation intent (`RaiseDonationCreated`) |
+| `DonationPaymentMethod` | Existing `PaymentMethod` |
+| Journal / Ledger DB | Same `ApplicationDatabaseContext` |
+| `IsAnonymous`, `DonorMessage` | Not stored. Preferences: `DoNotEmail` / `DoNotSms` |
+| Event type names | `*DomainEvent` suffix, Country-style |
+
+**HTTP entry:** `POST /api/v1/donations` → `UserMakesDonationCommand`  
+**Result:** `ContactId`, `PaymentMethodId`, `PaymentScheduleId`, `IsRecurring` (transaction is **not** created in this request).
+
+**Commands** (one type per file under `Application/Donation/`):
+
+- `UserMakesDonationCommand` / Handler
+- `ProcessDonationTransactionCommand` / Handler — `Transaction.CreatePending`
+- `CompleteDonationTransactionCommand` / Handler — `IDonationTransactionOutcome` (API: 50/50 `RandomDonationTransactionOutcome`)
+- `GenerateDonationReceiptCommand` / Handler — PDF via `ReceiptDocumentService` (after DB commit is still an accepted limitation)
+- `CreateJournalEntryCommand` / Handler — saga path; REST `CreateJournalCommand` still exists
+
+**Events** (Domain `Events/` + Application `Donation/Events/` handlers):
+
+- `DonationCreated` → **sends** `ProcessDonationTransactionCommand`
+- `ContactCreated`, `DonationPaymentMethodCreated` → log only
+- `TransactionPending` → **sends** `CompleteDonationTransactionCommand`
+- `TransactionSucceeded` → **parallel** `GenerateDonationReceiptCommand` + `CreateJournalEntryCommand` via `IServiceScopeFactory` (do not `Task.WhenAll` on the same DbContext)
+- `TransactionFailed` → log only (no receipt, no journal)
+- `DonationReceiptGenerated`, `JournalEntryCreated` → log only (terminal)
+
+**One-time vs recurring (same command):**
+
+- `IsRecurring: false` → persist `RecurringInterval.OneOff`
+- `IsRecurring: true` → require a real interval (not `OneOff`)
+- Carried on `DonationCreated` and `ProcessDonationTransactionCommand` / `TransactionPending`
+- Recurring **does not** create extra transactions. `FindByPaymentScheduleIdAsync` returning an existing row is the POC idempotent skip.
+
+**Transaction status** (migration `20260816110934_AddTransactionStatus`, existing rows default `Succeeded`):
+
+- Pipeline: `Pending` → `Succeeded` | `Failed`
+- REST `Transaction.Create` stays `Succeeded` (no pending event)
+
+**UI**
+
+- Donate form: one-time / recurring radio; interval dropdown only if recurring; `DonationApiClient.MakeDonationAsync`
+- Thank-you: schedule id + gift type; receipt PDF only if the poller already finished
+- Existing six HTTP routes unchanged for admin
 
 ---
 
@@ -39,14 +119,14 @@ Cloud-based donation management for non-profits (RMIT COSC29800 Assignment 3).
 |---|---|---|
 | Data | RDS PostgreSQL | Aspire Postgres |
 | API | API Gateway + Lambda | Local Kestrel API |
-| Async processing | EventBridge / SNS + Lambda | Not started |
+| Async processing | EventBridge / SNS + Lambda | **Transactional outbox + in-process poller** (stub publisher) |
 | Receipts storage | S3 | MinIO via Aspire + `AWSSDK.S3` |
 | Notifications | SES + SNS | Preference flags only (`DoNotEmail` / `DoNotSms`) |
-| Static/UI hosting | S3 / Elastic Beanstalk | Template UI only |
+| Static/UI hosting | S3 / Elastic Beanstalk | Blazor donor `:6010` + admin `:6020` |
 | Observability | CloudWatch | OpenTelemetry locally |
 
 **Template base:** `personal/NetCore` (.NET 10 Clean Architecture + Aspire).  
-**Code location:** `RMIT/NetCoreDonation/` with namespaces `NetCore.Donation.*`.
+**Code location:** `d:\source\RMIT\master-of-ai-new\2026-semester-02\NetCoreDonation` with namespaces `NetCore.Donation.*`.
 
 ---
 
@@ -54,84 +134,32 @@ Cloud-based donation management for non-profits (RMIT COSC29800 Assignment 3).
 
 | Item | Value |
 |---|---|
-| Repo path | `C:\Nghia\source\RMIT\NetCoreDonation` |
-| Remote | `https://github.com/NghiaNguyen170192/NetCore.git` |
-| Branch | `donation-implementation` (tracks `origin/donation-implementation`) |
-| Last commit on branch | `aa28858` — *update* (Pass 2: Journal, preferences, receipt PDF/MinIO). Prior: `8cad2ea` scaffold. |
-| Uncommitted | PATCH preferences, extra Pass 2 tests, seed flags, `CONTINUATION.md` |
-| Keep deleted | `src/NetCore.Donation.Application/Messaging/Dispatcher.cs` — MediatR is the dispatcher |
-| Sibling checkout | `personal/NetCore` is separate; do not mix worktrees casually |
+| Repo path | `d:\source\RMIT\master-of-ai-new\2026-semester-02\NetCoreDonation` |
+| Remote | `https://github.com/NghiaNguyen170192/NetCore.git` (confirm if this checkout still tracks it) |
+| Branch | `donation-implementation` |
+| Uncommitted | Outbox, donate pipeline, UI donate POST, docs — **commit only when asked** |
+| Keep deleted | `Application/Messaging/Dispatcher.cs` |
 
 ---
 
-## Goals already implemented
-
-### Pass 1 — local scaffold (committed)
-
-- [x] Copy/rename NetCore template → `NetCore.Donation.*`
-- [x] Domain: Contact (+ `CountryId`), PaymentMethod, PaymentSchedule, Transaction, Receipt; keep Country
-- [x] Country-style CQRS (one type per file), explicit controller bodies, per-entity repositories
-- [x] Aspire Postgres/Redis, EF migrations, seeds, tests
-- [x] User rejected “slice” / grouped files — stick to Country folder layout
-
-### Pass 2 — journal, preferences, receipt PDF (committed `aa28858`)
-
-**Contact preferences**
-
-- [x] `DoNotEmail` / `DoNotSms` (default `false`) on entity, create/update, EF, DTOs, seeds/tests
-- [x] `PATCH /api/v1/contacts/{id}/preferences` → `SetCommunicationPreferences` (working tree; not in `aa28858`)
-
-**Journal**
-
-- [x] Minimal `Journal : Entity, IAggregateRoot` (Id + audit only)
-- [x] `IJournalRepository` + EF config/repo + `DbSet`
-- [x] CQRS: Create, Get by id, OData list, Delete (no Update until mutable fields exist)
-- [x] `JournalController` → `/api/v1/journals`
-
-**Receipt documents**
-
-- [x] Persisted metadata: object key, file name, content type, generated-at, size
-- [x] `POST /api/v1/receipts` → allocate id, blank PDF, upload, persist metadata, `201`
-- [x] `GET /api/v1/receipts/{id}` Accept negotiation:
-  - JSON (`QueryReceiptDto`) for empty / `*/*` / `application/json`
-  - PDF stream + `Content-Disposition: attachment` for `application/pdf`
-  - `406` unsupported; `404` missing receipt/document
-- [x] Update regenerates document when linkage changes; delete removes storage object
-- [x] Compensating storage delete if upload succeeds but DB save fails
-
-**Storage / Aspire**
-
-- [x] Domain ports: `IReceiptDocumentGenerator`, `IReceiptDocumentStorage`
-- [x] Project `NetCore.Donation.Infrastructure.Storage` (S3 client usable vs MinIO + AWS; blank PDF; in-memory double; `AddObjectStorage`)
-- [x] Aspire MinIO (`9000`/`9001`, `minioadmin`/`minioadmin`), health `/minio/health/live`, ObjectStorage env for API + Migration
-- [x] Stable Postgres password via `AppHost/appsettings.Development.json` → `Parameters:postgres-password`
-- [x] Migration `20260815084604_AddJournalPreferencesAndReceiptDocuments`
-- [x] `DonationSeed` creates Journal + full sample chain including receipt PDF in MinIO
-- [x] DI prefers Aspire connection strings `ConnectionStrings:netcore-donation-db` / `redis` over appsettings
-
-**Verification**
-
-- [x] Unit/integration tests green (**100**: Domain 24, Infra DB 30, Application 41, Api 5)
-- [ ] Live Aspire smoke deferred until Docker/WSL is fixed
-
----
-
-## Key paths (Pass 2)
+## Key paths (current pipeline)
 
 | Area | Path |
 |---|---|
-| Contact prefs | `Domain/Entities/Contact.cs`, `Application/Contact/SetPreferences/` |
-| Journal entity | `Domain/Entities/Journal.cs` |
-| Receipt metadata | `Domain/Entities/Receipt.cs` |
-| Storage ports | `Domain/Storage/` |
-| Journal CQRS | `Application/Journal/` |
-| Receipt doc flow | `Application/Receipt/` (+ `ReceiptDocumentService`, `GetReceiptDocument/`) |
-| Storage impl | `Infrastructure.Storage/` |
-| EF + migration | `Infrastructure.Database/` (Journal repo, `*AddJournalPreferencesAndReceiptDocuments*`) |
-| API | `Controllers/JournalController.cs`, `ReceiptController.cs`, `ContactController.cs` (`PATCH .../preferences`) |
-| Aspire | `client/NetCore.Donation.AppHost/Program.cs` |
-| Seed | `Migration/Seeds/Base/DonationSeed.cs` |
-| API tests | `test/.../ReceiptAndJournalApiTests.cs`, `ContactPreferencesApiTests.cs` |
+| Donate command | `Application/Donation/UserMakesDonation/` |
+| Process / complete txn | `Application/Donation/ProcessDonationTransaction/`, `CompleteDonationTransaction/` |
+| Receipt + journal saga | `Application/Donation/GenerateDonationReceipt/`, `CreateJournalEntry/` |
+| Event handlers | `Application/Donation/Events/` |
+| Domain events | `Domain/Events/*DomainEvent.cs` |
+| PaymentSchedule / Transaction | `Domain/Entities/PaymentSchedule.cs`, `Transaction.cs` |
+| Outbox capture | `Infrastructure.Database/ApplicationDatabaseContext.cs` |
+| Outbox processor | `Application/Outbox/Process/`, `Api/OutboxProcessor.cs` |
+| Trace query | `GET /api/v1/outbox-messages` |
+| HTTP donate | `Api/Controllers/DonationController.cs` |
+| Donor UI | `client/NetCore.Donation.UI/Pages/Donate.razor`, `ThankYou.razor` |
+| API client | `client/NetCore.Donation.WebClient/DonationApiClient.cs` (`MakeDonationAsync`) |
+| Migrations | `20260816092518_AddOutboxMessages`, `20260816110934_AddTransactionStatus` |
+| Pipeline tests | `test/.../Donation/DonationCommandPipelineTest.cs` |
 
 Object key format: `receipts/{receiptId:N}.pdf`.
 
@@ -147,12 +175,14 @@ dotnet run --project src/client/NetCore.Donation.AppHost
 |---|---|
 | Aspire Dashboard | URL printed by AppHost |
 | API | `http://localhost:6000` / `https://localhost:6001` |
-| UI | `http://localhost:6010` / `https://localhost:6011` |
+| Donor UI | `http://localhost:6010` / `https://localhost:6011` |
+| Admin UI | `http://localhost:6020` |
 | MinIO API / Console | `9000` / `9001` (`minioadmin` / `minioadmin`) |
 | Swagger | `https://localhost:6001/swagger` |
 
-Routes: `/api/v1/countries|contacts|payment-methods|payment-schedules|transactions|journals|receipts`  
-Consent: `PATCH /api/v1/contacts/{id}/preferences` body `{ id, doNotEmail, doNotSms }` (camelCase write; GET returns `do-not-email` / `do-not-sms`).
+Routes: `/api/v1/countries|contacts|payment-methods|payment-schedules|transactions|journals|receipts|donations|outbox-messages`  
+Donate body (camelCase): `UserMakesDonationCommand` including `isRecurring`, `recurringInterval`.  
+Consent: `PATCH /api/v1/contacts/{id}/preferences` body `{ id, doNotEmail, doNotSms }`.
 
 ---
 
@@ -160,15 +190,17 @@ Consent: `PATCH /api/v1/contacts/{id}/preferences` body `{ id, doNotEmail, doNot
 
 | Decision | Choice |
 |---|---|
-| Naming | `NetCore.Donation.*` under `RMIT/NetCoreDonation/` |
-| First local host | Aspire (Postgres + Redis + MinIO); Lambda later |
-| CQRS style | Country-style one-type-per-file; MediatR (not custom Dispatcher) |
-| Controllers | Explicit action bodies (no arrow-only stubs) |
-| Query DTOs | OData/list/get only; kebab-case `[JsonPropertyName]`; CUD via Commands |
-| Receipt retrieval | Same URI; Accept negotiation (not a separate `/pdf` route) |
-| Journal now | Create / Get / List / Delete only; no Update until properties exist |
+| Naming | `NetCore.Donation.*`; Country-style one type per file |
+| Dispatcher | MediatR only — no `Dispatcher.cs` |
+| Controllers | Explicit action bodies |
+| Query DTOs | kebab-case `[JsonPropertyName]`; CUD camelCase |
+| Application layer | No EF |
+| Donate entry | `POST /api/v1/donations` + outbox; not six UI writes |
+| Recurring | Same command; one transaction now; no scheduler |
+| Journal DB | Same Postgres |
+| Succeeded fan-out | Two commands, **new scopes**, not nested writes in the event handler |
+| Receipt PDF | Blank PDF; generate after/around save is an accepted POC limitation |
 | Storage | One S3-compatible impl for MinIO local + AWS later |
-| PDF for now | Minimal valid blank PDF; real merge template later |
 
 ---
 
@@ -176,54 +208,54 @@ Consent: `PATCH /api/v1/contacts/{id}/preferences` body `{ id, doNotEmail, doNot
 
 ### Near-term
 
-- [ ] Commit leftovers (PATCH preferences + tests + this file) when asked
-- [ ] Complete live Aspire smoke after Docker/WSL is fixed
+- [ ] Commit working tree when asked
+- [ ] Live Aspire smoke (donate one-time + recurring, outbox drain, receipt PDF, admin lists)
+- [ ] Replace blank PDF with a real document-merge template
 - [ ] Expand PaymentMethod fields
-- [ ] Replace blank PDF with real document-merge template
-- [ ] Link Journal to Transaction / Contact once properties are decided
-- [ ] Use `DoNotEmail` / `DoNotSms` in SES/SNS notification flow
-- [ ] Domain events for donation lifecycle
+- [ ] Use `DoNotEmail` / `DoNotSms` in SES/SNS
 - [ ] JSON string enums (`JsonStringEnumConverter`)
-- [ ] Donation-focused UI
-- [ ] Trim leftover Identity Provider / nested ServiceDefaults if not needed
+- [ ] Recurring **generator** (later transactions on a schedule) — explicitly later
 
 ### Cloud / assignment
 
 - [ ] API Gateway + Lambda packaging
-- [ ] EventBridge/SNS async donation processing
-- [ ] Real AWS S3 (same storage code; drop custom ServiceUrl / ForcePathStyle; use IAM + region)
+- [ ] Replace in-process poller with SNS/SQS or EventBridge (keep outbox table)
+- [ ] Real AWS S3 (drop custom ServiceUrl / ForcePathStyle; IAM + region)
 - [ ] SES email + SNS SMS
 - [ ] Elastic Beanstalk / static UI hosting
-- [ ] CloudWatch + architecture docs from assignment PDF (`ASSESSMENT_3_S2.pdf`)
+- [ ] CloudWatch + architecture docs from `ASSESSMENT_3_S2.pdf`
 
 ---
 
 ## Architecture conventions (must keep)
 
-- Mirror `personal/NetCore/src/NetCore.Application/Country/` layout.
-- Handlers depend on Domain storage ports only — never AWS SDK types in Application.
+- Mirror `personal/NetCore` Country folder layout.
+- Handlers depend on Domain ports only — never AWS SDK types in Application.
 - Prefer Aspire-injected connection strings when present.
-- Do not recreate Pass 2 plan todos; mark/complete only if continuing that plan file.
+- Event handlers that start the next write **`IMediator.Send` a command**; they must not perform the next aggregate write themselves.
+- `DonationCreated` is the only first-wave event that starts payment processing (not `ContactCreated` / `DonationPaymentMethodCreated`).
+- Namespace collision in Application: use `Domain.Entities.Contact.Create` (folder `Contact.Create` hides the type).
 
 ---
 
 ## Known quirks
 
-1. Enum JSON still numeric unless a converter is registered.
+1. Enum JSON is still numeric unless a converter is registered. `RecurringInterval.OneOff = 6` in the WebClient enum.
 2. Query DTOs use kebab-case `[JsonPropertyName]`.
-3. Receipt GET needs `Accept: application/pdf` for binary download; browsers sending HTML Accept may get `406`.
-4. Local MinIO credentials are development-only (`minioadmin`).
-5. Keep `Dispatcher.cs` deleted; MediatR dispatches.
-6. Aspire Postgres password is stable via `Parameters:postgres-password` in AppHost Development settings. An older generated password + `WithDataVolume()` causes eternal Waiting — delete volume `netcore.donation.apphost-*-postgres-data` once.
-7. Fixed ports require a clean prior AppHost shutdown; rebuild can fail if `NetCore.Donation.UI` locks Application DLLs.
-8. Earlier Aspire journals probe saw HTTP **500** while API process was up but DB/storage not healthy — do not treat “port open” as success.
+3. Receipt GET needs `Accept: application/pdf` for binary download.
+4. Hosted outbox poller has no HTTP context → new correlation guid per `SaveChanges` / poll. Unique outbox index is `IdempotencyKey + MessageType`.
+5. `IdempotencyBehavior` applies to all MediatR requests including `ProcessOutboxMessagesCommand` (poller fills `IdempotencyLogs` every 5s).
+6. `ApiWebApplicationFactory` must remove hosted services.
+7. `ICountryRepository.FindByIdAsync` returns `Country` but can be null at runtime.
+8. Processor `SaveChanges` after publish will capture **new** domain events from in-scope command handlers onto the outbox (next poll processes them). Parallel receipt/journal use **new scopes** on purpose.
+9. Thank-you page may not have a receipt yet; My gifts after ~5–15s is expected.
+10. Aspire Postgres password / volume and DLL-lock notes from earlier sessions still apply.
 
 ---
 
 ## Suggested next session order
 
-1. Commit leftovers if requested — PATCH preferences, extra tests, docs; do not revive `Dispatcher.cs`.
-2. After Docker/WSL works: Aspire restart + smoke journal/receipt JSON+PDF + contact preferences PATCH.
-3. Decide Journal business properties / FKs.
-4. Upgrade blank PDF to a real merge template.
-5. Begin AWS Lambda packaging on the existing MediatR API surface.
+1. User updates/commits the working tree (outbox + pipeline + UI + these docs).
+2. After Docker/WSL: Aspire + donate both gift types + confirm outbox → transaction → journal/receipt.
+3. Real receipt PDF template if needed for the assignment demo.
+4. AWS packaging on the existing MediatR + outbox surface (swap poller for a queue later).

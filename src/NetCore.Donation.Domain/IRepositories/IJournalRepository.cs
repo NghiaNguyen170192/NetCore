@@ -10,6 +10,8 @@ public interface IJournalRepository
 
     Task<Journal?> FindByIdAsync(Guid id, CancellationToken cancellationToken);
 
+    Task<Journal?> FindByTransactionIdAsync(Guid transactionId, CancellationToken cancellationToken);
+
     void Delete(Journal journal);
 
     IQueryable<Journal> GetAll();

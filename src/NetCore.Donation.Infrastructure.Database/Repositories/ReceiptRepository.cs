@@ -27,6 +27,13 @@ public class ReceiptRepository(ApplicationDatabaseContext applicationDatabaseCon
         return await applicationDatabaseContext.Receipts.FindAsync([id], cancellationToken);
     }
 
+    public async Task<Receipt?> FindByTransactionIdAsync(Guid transactionId, CancellationToken cancellationToken)
+    {
+        return await applicationDatabaseContext.Receipts
+            .AsNoTracking()
+            .FirstOrDefaultAsync(receipt => receipt.TransactionId == transactionId, cancellationToken);
+    }
+
     public void Delete(Receipt receipt)
     {
         applicationDatabaseContext.Receipts.Remove(receipt);

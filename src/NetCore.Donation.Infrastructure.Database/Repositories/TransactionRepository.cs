@@ -27,6 +27,12 @@ public class TransactionRepository(ApplicationDatabaseContext applicationDatabas
         return await applicationDatabaseContext.Transactions.FindAsync([id], cancellationToken);
     }
 
+    public async Task<Transaction?> FindByPaymentScheduleIdAsync(Guid paymentScheduleId, CancellationToken cancellationToken)
+    {
+        return await applicationDatabaseContext.Transactions
+            .FirstOrDefaultAsync(transaction => transaction.PaymentScheduleId == paymentScheduleId, cancellationToken);
+    }
+
     public void Delete(Transaction transaction)
     {
         applicationDatabaseContext.Transactions.Remove(transaction);

@@ -1,3 +1,5 @@
+using NetCore.Donation.Domain.Enums;
+
 namespace NetCore.Donation.Application.PaymentSchedule.DTOs;
 
 public static class QueryPaymentScheduleDtoExtension
@@ -13,6 +15,7 @@ public static class QueryPaymentScheduleDtoExtension
             Amount = paymentSchedule.Amount,
             BookDate = paymentSchedule.BookDate,
             RecurringInterval = paymentSchedule.RecurringInterval,
+            IsRecurring = paymentSchedule.RecurringInterval != RecurringInterval.OneOff,
         });
     }
 }

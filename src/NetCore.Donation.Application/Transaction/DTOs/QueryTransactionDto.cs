@@ -23,6 +23,9 @@ public sealed record QueryTransactionDto
     [JsonPropertyName("payment-type")]
     public PaymentType PaymentType { get; set; }
 
+    [JsonPropertyName("status")]
+    public TransactionStatus Status { get; set; }
+
     [JsonPropertyName("book-date")]
     public DateOnly BookDate { get; set; }
 

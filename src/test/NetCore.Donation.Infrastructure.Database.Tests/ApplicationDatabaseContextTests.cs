@@ -56,15 +56,17 @@ public class ApplicationDatabaseContextTests
         var publisher = serviceProvider.GetRequiredService<IPublisher>();
 
         var context = new ApplicationDatabaseContext(options, publisher);
-        var country = CreateCountryWithDomainEvent("Test", "001", "TS", "TST");
+        await context.Database.EnsureCreatedAsync();
+        var country = Country.Create("Test", "001", "TS", "TST");
 
         // Act
         context.Countries.Add(country);
         await context.SaveChangesAsync(CancellationToken.None);
 
-        // Assert
-        Assert.IsTrue(eventDispatched);
-        Assert.IsEmpty(country.DomainEvents); // Events should be cleared after dispatching
+        // Assert — domain events are captured in the outbox, not published inside SaveChanges
+        Assert.IsFalse(eventDispatched);
+        Assert.IsEmpty(country.DomainEvents);
+        Assert.AreEqual(1, await context.OutboxMessages.CountAsync());
     }
 
     [TestMethod]
@@ -136,17 +138,5 @@ public class ApplicationDatabaseContextTests
             _onHandle?.Invoke();
             return Task.CompletedTask;
         }
-    }
-
-    private static Country CreateCountryWithDomainEvent(string name, string countryCode, string alpha2, string alpha3)
-    {
-        var country = Country.Create(name, countryCode, alpha2, alpha3);
-
-        var addMethod = typeof(Domain.SharedKernel.Entity).GetMethod(
-            "AddDomainEvent",
-            System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
-        addMethod?.Invoke(country, [new CountryCreatedDomainEvent(country.Id, name)]);
-
-        return country;
     }
 }

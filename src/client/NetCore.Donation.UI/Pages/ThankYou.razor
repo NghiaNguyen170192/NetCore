@@ -6,7 +6,10 @@
 
 <div class="card-panel">
     <h1>Thank you</h1>
-    <p>Your simulated donation has been recorded. A journal line and digital receipt were created.</p>
+    <p>
+        Your simulated @(isRecurring ? "recurring" : "one-time") donation has been recorded.
+        A payment schedule and the first transaction are being processed; a journal line and receipt follow if payment succeeds.
+    </p>
 
     @if (!string.IsNullOrWhiteSpace(error))
     {
@@ -14,41 +17,90 @@
     }
 
     <dl class="row">
-        <dt class="col-sm-3">Receipt</dt>
-        <dd class="col-sm-9"><code>@receiptId</code></dd>
-        <dt class="col-sm-3">Transaction</dt>
-        <dd class="col-sm-9"><code>@transactionId</code></dd>
+        <dt class="col-sm-3">Gift type</dt>
+        <dd class="col-sm-9">@(isRecurring ? "Recurring" : "One-time")</dd>
+        <dt class="col-sm-3">Schedule</dt>
+        <dd class="col-sm-9"><code>@paymentScheduleId</code></dd>
+        @if (transactionId != Guid.Empty)
+        {
+            <dt class="col-sm-3">Transaction</dt>
+            <dd class="col-sm-9"><code>@transactionId</code></dd>
+        }
+        @if (receiptId != Guid.Empty)
+        {
+            <dt class="col-sm-3">Receipt</dt>
+            <dd class="col-sm-9"><code>@receiptId</code></dd>
+        }
     </dl>
 
-    <button class="btn btn-give" type="button" disabled="@busy" @onclick="DownloadReceiptAsync">
-        @(busy ? "Preparing PDF…" : "Download receipt PDF")
-    </button>
-    <a class="btn btn-outline-secondary ms-2" href="gifts">View my gifts</a>
+    @if (receiptId != Guid.Empty)
+    {
+        <button class="btn btn-give" type="button" disabled="@busy" @onclick="DownloadReceiptAsync">
+            @(busy ? "Preparing PDF…" : "Download receipt PDF")
+        </button>
+    }
+    <a class="btn btn-outline-secondary @(receiptId != Guid.Empty ? "ms-2" : null)" href="gifts">View my gifts</a>
 </div>
 
 @code {
+    [SupplyParameterFromQuery]
+    public Guid ContactId { get; set; }
+
+    [SupplyParameterFromQuery]
+    public Guid PaymentScheduleId { get; set; }
+
+    [SupplyParameterFromQuery]
+    public bool IsRecurring { get; set; }
+
     [SupplyParameterFromQuery]
     public Guid ReceiptId { get; set; }
 
     [SupplyParameterFromQuery]
     public Guid TransactionId { get; set; }
 
+    private Guid paymentScheduleId;
     private Guid receiptId;
     private Guid transactionId;
+    private bool isRecurring;
     private bool busy;
     private string? error;
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        receiptId = ReceiptId;
+        paymentScheduleId = PaymentScheduleId;
+        isRecurring = IsRecurring;
         transactionId = TransactionId;
+        receiptId = ReceiptId;
+
+        if (transactionId == Guid.Empty && paymentScheduleId != Guid.Empty)
+        {
+            try
+            {
+                var transactions = await Api.GetTransactionsAsync(paymentScheduleId: paymentScheduleId);
+                var transaction = transactions.FirstOrDefault();
+                if (transaction is not null)
+                {
+                    transactionId = transaction.Id;
+                    var receipts = await Api.GetReceiptsAsync(ContactId == Guid.Empty ? transaction.ContactId : ContactId);
+                    var receipt = receipts.FirstOrDefault(item => item.TransactionId == transaction.Id);
+                    if (receipt is not null)
+                    {
+                        receiptId = receipt.Id;
+                    }
+                }
+            }
+            catch (Exception exception)
+            {
+                error = exception.Message;
+            }
+        }
     }
 
     private async Task DownloadReceiptAsync()
     {
         if (receiptId == Guid.Empty)
         {
-            error = "No receipt was returned for this gift.";
+            error = "No receipt was returned for this gift yet. Check My gifts in a moment.";
             return;
         }
 

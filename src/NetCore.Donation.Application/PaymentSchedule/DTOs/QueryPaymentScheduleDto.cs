@@ -22,4 +22,7 @@ public sealed record QueryPaymentScheduleDto
 
     [JsonPropertyName("recurring-interval")]
     public RecurringInterval RecurringInterval { get; set; }
+
+    [JsonPropertyName("is-recurring")]
+    public bool IsRecurring { get; set; }
 }

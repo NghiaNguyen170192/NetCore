@@ -2,8 +2,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NetCore.Donation.Domain.IRepositories;
+using NetCore.Donation.Domain.Messaging;
 using NetCore.Donation.Domain.SharedKernel;
 using NetCore.Donation.Infrastructure.Database.AppSettingConfigurations;
+using NetCore.Donation.Infrastructure.Database.Messaging;
 using NetCore.Donation.Infrastructure.Database.Repositories;
 using Redis.OM;
 
@@ -48,6 +50,9 @@ public static class DependencyInjection
 		services.AddScoped<IReceiptRepository, ReceiptRepository>();
 		services.AddScoped<IJournalRepository, JournalRepository>();
 		services.AddScoped<IIdempotencyRepository, IdempotencyRepository>();
+		services.AddScoped<IOutboxMessageRepository, OutboxMessageRepository>();
+		services.AddSingleton<RecordingIntegrationEventPublisher>();
+		services.AddSingleton<IIntegrationEventPublisher>(sp => sp.GetRequiredService<RecordingIntegrationEventPublisher>());
 		services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDatabaseContext>());
 
 		// Cache configuration

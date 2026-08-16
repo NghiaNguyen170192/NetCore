@@ -222,6 +222,63 @@ namespace NetCore.Donation.Infrastructure.Database.Migrations
                     b.ToTable("Journals");
                 });
 
+            modelBuilder.Entity("NetCore.Donation.Domain.Entities.OutboxMessage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AttemptCount")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("CorrelationId")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("IdempotencyKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("LastError")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("MessageType")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
+
+                    b.Property<DateTime>("OccurredAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("ProcessedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CorrelationId")
+                        .HasDatabaseName("IX_OutboxMessages_CorrelationId");
+
+                    b.HasIndex("IdempotencyKey")
+                        .HasDatabaseName("IX_OutboxMessages_IdempotencyKey");
+
+                    b.HasIndex("IdempotencyKey", "MessageType")
+                        .IsUnique()
+                        .HasDatabaseName("IX_OutboxMessages_IdempotencyKey_MessageType")
+                        .HasFilter("\"IdempotencyKey\" <> ''");
+
+                    b.HasIndex("ProcessedAtUtc", "OccurredAtUtc")
+                        .HasDatabaseName("IX_OutboxMessages_Pending");
+
+                    b.ToTable("OutboxMessages", (string)null);
+                });
+
             modelBuilder.Entity("NetCore.Donation.Domain.Entities.PaymentMethod", b =>
                 {
                     b.Property<Guid>("Id")
@@ -399,6 +456,11 @@ namespace NetCore.Donation.Infrastructure.Database.Migrations
 
                     b.Property<DateOnly>("ReceivedDate")
                         .HasColumnType("date");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
 
                     b.HasKey("Id");
 

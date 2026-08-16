@@ -5,7 +5,7 @@
 <PageTitle>Donate — Hope &amp; Help</PageTitle>
 
 <h1 class="mb-3">Make a donation</h1>
-<p class="text-muted">This is a simulated gift. We still walk the full record: contact, method, schedule, transaction, journal, and receipt.</p>
+<p class="text-muted">This is a simulated gift. Choose a one-time donation or a recurring gift — both record a payment schedule and one transaction now. Later recurring charges are not generated yet.</p>
 
 @if (!string.IsNullOrWhiteSpace(error))
 {
@@ -71,14 +71,30 @@
                 </InputSelect>
             </div>
             <div class="col-md-4">
-                <label class="form-label">Schedule</label>
-                <InputSelect class="form-select" @bind-Value="form.Interval">
-                    @foreach (var interval in Enum.GetValues<RecurringInterval>())
-                    {
-                        <option value="@interval">@interval</option>
-                    }
-                </InputSelect>
+                <label class="form-label">Gift type</label>
+                <InputRadioGroup class="d-flex flex-column gap-1 pt-1" @bind-Value="form.IsRecurring">
+                    <label class="form-check mb-0">
+                        <InputRadio class="form-check-input" Value="@(false)" />
+                        <span class="form-check-label">One-time donation</span>
+                    </label>
+                    <label class="form-check mb-0">
+                        <InputRadio class="form-check-input" Value="@(true)" />
+                        <span class="form-check-label">Recurring donation</span>
+                    </label>
+                </InputRadioGroup>
             </div>
+            @if (form.IsRecurring)
+            {
+                <div class="col-md-4">
+                    <label class="form-label">Repeats</label>
+                    <InputSelect class="form-select" @bind-Value="form.Interval">
+                        @foreach (var interval in RecurringChoices)
+                        {
+                            <option value="@interval">@interval</option>
+                        }
+                    </InputSelect>
+                </div>
+            }
             <div class="col-md-6">
                 <label class="form-label">Payment method label</label>
                 <InputText class="form-control" @bind-Value="form.PaymentMethodName" />
@@ -102,6 +118,9 @@
 </div>
 
 @code {
+    private static readonly RecurringInterval[] RecurringChoices =
+        Enum.GetValues<RecurringInterval>().Where(interval => interval != RecurringInterval.OneOff).ToArray();
+
     private readonly DonationForm form = new();
     private IReadOnlyList<CountryDto> countries = [];
     private string? error;
@@ -128,26 +147,24 @@
         busy = true;
         try
         {
-            var today = DateOnly.FromDateTime(DateTime.UtcNow);
-            var contactId = await ResolveContactAsync();
-            var methodId = await Api.CreatePaymentMethodAsync(contactId, form.PaymentMethodName);
-            var scheduleId = await Api.CreatePaymentScheduleAsync(
-                contactId,
-                methodId,
+            var result = await Api.MakeDonationAsync(
+                form.FirstName.Trim(),
+                form.LastName.Trim(),
+                DateOnly.FromDateTime(form.DateOfBirth),
+                form.AddressLine.Trim(),
+                form.Email.Trim(),
+                form.PhoneNumber.Trim(),
+                Guid.Parse(form.CountryId),
                 form.Amount,
-                today,
-                form.Interval);
-            var transactionId = await Api.CreateTransactionAsync(
-                form.Amount,
-                scheduleId,
-                contactId,
-                methodId,
+                form.PaymentMethodName,
                 form.PaymentType,
-                today,
-                today);
-            await Api.CreateJournalAsync(transactionId);
-            var receiptId = await Api.CreateReceiptAsync(contactId, transactionId);
-            Navigation.NavigateTo($"/donate/thanks?contactId={contactId}&transactionId={transactionId}&receiptId={receiptId}");
+                form.IsRecurring,
+                form.IsRecurring ? form.Interval : RecurringInterval.OneOff,
+                form.DoNotEmail,
+                form.DoNotSms);
+
+            Navigation.NavigateTo(
+                $"/donate/thanks?contactId={result.ContactId}&paymentScheduleId={result.PaymentScheduleId}&isRecurring={result.IsRecurring}");
         }
         catch (Exception exception)
         {
@@ -157,28 +174,6 @@
         {
             busy = false;
         }
-    }
-
-    private async Task<Guid> ResolveContactAsync()
-    {
-        var existing = (await Api.GetContactsAsync())
-            .FirstOrDefault(contact => contact.Email.Equals(form.Email.Trim(), StringComparison.OrdinalIgnoreCase));
-        if (existing is not null)
-        {
-            await Api.SetContactPreferencesAsync(existing.Id, form.DoNotEmail, form.DoNotSms);
-            return existing.Id;
-        }
-
-        return await Api.CreateContactAsync(
-            form.FirstName.Trim(),
-            form.LastName.Trim(),
-            DateOnly.FromDateTime(form.DateOfBirth),
-            form.AddressLine.Trim(),
-            form.Email.Trim(),
-            form.PhoneNumber.Trim(),
-            Guid.Parse(form.CountryId),
-            form.DoNotEmail,
-            form.DoNotSms);
     }
 
     private sealed class DonationForm
@@ -193,6 +188,7 @@
         public decimal Amount { get; set; } = 50;
         public string PaymentMethodName { get; set; } = "Simulated bank account";
         public PaymentType PaymentType { get; set; } = PaymentType.Bank;
+        public bool IsRecurring { get; set; }
         public RecurringInterval Interval { get; set; } = RecurringInterval.Monthly;
         public bool DoNotEmail { get; set; }
         public bool DoNotSms { get; set; }

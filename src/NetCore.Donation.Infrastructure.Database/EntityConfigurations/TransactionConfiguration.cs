@@ -10,6 +10,7 @@ public class TransactionConfiguration : EntityTypeConfiguration<Transaction>
     {
         builder.Property(transaction => transaction.Amount).HasPrecision(18, 2);
         builder.Property(transaction => transaction.PaymentType).HasConversion<string>().HasMaxLength(20);
+        builder.Property(transaction => transaction.Status).HasConversion<string>().HasMaxLength(20);
         builder.HasIndex(transaction => transaction.PaymentScheduleId);
         builder.HasIndex(transaction => transaction.ContactId);
         builder.HasIndex(transaction => transaction.PaymentMethodId);

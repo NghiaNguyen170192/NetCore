@@ -1,6 +1,7 @@
 #nullable disable
 
 using NetCore.Donation.Domain.Enums;
+using NetCore.Donation.Domain.Events;
 using NetCore.Donation.Domain.SharedKernel;
 
 namespace NetCore.Donation.Domain.Entities;
@@ -23,6 +24,8 @@ public class Transaction : Entity, IAggregateRoot
 
     public PaymentType PaymentType { get; private set; }
 
+    public TransactionStatus Status { get; private set; }
+
     public DateOnly BookDate { get; private set; }
 
     public DateOnly ReceivedDate { get; private set; }
@@ -44,9 +47,57 @@ public class Transaction : Entity, IAggregateRoot
             ContactId = contactId,
             PaymentMethodId = paymentMethodId,
             PaymentType = paymentType,
+            Status = TransactionStatus.Succeeded,
             BookDate = bookDate,
             ReceivedDate = receivedDate,
         };
+    }
+
+    public static Transaction CreatePending(
+        decimal amount,
+        Guid paymentScheduleId,
+        Guid contactId,
+        Guid paymentMethodId,
+        PaymentType paymentType,
+        DateOnly bookDate,
+        bool isRecurring)
+    {
+        Validate(amount, paymentScheduleId, contactId, paymentMethodId, paymentType, bookDate, bookDate);
+        var transaction = new Transaction
+        {
+            Id = Guid.NewGuid(),
+            Amount = amount,
+            PaymentScheduleId = paymentScheduleId,
+            ContactId = contactId,
+            PaymentMethodId = paymentMethodId,
+            PaymentType = paymentType,
+            Status = TransactionStatus.Pending,
+            BookDate = bookDate,
+            ReceivedDate = bookDate,
+        };
+
+        transaction.AddDomainEvent(new TransactionPendingDomainEvent(
+            transaction.Id,
+            transaction.PaymentScheduleId,
+            transaction.ContactId,
+            transaction.Amount,
+            isRecurring));
+        return transaction;
+    }
+
+    public void MarkSucceeded()
+    {
+        EnsurePending();
+        Status = TransactionStatus.Succeeded;
+        ReceivedDate = DateOnly.FromDateTime(DateTime.UtcNow);
+        AddDomainEvent(new TransactionSucceededDomainEvent(Id, ContactId, PaymentScheduleId, Amount));
+    }
+
+    public void MarkFailed()
+    {
+        EnsurePending();
+        Status = TransactionStatus.Failed;
+        AddDomainEvent(new TransactionFailedDomainEvent(Id, ContactId, Amount));
     }
 
     public void UpdateReceiptDetails(decimal amount, PaymentType paymentType, DateOnly receivedDate)
@@ -55,6 +106,19 @@ public class Transaction : Entity, IAggregateRoot
         Amount = amount;
         PaymentType = paymentType;
         ReceivedDate = receivedDate;
+    }
+
+    private void EnsurePending()
+    {
+        if (Status != TransactionStatus.Pending)
+        {
+            throw new InvalidOperationException($"Transaction '{Id}' cannot leave status '{Status}'.");
+        }
+
+        if (Id == Guid.Empty)
+        {
+            Id = Guid.NewGuid();
+        }
     }
 
     private static void Validate(

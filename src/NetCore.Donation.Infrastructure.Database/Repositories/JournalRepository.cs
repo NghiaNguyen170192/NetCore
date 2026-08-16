@@ -27,6 +27,13 @@ public class JournalRepository(ApplicationDatabaseContext applicationDatabaseCon
         return await applicationDatabaseContext.Journals.FindAsync([id], cancellationToken);
     }
 
+    public async Task<Journal?> FindByTransactionIdAsync(Guid transactionId, CancellationToken cancellationToken)
+    {
+        return await applicationDatabaseContext.Journals
+            .AsNoTracking()
+            .FirstOrDefaultAsync(journal => journal.TransactionId == transactionId, cancellationToken);
+    }
+
     public void Delete(Journal journal)
     {
         applicationDatabaseContext.Journals.Remove(journal);

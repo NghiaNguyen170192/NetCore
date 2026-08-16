@@ -1,5 +1,6 @@
 #nullable disable
 
+using NetCore.Donation.Domain.Events;
 using NetCore.Donation.Domain.SharedKernel;
 
 namespace NetCore.Donation.Domain.Entities;
@@ -15,11 +16,18 @@ public class PaymentMethod : Entity, IAggregateRoot
     public static PaymentMethod Create(Guid contactId, string displayName)
     {
         Validate(contactId, displayName);
-        return new PaymentMethod
+        var paymentMethod = new PaymentMethod
         {
+            Id = Guid.NewGuid(),
             ContactId = contactId,
             DisplayName = displayName.Trim(),
         };
+
+        paymentMethod.AddDomainEvent(new DonationPaymentMethodCreatedDomainEvent(
+            paymentMethod.Id,
+            paymentMethod.ContactId,
+            paymentMethod.DisplayName));
+        return paymentMethod;
     }
 
     public void UpdateDisplayName(string displayName)
