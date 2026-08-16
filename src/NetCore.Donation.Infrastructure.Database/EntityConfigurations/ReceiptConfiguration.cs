@@ -10,6 +10,7 @@ public class ReceiptConfiguration : EntityTypeConfiguration<Receipt>
     {
         builder.HasIndex(receipt => receipt.ContactId);
         builder.HasIndex(receipt => receipt.TransactionId);
+        builder.HasIndex(receipt => receipt.PaymentScheduleId);
         builder.HasIndex(receipt => receipt.DocumentObjectKey);
 
         builder.Property(receipt => receipt.DocumentObjectKey).HasMaxLength(512);
@@ -26,6 +27,12 @@ public class ReceiptConfiguration : EntityTypeConfiguration<Receipt>
             .HasOne(receipt => receipt.Transaction)
             .WithMany()
             .HasForeignKey(receipt => receipt.TransactionId)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder
+            .HasOne(receipt => receipt.PaymentSchedule)
+            .WithMany()
+            .HasForeignKey(receipt => receipt.PaymentScheduleId)
             .OnDelete(DeleteBehavior.SetNull);
     }
 }

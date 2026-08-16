@@ -21,6 +21,7 @@ public class UpdateReceiptCommandHandler(
             return false;
         }
 
+        Guid? paymentScheduleId = null;
         if (request.TransactionId is { } transactionId)
         {
             var transaction = await transactionRepository.FindByIdAsync(transactionId, cancellationToken);
@@ -33,10 +34,12 @@ public class UpdateReceiptCommandHandler(
             {
                 throw new InvalidOperationException("The transaction does not belong to the contact.");
             }
+
+            paymentScheduleId = transaction.PaymentScheduleId;
         }
 
         var transactionChanged = receipt.TransactionId != request.TransactionId;
-        request.UpdateEntity(receipt);
+        request.UpdateEntity(receipt, paymentScheduleId);
 
         if (transactionChanged)
         {

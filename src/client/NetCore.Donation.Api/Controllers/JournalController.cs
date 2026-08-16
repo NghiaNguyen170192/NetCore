@@ -15,9 +15,10 @@ public class JournalController(IMediator mediator) : AuthorizedBaseController
 {
     [HttpPost]
     [ProducesResponseType((int)HttpStatusCode.Created)]
-    public async Task<ActionResult> Create()
+    [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+    public async Task<ActionResult> Create([FromBody] CreateJournalCommand request)
     {
-        var id = await mediator.Send(new CreateJournalCommand());
+        var id = await mediator.Send(request);
 
         return CreatedAtAction(nameof(GetJournal), new { id }, new { id });
     }

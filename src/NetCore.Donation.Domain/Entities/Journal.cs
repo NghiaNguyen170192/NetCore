@@ -6,8 +6,20 @@ namespace NetCore.Donation.Domain.Entities;
 
 public class Journal : Entity, IAggregateRoot
 {
-    public static Journal Create()
+    public Guid TransactionId { get; private set; }
+
+    public Transaction Transaction { get; private set; }
+
+    public static Journal Create(Guid transactionId)
     {
-        return new Journal();
+        if (transactionId == Guid.Empty)
+        {
+            throw new ArgumentException("Transaction ID is required.", nameof(transactionId));
+        }
+
+        return new Journal
+        {
+            TransactionId = transactionId,
+        };
     }
 }

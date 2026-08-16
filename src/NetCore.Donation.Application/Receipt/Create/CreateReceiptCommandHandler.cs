@@ -21,6 +21,7 @@ public class CreateReceiptCommandHandler(
             throw new ArgumentException($"Contact '{request.ContactId}' was not found.", nameof(request));
         }
 
+        Guid? paymentScheduleId = null;
         if (request.TransactionId is { } transactionId)
         {
             var transaction = await transactionRepository.FindByIdAsync(transactionId, cancellationToken);
@@ -33,9 +34,11 @@ public class CreateReceiptCommandHandler(
             {
                 throw new InvalidOperationException("The transaction does not belong to the contact.");
             }
+
+            paymentScheduleId = transaction.PaymentScheduleId;
         }
 
-        var receipt = request.ToDbEntity();
+        var receipt = request.ToDbEntity(paymentScheduleId);
         await ReceiptDocumentService.AssignGeneratedDocumentAsync(
             receipt,
             documentGenerator,

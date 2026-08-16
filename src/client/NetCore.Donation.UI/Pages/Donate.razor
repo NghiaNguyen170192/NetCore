@@ -1,0 +1,200 @@
+@page "/donate"
+@inject DonationApiClient Api
+@inject NavigationManager Navigation
+
+<PageTitle>Donate — Hope &amp; Help</PageTitle>
+
+<h1 class="mb-3">Make a donation</h1>
+<p class="text-muted">This is a simulated gift. We still walk the full record: contact, method, schedule, transaction, journal, and receipt.</p>
+
+@if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<div class="card-panel">
+    <EditForm Model="form" OnValidSubmit="SubmitAsync">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <h2 class="h5">Your details</h2>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">First name</label>
+                <InputText class="form-control" @bind-Value="form.FirstName" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Last name</label>
+                <InputText class="form-control" @bind-Value="form.LastName" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Email</label>
+                <InputText class="form-control" @bind-Value="form.Email" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Phone</label>
+                <InputText class="form-control" @bind-Value="form.PhoneNumber" />
+            </div>
+            <div class="col-md-8">
+                <label class="form-label">Address</label>
+                <InputText class="form-control" @bind-Value="form.AddressLine" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Date of birth</label>
+                <InputDate class="form-control" @bind-Value="form.DateOfBirth" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Country</label>
+                <InputSelect class="form-select" @bind-Value="form.CountryId">
+                    <option value="">Select a country</option>
+                    @foreach (var country in countries)
+                    {
+                        <option value="@country.Id.ToString()">@country.Name</option>
+                    }
+                </InputSelect>
+            </div>
+        </div>
+
+        <h2 class="h5 mt-4">Gift</h2>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">Amount (AUD)</label>
+                <InputNumber class="form-control" @bind-Value="form.Amount" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Payment type</label>
+                <InputSelect class="form-select" @bind-Value="form.PaymentType">
+                    @foreach (var type in Enum.GetValues<PaymentType>())
+                    {
+                        <option value="@type">@type</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Schedule</label>
+                <InputSelect class="form-select" @bind-Value="form.Interval">
+                    @foreach (var interval in Enum.GetValues<RecurringInterval>())
+                    {
+                        <option value="@interval">@interval</option>
+                    }
+                </InputSelect>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label">Payment method label</label>
+                <InputText class="form-control" @bind-Value="form.PaymentMethodName" />
+            </div>
+            <div class="col-md-6 d-flex align-items-end gap-4">
+                <label class="form-check">
+                    <InputCheckbox class="form-check-input" @bind-Value="form.DoNotEmail" />
+                    <span class="form-check-label">Do not email</span>
+                </label>
+                <label class="form-check">
+                    <InputCheckbox class="form-check-input" @bind-Value="form.DoNotSms" />
+                    <span class="form-check-label">Do not SMS</span>
+                </label>
+            </div>
+        </div>
+
+        <button class="btn btn-give btn-lg mt-4" type="submit" disabled="@busy">
+            @(busy ? "Recording gift…" : "Give now")
+        </button>
+    </EditForm>
+</div>
+
+@code {
+    private readonly DonationForm form = new();
+    private IReadOnlyList<CountryDto> countries = [];
+    private string? error;
+    private bool busy;
+
+    protected override async Task OnInitializedAsync()
+    {
+        countries = await Api.GetCountriesAsync();
+        var australia = countries.FirstOrDefault(country =>
+            country.Name.Equals("Australia", StringComparison.OrdinalIgnoreCase));
+        if (australia is not null)
+        {
+            form.CountryId = australia.Id.ToString();
+        }
+        else if (countries.Count > 0)
+        {
+            form.CountryId = countries[0].Id.ToString();
+        }
+    }
+
+    private async Task SubmitAsync()
+    {
+        error = null;
+        busy = true;
+        try
+        {
+            var today = DateOnly.FromDateTime(DateTime.UtcNow);
+            var contactId = await ResolveContactAsync();
+            var methodId = await Api.CreatePaymentMethodAsync(contactId, form.PaymentMethodName);
+            var scheduleId = await Api.CreatePaymentScheduleAsync(
+                contactId,
+                methodId,
+                form.Amount,
+                today,
+                form.Interval);
+            var transactionId = await Api.CreateTransactionAsync(
+                form.Amount,
+                scheduleId,
+                contactId,
+                methodId,
+                form.PaymentType,
+                today,
+                today);
+            await Api.CreateJournalAsync(transactionId);
+            var receiptId = await Api.CreateReceiptAsync(contactId, transactionId);
+            Navigation.NavigateTo($"/donate/thanks?contactId={contactId}&transactionId={transactionId}&receiptId={receiptId}");
+        }
+        catch (Exception exception)
+        {
+            error = exception.Message;
+        }
+        finally
+        {
+            busy = false;
+        }
+    }
+
+    private async Task<Guid> ResolveContactAsync()
+    {
+        var existing = (await Api.GetContactsAsync())
+            .FirstOrDefault(contact => contact.Email.Equals(form.Email.Trim(), StringComparison.OrdinalIgnoreCase));
+        if (existing is not null)
+        {
+            await Api.SetContactPreferencesAsync(existing.Id, form.DoNotEmail, form.DoNotSms);
+            return existing.Id;
+        }
+
+        return await Api.CreateContactAsync(
+            form.FirstName.Trim(),
+            form.LastName.Trim(),
+            DateOnly.FromDateTime(form.DateOfBirth),
+            form.AddressLine.Trim(),
+            form.Email.Trim(),
+            form.PhoneNumber.Trim(),
+            Guid.Parse(form.CountryId),
+            form.DoNotEmail,
+            form.DoNotSms);
+    }
+
+    private sealed class DonationForm
+    {
+        public string FirstName { get; set; } = string.Empty;
+        public string LastName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string PhoneNumber { get; set; } = string.Empty;
+        public string AddressLine { get; set; } = string.Empty;
+        public DateTime DateOfBirth { get; set; } = new(1990, 1, 1);
+        public string CountryId { get; set; } = string.Empty;
+        public decimal Amount { get; set; } = 50;
+        public string PaymentMethodName { get; set; } = "Simulated bank account";
+        public PaymentType PaymentType { get; set; } = PaymentType.Bank;
+        public RecurringInterval Interval { get; set; } = RecurringInterval.Monthly;
+        public bool DoNotEmail { get; set; }
+        public bool DoNotSms { get; set; }
+    }
+}

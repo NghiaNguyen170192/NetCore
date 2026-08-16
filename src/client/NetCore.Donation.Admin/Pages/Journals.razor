@@ -1,0 +1,52 @@
+@page "/journals"
+@inject DonationApiClient Api
+
+<PageTitle>Journals — Donation admin</PageTitle>
+
+<h1>Journals</h1>
+
+@if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Created (UTC)</th>
+                    <th>Journal</th>
+                    <th>Transaction</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var journal in journals.OrderByDescending(item => item.CreatedDate))
+                {
+                    <tr>
+                        <td>@journal.CreatedDate.ToString("u")</td>
+                        <td><code>@journal.Id</code></td>
+                        <td><code>@journal.TransactionId</code></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private IReadOnlyList<JournalDto> journals = [];
+    private string? error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            journals = await Api.GetJournalsAsync();
+        }
+        catch (Exception exception)
+        {
+            error = exception.Message;
+        }
+    }
+}

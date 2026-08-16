@@ -13,6 +13,9 @@ public sealed record QueryReceiptDto
     [JsonPropertyName("transaction-id")]
     public Guid? TransactionId { get; set; }
 
+    [JsonPropertyName("payment-schedule-id")]
+    public Guid? PaymentScheduleId { get; set; }
+
     [JsonPropertyName("document-object-key")]
     public string? DocumentObjectKey { get; set; }
 

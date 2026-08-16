@@ -1,0 +1,58 @@
+@page "/transactions"
+@inject DonationApiClient Api
+
+<PageTitle>Transactions — Donation admin</PageTitle>
+
+<h1>Transactions</h1>
+
+@if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Book date</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                    <th>Contact</th>
+                    <th>Schedule</th>
+                    <th>Id</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var transaction in transactions.OrderByDescending(item => item.BookDate))
+                {
+                    <tr>
+                        <td>@transaction.BookDate</td>
+                        <td>@transaction.Amount.ToString("C")</td>
+                        <td>@transaction.PaymentType</td>
+                        <td><code>@transaction.ContactId.ToString("N")[..8]</code></td>
+                        <td><code>@transaction.PaymentScheduleId.ToString("N")[..8]</code></td>
+                        <td><code>@transaction.Id.ToString("N")[..8]</code></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private IReadOnlyList<TransactionDto> transactions = [];
+    private string? error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            transactions = await Api.GetTransactionsAsync();
+        }
+        catch (Exception exception)
+        {
+            error = exception.Message;
+        }
+    }
+}

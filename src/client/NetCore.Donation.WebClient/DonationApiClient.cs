@@ -1,0 +1,237 @@
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
+
+namespace NetCore.Donation.WebClient;
+
+public sealed class DonationApiClient(HttpClient http)
+{
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+    };
+
+    public Task<IReadOnlyList<CountryDto>> GetCountriesAsync(CancellationToken cancellationToken = default) =>
+        GetListAsync<CountryDto>("api/v1/countries", cancellationToken);
+
+    public Task<IReadOnlyList<ContactDto>> GetContactsAsync(CancellationToken cancellationToken = default) =>
+        GetListAsync<ContactDto>("api/v1/contacts", cancellationToken);
+
+    public Task<ContactDto?> GetContactAsync(Guid id, CancellationToken cancellationToken = default) =>
+        GetAsync<ContactDto>($"api/v1/contacts/{id}", cancellationToken);
+
+    public Task<Guid> CreateContactAsync(
+        string firstName,
+        string lastName,
+        DateOnly dateOfBirth,
+        string addressLine,
+        string email,
+        string phoneNumber,
+        Guid countryId,
+        bool doNotEmail,
+        bool doNotSms,
+        CancellationToken cancellationToken = default) =>
+        PostIdAsync(
+            "api/v1/contacts",
+            new
+            {
+                firstName,
+                lastName,
+                dateOfBirth,
+                addressLine,
+                email,
+                phoneNumber,
+                countryId,
+                doNotEmail,
+                doNotSms,
+            },
+            cancellationToken);
+
+    public Task SetContactPreferencesAsync(
+        Guid id,
+        bool doNotEmail,
+        bool doNotSms,
+        CancellationToken cancellationToken = default) =>
+        SendAsync(
+            HttpMethod.Patch,
+            $"api/v1/contacts/{id}/preferences",
+            new { id, doNotEmail, doNotSms },
+            cancellationToken);
+
+    public Task<IReadOnlyList<PaymentMethodDto>> GetPaymentMethodsAsync(
+        Guid? contactId = null,
+        CancellationToken cancellationToken = default) =>
+        GetListAsync<PaymentMethodDto>(WithContact("api/v1/payment-methods", contactId), cancellationToken);
+
+    public Task<Guid> CreatePaymentMethodAsync(
+        Guid contactId,
+        string displayName,
+        CancellationToken cancellationToken = default) =>
+        PostIdAsync("api/v1/payment-methods", new { contactId, displayName }, cancellationToken);
+
+    public Task<IReadOnlyList<PaymentScheduleDto>> GetPaymentSchedulesAsync(
+        Guid? contactId = null,
+        CancellationToken cancellationToken = default) =>
+        GetListAsync<PaymentScheduleDto>(WithContact("api/v1/payment-schedules", contactId), cancellationToken);
+
+    public Task<Guid> CreatePaymentScheduleAsync(
+        Guid contactId,
+        Guid paymentMethodId,
+        decimal amount,
+        DateOnly bookDate,
+        RecurringInterval recurringInterval,
+        CancellationToken cancellationToken = default) =>
+        PostIdAsync(
+            "api/v1/payment-schedules",
+            new { contactId, paymentMethodId, amount, bookDate, recurringInterval },
+            cancellationToken);
+
+    public Task<IReadOnlyList<TransactionDto>> GetTransactionsAsync(
+        Guid? contactId = null,
+        CancellationToken cancellationToken = default) =>
+        GetListAsync<TransactionDto>(WithContact("api/v1/transactions", contactId), cancellationToken);
+
+    public Task<Guid> CreateTransactionAsync(
+        decimal amount,
+        Guid paymentScheduleId,
+        Guid contactId,
+        Guid paymentMethodId,
+        PaymentType paymentType,
+        DateOnly bookDate,
+        DateOnly receivedDate,
+        CancellationToken cancellationToken = default) =>
+        PostIdAsync(
+            "api/v1/transactions",
+            new
+            {
+                amount,
+                paymentScheduleId,
+                contactId,
+                paymentMethodId,
+                paymentType,
+                bookDate,
+                receivedDate,
+            },
+            cancellationToken);
+
+    public Task<IReadOnlyList<JournalDto>> GetJournalsAsync(CancellationToken cancellationToken = default) =>
+        GetListAsync<JournalDto>("api/v1/journals", cancellationToken);
+
+    public Task<Guid> CreateJournalAsync(Guid transactionId, CancellationToken cancellationToken = default) =>
+        PostIdAsync("api/v1/journals", new { transactionId }, cancellationToken);
+
+    public Task<IReadOnlyList<ReceiptDto>> GetReceiptsAsync(
+        Guid? contactId = null,
+        CancellationToken cancellationToken = default) =>
+        GetListAsync<ReceiptDto>(WithContact("api/v1/receipts", contactId), cancellationToken);
+
+    public Task<ReceiptDto?> GetReceiptAsync(Guid id, CancellationToken cancellationToken = default) =>
+        GetAsync<ReceiptDto>($"api/v1/receipts/{id}", cancellationToken);
+
+    public Task<Guid> CreateReceiptAsync(
+        Guid contactId,
+        Guid? transactionId,
+        CancellationToken cancellationToken = default) =>
+        PostIdAsync("api/v1/receipts", new { contactId, transactionId }, cancellationToken);
+
+    public async Task<byte[]> GetReceiptPdfAsync(Guid id, CancellationToken cancellationToken = default)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Get, $"api/v1/receipts/{id}");
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/pdf"));
+        using var response = await http.SendAsync(request, cancellationToken);
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadAsByteArrayAsync(cancellationToken);
+    }
+
+    private static string WithContact(string path, Guid? contactId) =>
+        contactId is { } id ? $"{path}?contactId={id}" : path;
+
+    private async Task<IReadOnlyList<T>> GetListAsync<T>(string path, CancellationToken cancellationToken)
+    {
+        using var request = JsonGet(path);
+        using var response = await http.SendAsync(request, cancellationToken);
+        await EnsureSuccessAsync(response);
+        await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+        using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
+        var root = document.RootElement;
+        var array = root.ValueKind == JsonValueKind.Array ? root : root.GetProperty("value");
+        return array.Deserialize<List<T>>(JsonOptions) ?? [];
+    }
+
+    private async Task<T?> GetAsync<T>(string path, CancellationToken cancellationToken)
+    {
+        using var request = JsonGet(path);
+        using var response = await http.SendAsync(request, cancellationToken);
+        if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+        {
+            return default;
+        }
+
+        await EnsureSuccessAsync(response);
+        return await response.Content.ReadFromJsonAsync<T>(JsonOptions, cancellationToken);
+    }
+
+    private async Task<Guid> PostIdAsync(string path, object body, CancellationToken cancellationToken)
+    {
+        using var response = await http.PostAsJsonAsync(path, body, JsonOptions, cancellationToken);
+        await EnsureSuccessAsync(response);
+        var created = await response.Content.ReadFromJsonAsync<IdResponse>(JsonOptions, cancellationToken);
+        if (created is null || created.Id == Guid.Empty)
+        {
+            throw new HttpRequestException("The API did not return a resource identifier.");
+        }
+
+        return created.Id;
+    }
+
+    private async Task SendAsync(HttpMethod method, string path, object body, CancellationToken cancellationToken)
+    {
+        using var request = new HttpRequestMessage(method, path)
+        {
+            Content = JsonContent.Create(body, options: JsonOptions),
+        };
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        using var response = await http.SendAsync(request, cancellationToken);
+        await EnsureSuccessAsync(response);
+    }
+
+    private static HttpRequestMessage JsonGet(string path)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, path);
+        request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+        return request;
+    }
+
+    private static async Task EnsureSuccessAsync(HttpResponseMessage response)
+    {
+        if (response.IsSuccessStatusCode)
+        {
+            return;
+        }
+
+        var detail = await TryReadProblemDetailAsync(response);
+        throw new HttpRequestException(
+            string.IsNullOrWhiteSpace(detail)
+                ? $"{(int)response.StatusCode} {response.ReasonPhrase}"
+                : detail);
+    }
+
+    private static async Task<string?> TryReadProblemDetailAsync(HttpResponseMessage response)
+    {
+        try
+        {
+            var payload = await response.Content.ReadFromJsonAsync<Dictionary<string, JsonElement>>();
+            if (payload is not null && payload.TryGetValue("detail", out var detail))
+            {
+                return detail.GetString();
+            }
+        }
+        catch (JsonException)
+        {
+            // Fall back to the status line.
+        }
+
+        return null;
+    }
+}

@@ -1,35 +1,38 @@
 using NetCore.Donation.ServiceDefaults;
+using NetCore.Donation.WebClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddSharedConfiguration();
 
-var apiBaseAddress = builder.Configuration.GetValue<string>("ApiBaseAddress") ?? "https://localhost:6001";
+if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable("ASPNETCORE_URLS")))
+{
+    builder.WebHost.UseUrls("http://localhost:6010", "https://localhost:6011");
+}
 
-// Add services to the container.
+var apiBaseAddress = builder.Configuration["ApiBaseAddress"] ?? "http://localhost:6000";
+builder.Services.AddHttpClient<DonationApiClient>(client =>
+{
+    client.BaseAddress = new Uri(apiBaseAddress.EndsWith('/') ? apiBaseAddress : apiBaseAddress + "/");
+    client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+});
+
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddScoped(sp => new HttpClient
-{
-	BaseAddress = new Uri(apiBaseAddress),
-});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-	app.UseExceptionHandler("/Error");
-	app.UseHsts();
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
-
 app.UseRouting();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
-app.Run();
+await app.RunAsync();

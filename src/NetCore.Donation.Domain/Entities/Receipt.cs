@@ -14,6 +14,10 @@ public class Receipt : Entity, IAggregateRoot
 
     public Transaction Transaction { get; private set; }
 
+    public Guid? PaymentScheduleId { get; private set; }
+
+    public PaymentSchedule PaymentSchedule { get; private set; }
+
     public string DocumentObjectKey { get; private set; }
 
     public string DocumentFileName { get; private set; }
@@ -24,27 +28,38 @@ public class Receipt : Entity, IAggregateRoot
 
     public long? DocumentSizeBytes { get; private set; }
 
-    public static Receipt Create(Guid contactId, Guid? transactionId = null)
+    public static Receipt Create(Guid contactId, Guid? transactionId = null, Guid? paymentScheduleId = null)
     {
-        Validate(contactId, transactionId);
+        Validate(contactId, transactionId, paymentScheduleId);
         return new Receipt
         {
             ContactId = contactId,
             TransactionId = transactionId,
+            PaymentScheduleId = paymentScheduleId,
         };
     }
 
-    public void AssignTransaction(Guid transactionId)
+    public void AssignTransaction(Guid transactionId, Guid paymentScheduleId)
     {
         if (transactionId == Guid.Empty)
         {
             throw new ArgumentException("Transaction ID cannot be empty.", nameof(transactionId));
         }
 
+        if (paymentScheduleId == Guid.Empty)
+        {
+            throw new ArgumentException("Payment schedule ID cannot be empty.", nameof(paymentScheduleId));
+        }
+
         TransactionId = transactionId;
+        PaymentScheduleId = paymentScheduleId;
     }
 
-    public void ClearTransaction() => TransactionId = null;
+    public void ClearTransaction()
+    {
+        TransactionId = null;
+        PaymentScheduleId = null;
+    }
 
     public void AssignDocument(
         string objectKey,
@@ -80,7 +95,7 @@ public class Receipt : Entity, IAggregateRoot
 
     public bool HasDocument => !string.IsNullOrWhiteSpace(DocumentObjectKey);
 
-    private static void Validate(Guid contactId, Guid? transactionId)
+    private static void Validate(Guid contactId, Guid? transactionId, Guid? paymentScheduleId)
     {
         if (contactId == Guid.Empty)
         {
@@ -90,6 +105,16 @@ public class Receipt : Entity, IAggregateRoot
         if (transactionId == Guid.Empty)
         {
             throw new ArgumentException("Transaction ID cannot be empty.", nameof(transactionId));
+        }
+
+        if (paymentScheduleId == Guid.Empty)
+        {
+            throw new ArgumentException("Payment schedule ID cannot be empty.", nameof(paymentScheduleId));
+        }
+
+        if (transactionId is not null && paymentScheduleId is null)
+        {
+            throw new ArgumentException("Payment schedule ID is required when a transaction is assigned.", nameof(paymentScheduleId));
         }
     }
 }

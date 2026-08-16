@@ -9,6 +9,7 @@ public static class QueryReceiptDtoExtension
             Id = receipt.Id,
             ContactId = receipt.ContactId,
             TransactionId = receipt.TransactionId,
+            PaymentScheduleId = receipt.PaymentScheduleId,
             DocumentObjectKey = receipt.DocumentObjectKey,
             DocumentFileName = receipt.DocumentFileName,
             DocumentContentType = receipt.DocumentContentType,

@@ -7,6 +7,7 @@ public static class QueryJournalDtoExtension
         return journals.Select(journal => new QueryJournalDto
         {
             Id = journal.Id,
+            TransactionId = journal.TransactionId,
             CreatedDate = journal.CreatedDate,
             ModifiedDate = journal.ModifiedDate,
         });

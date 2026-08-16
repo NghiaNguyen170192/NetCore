@@ -212,7 +212,12 @@ namespace NetCore.Donation.Infrastructure.Database.Migrations
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid>("TransactionId")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("TransactionId");
 
                     b.ToTable("Journals");
                 });
@@ -334,6 +339,9 @@ namespace NetCore.Donation.Infrastructure.Database.Migrations
                     b.Property<DateTime>("ModifiedDate")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("PaymentScheduleId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("TransactionId")
                         .HasColumnType("uuid");
 
@@ -342,6 +350,8 @@ namespace NetCore.Donation.Infrastructure.Database.Migrations
                     b.HasIndex("ContactId");
 
                     b.HasIndex("DocumentObjectKey");
+
+                    b.HasIndex("PaymentScheduleId");
 
                     b.HasIndex("TransactionId");
 
@@ -412,6 +422,17 @@ namespace NetCore.Donation.Infrastructure.Database.Migrations
                     b.Navigation("Country");
                 });
 
+            modelBuilder.Entity("NetCore.Donation.Domain.Entities.Journal", b =>
+                {
+                    b.HasOne("NetCore.Donation.Domain.Entities.Transaction", "Transaction")
+                        .WithMany()
+                        .HasForeignKey("TransactionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Transaction");
+                });
+
             modelBuilder.Entity("NetCore.Donation.Domain.Entities.PaymentMethod", b =>
                 {
                     b.HasOne("NetCore.Donation.Domain.Entities.Contact", "Contact")
@@ -450,12 +471,19 @@ namespace NetCore.Donation.Infrastructure.Database.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
+                    b.HasOne("NetCore.Donation.Domain.Entities.PaymentSchedule", "PaymentSchedule")
+                        .WithMany()
+                        .HasForeignKey("PaymentScheduleId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
                     b.HasOne("NetCore.Donation.Domain.Entities.Transaction", "Transaction")
                         .WithMany()
                         .HasForeignKey("TransactionId")
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Contact");
+
+                    b.Navigation("PaymentSchedule");
 
                     b.Navigation("Transaction");
                 });

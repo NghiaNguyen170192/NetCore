@@ -1,0 +1,102 @@
+@page "/"
+@inject DonationApiClient Api
+
+<PageTitle>Overview — Donation admin</PageTitle>
+
+<h1>Overview</h1>
+<p class="text-muted">Live totals from the donation API. Auth is not enabled.</p>
+
+@if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+else if (loading)
+{
+    <p>Loading…</p>
+}
+else
+{
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="text-muted">Contacts</div>
+                <div class="value">@contacts.Count</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="text-muted">Transactions</div>
+                <div class="value">@transactions.Count</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="text-muted">Total gifted</div>
+                <div class="value">@transactions.Sum(item => item.Amount).ToString("C")</div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="text-muted">Receipts</div>
+                <div class="value">@receipts.Count</div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="h5">Recent transactions</h2>
+    <div class="table-wrap">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                    <th>Contact</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var transaction in transactions.OrderByDescending(item => item.BookDate).Take(10))
+                {
+                    <tr>
+                        <td>@transaction.BookDate</td>
+                        <td>@transaction.Amount.ToString("C")</td>
+                        <td>@transaction.PaymentType</td>
+                        <td>@NameFor(transaction.ContactId)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private bool loading = true;
+    private string? error;
+    private IReadOnlyList<ContactDto> contacts = [];
+    private IReadOnlyList<TransactionDto> transactions = [];
+    private IReadOnlyList<ReceiptDto> receipts = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            contacts = await Api.GetContactsAsync();
+            transactions = await Api.GetTransactionsAsync();
+            receipts = await Api.GetReceiptsAsync();
+        }
+        catch (Exception exception)
+        {
+            error = exception.Message;
+        }
+        finally
+        {
+            loading = false;
+        }
+    }
+
+    private string NameFor(Guid contactId)
+    {
+        var contact = contacts.FirstOrDefault(item => item.Id == contactId);
+        return contact is null ? contactId.ToString("N")[..8] : $"{contact.FirstName} {contact.LastName}";
+    }
+}

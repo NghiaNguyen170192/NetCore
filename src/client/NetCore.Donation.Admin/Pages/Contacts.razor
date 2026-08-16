@@ -1,0 +1,62 @@
+@page "/contacts"
+@inject DonationApiClient Api
+
+<PageTitle>Contacts — Donation admin</PageTitle>
+
+<h1>Contacts</h1>
+
+@if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="table mb-0">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Country</th>
+                    <th>Active</th>
+                    <th>Prefs</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var contact in contacts)
+                {
+                    <tr>
+                        <td>@contact.FirstName @contact.LastName</td>
+                        <td>@contact.Email</td>
+                        <td>@contact.PhoneNumber</td>
+                        <td>@contact.CountryName</td>
+                        <td>@(contact.IsActive ? "Yes" : "No")</td>
+                        <td>
+                            @(contact.DoNotEmail ? "no email" : "email ok")
+                            /
+                            @(contact.DoNotSms ? "no SMS" : "SMS ok")
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+
+@code {
+    private IReadOnlyList<ContactDto> contacts = [];
+    private string? error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            contacts = await Api.GetContactsAsync();
+        }
+        catch (Exception exception)
+        {
+            error = exception.Message;
+        }
+    }
+}

@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\NetCore.Donation.Api\NetCore.Donation.Api.csproj" />
     <ProjectReference Include="..\NetCore.Donation.UI\NetCore.Donation.UI.csproj" />
+    <ProjectReference Include="..\NetCore.Donation.Admin\NetCore.Donation.Admin.csproj" />
     <ProjectReference Include="..\NetCore.Donation.Migration\NetCore.Donation.Migration.csproj" />
   </ItemGroup>
 </Project>

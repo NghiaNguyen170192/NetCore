@@ -29,8 +29,6 @@ public sealed class DonationSeed(
         var country = await countryRepository.GetAll().OrderBy(item => item.Name).FirstAsync();
         var today = DateOnly.FromDateTime(DateTime.UtcNow);
 
-        await dispatcher.Send(new CreateJournalCommand());
-
         var contactId = await dispatcher.Send(new CreateContactCommand(
             "Sample",
             "Donor",
@@ -61,6 +59,7 @@ public sealed class DonationSeed(
             today,
             today));
 
+        await dispatcher.Send(new CreateJournalCommand(transactionId));
         await dispatcher.Send(new CreateReceiptCommand(contactId, transactionId));
     }
 }

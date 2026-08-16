@@ -71,4 +71,10 @@ var ui = builder.AddProject<Projects.NetCore_Donation_UI>("ui")
     .WithHttpEndpoint(port: 6010, name: "ui-http")
     .WithHttpsEndpoint(port: 6011, name: "ui-https");
 
+var admin = builder.AddProject<Projects.NetCore_Donation_Admin>("admin")
+    .WithReference(api)
+    .WithEnvironment("ApiBaseAddress", () => api.GetEndpoint("api-http").Url)
+    .WithHttpEndpoint(port: 6020, name: "admin-http")
+    .WithHttpsEndpoint(port: 6021, name: "admin-https");
+
 await builder.Build().RunAsync();

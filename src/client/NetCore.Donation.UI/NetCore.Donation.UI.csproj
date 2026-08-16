@@ -16,9 +16,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	<ProjectReference Include="..\NetCore.Donation.Api\NetCore.Donation.Api.csproj" />
-	<!-- Reference centralized service defaults at solution root to avoid duplicate copies -->
-	<ProjectReference Include="..\..\NetCore.Donation.ServiceDefaults\NetCore.Donation.ServiceDefaults.csproj" />
+		<ProjectReference Include="..\NetCore.Donation.WebClient\NetCore.Donation.WebClient.csproj" />
+		<ProjectReference Include="..\..\NetCore.Donation.ServiceDefaults\NetCore.Donation.ServiceDefaults.csproj" />
 	</ItemGroup>
 
 </Project>

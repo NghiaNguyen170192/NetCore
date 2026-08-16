@@ -1,0 +1,82 @@
+@page "/receipts"
+@inject DonationApiClient Api
+@inject IJSRuntime JS
+
+<PageTitle>Receipts — Donation admin</PageTitle>
+
+<h1>Receipts</h1>
+
+@if (!string.IsNullOrWhiteSpace(error))
+{
+    <div class="alert alert-danger">@error</div>
+}
+
+<div class="table-wrap">
+    <table class="table mb-0">
+        <thead>
+            <tr>
+                <th>Receipt</th>
+                <th>Contact</th>
+                <th>Transaction</th>
+                <th>Schedule</th>
+                <th>Document</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var receipt in receipts)
+            {
+                <tr>
+                    <td><code>@receipt.Id.ToString("N")[..8]</code></td>
+                    <td><code>@receipt.ContactId.ToString("N")[..8]</code></td>
+                    <td>@(receipt.TransactionId is { } transactionId ? transactionId.ToString("N")[..8] : "—")</td>
+                    <td>@(receipt.PaymentScheduleId is { } scheduleId ? scheduleId.ToString("N")[..8] : "—")</td>
+                    <td>
+                        @if (receipt.HasDocument)
+                        {
+                            <button class="btn btn-sm btn-outline-primary" type="button" @onclick="() => DownloadAsync(receipt)">
+                                Download
+                            </button>
+                        }
+                        else
+                        {
+                            <span class="text-muted">None</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@code {
+    private IReadOnlyList<ReceiptDto> receipts = [];
+    private string? error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            receipts = await Api.GetReceiptsAsync();
+        }
+        catch (Exception exception)
+        {
+            error = exception.Message;
+        }
+    }
+
+    private async Task DownloadAsync(ReceiptDto receipt)
+    {
+        try
+        {
+            var pdf = await Api.GetReceiptPdfAsync(receipt.Id);
+            var fileName = string.IsNullOrWhiteSpace(receipt.DocumentFileName)
+                ? $"receipt-{receipt.Id:N}.pdf"
+                : receipt.DocumentFileName;
+            await JS.InvokeVoidAsync("downloadFile", fileName, "application/pdf", pdf);
+        }
+        catch (Exception exception)
+        {
+            error = exception.Message;
+        }
+    }
+}

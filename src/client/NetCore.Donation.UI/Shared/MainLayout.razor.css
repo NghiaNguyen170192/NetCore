@@ -1,70 +1,87 @@
-.page {
-    position: relative;
+.site {
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
+    background: #f6f3ee;
+    color: #1f2a24;
 }
 
-main {
-    flex: 1;
+.site-header {
+    background: #14532d;
+    color: #fff;
 }
 
-.sidebar {
-    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
-}
-
-.top-row {
-    background-color: #f7f7f7;
-    border-bottom: 1px solid #d6d5d5;
-    justify-content: flex-end;
-    height: 3.5rem;
+.header-inner {
     display: flex;
     align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 4rem;
 }
 
-    .top-row ::deep a, .top-row .btn-link {
-        white-space: nowrap;
-        margin-left: 1.5rem;
-    }
-
-    .top-row a:first-child {
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-@media (max-width: 640.98px) {
-    .top-row:not(.auth) {
-        display: none;
-    }
-
-    .top-row.auth {
-        justify-content: space-between;
-    }
-
-    .top-row a, .top-row .btn-link {
-        margin-left: 0;
-    }
+.brand {
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.25rem;
+    text-decoration: none;
 }
 
-@media (min-width: 641px) {
-    .page {
-        flex-direction: row;
-    }
+.site-nav {
+    display: flex;
+    gap: 1.25rem;
+}
 
-    .sidebar {
-        width: 250px;
-        height: 100vh;
-        position: sticky;
-        top: 0;
-    }
+.site-nav a {
+    color: #d7efe0;
+    text-decoration: none;
+}
 
-    .top-row {
-        position: sticky;
-        top: 0;
-        z-index: 1;
-    }
+.site-nav a.active,
+.site-nav a:hover {
+    color: #fff;
+}
 
-    .top-row, article {
-        padding-left: 2rem !important;
-        padding-right: 1.5rem !important;
-    }
+.site-main {
+    flex: 1;
+    padding: 2rem 0 3rem;
+}
+
+.site-footer {
+    background: #0f172a;
+    color: #cbd5e1;
+    padding: 1rem 0;
+    font-size: 0.9rem;
+}
+
+.hero {
+    background: linear-gradient(135deg, #14532d, #166534 55%, #3f6212);
+    color: #fff;
+    border-radius: 1rem;
+    padding: 3rem 2rem;
+    margin-bottom: 2rem;
+}
+
+.hero h1 {
+    font-size: 2.4rem;
+    margin-bottom: 0.75rem;
+}
+
+.card-panel {
+    background: #fff;
+    border: 1px solid #e7e0d6;
+    border-radius: 0.85rem;
+    padding: 1.5rem;
+    box-shadow: 0 8px 24px rgba(20, 83, 45, 0.06);
+}
+
+.btn-give {
+    background: #166534;
+    border-color: #166534;
+    color: #fff;
+}
+
+.btn-give:hover {
+    background: #14532d;
+    border-color: #14532d;
+    color: #fff;
 }
